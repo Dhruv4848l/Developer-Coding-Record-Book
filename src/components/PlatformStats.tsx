@@ -1,6 +1,7 @@
  import { motion } from "framer-motion";
  import { ExternalLink, ChevronRight } from "lucide-react";
  import { Link } from "react-router-dom";
+ import { useCodolioStats } from "@/hooks/useCodolioStats";
  
  const platforms = [
    {
@@ -78,24 +79,7 @@
            <p className="text-muted-foreground text-lg">
              Total Problems Solved Across All Platforms
            </p>
-          <div className="flex flex-wrap justify-center gap-8 mt-6 text-sm">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">211</div>
-              <div className="text-muted-foreground">Submissions</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">42</div>
-              <div className="text-muted-foreground">Active Days</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">23</div>
-              <div className="text-muted-foreground">Max Streak</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-primary">10</div>
-              <div className="text-muted-foreground">Current Streak</div>
-            </div>
-          </div>
+           <StatsRow />
          </motion.div>
  
          {/* Platform Cards */}
@@ -146,5 +130,55 @@
          </div>
        </div>
      </section>
+   );
+ };
+ 
+ const StatsRow = () => {
+   const { data: codolioStats, isLoading } = useCodolioStats();
+   
+   if (isLoading || !codolioStats) {
+     return (
+       <div className="flex flex-wrap justify-center gap-8 mt-6 text-sm">
+         <div className="text-center">
+           <div className="text-2xl font-bold text-primary">...</div>
+           <div className="text-muted-foreground">Submissions</div>
+         </div>
+         <div className="text-center">
+           <div className="text-2xl font-bold text-primary">...</div>
+           <div className="text-muted-foreground">Active Days</div>
+         </div>
+         <div className="text-center">
+           <div className="text-2xl font-bold text-primary">...</div>
+           <div className="text-muted-foreground">Max Streak</div>
+         </div>
+         <div className="text-center">
+           <div className="text-2xl font-bold text-primary">...</div>
+           <div className="text-muted-foreground">Current Streak</div>
+         </div>
+       </div>
+     );
+   }
+ 
+   const { profile } = codolioStats;
+   
+   return (
+     <div className="flex flex-wrap justify-center gap-8 mt-6 text-sm">
+       <div className="text-center">
+         <div className="text-2xl font-bold text-primary">{profile.totalSubmissions}</div>
+         <div className="text-muted-foreground">Submissions</div>
+       </div>
+       <div className="text-center">
+         <div className="text-2xl font-bold text-primary">{profile.activeDays}</div>
+         <div className="text-muted-foreground">Active Days</div>
+       </div>
+       <div className="text-center">
+         <div className="text-2xl font-bold text-primary">{profile.longestStreak}</div>
+         <div className="text-muted-foreground">Max Streak</div>
+       </div>
+       <div className="text-center">
+         <div className="text-2xl font-bold text-primary">{profile.currentStreak}</div>
+         <div className="text-muted-foreground">Current Streak</div>
+       </div>
+     </div>
    );
  };

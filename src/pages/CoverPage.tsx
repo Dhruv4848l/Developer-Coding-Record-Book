@@ -1,11 +1,20 @@
  import { motion } from "framer-motion";
  import { useNavigate } from "react-router-dom";
- import { Code2, ChevronRight, Trophy, Zap, MapPin, GraduationCap, Github, Mail, Linkedin } from "lucide-react";
+ import { Code2, ChevronRight, Trophy, Zap, MapPin, GraduationCap, Github, Mail } from "lucide-react";
  import { Button } from "@/components/ui/button";
  import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+ import { useCodolioStats } from "@/hooks/useCodolioStats";
  
  const CoverPage = () => {
    const navigate = useNavigate();
+   const { data: codolioStats } = useCodolioStats();
+   
+   const profile = codolioStats?.profile ?? {
+     globalRank: 22122,
+     problemsSolved: 165,
+     totalSubmissions: 211,
+     longestStreak: 23,
+   };
  
    return (
      <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
@@ -98,22 +107,22 @@
            >
              <div className="glass rounded-xl p-4 text-center">
                <Trophy className="w-6 h-6 text-primary mx-auto mb-2" />
-               <div className="text-2xl font-bold">#22,122</div>
+               <div className="text-2xl font-bold">#{profile.globalRank.toLocaleString()}</div>
                <div className="text-xs text-muted-foreground">Global Rank</div>
              </div>
              <div className="glass rounded-xl p-4 text-center">
                <Code2 className="w-6 h-6 text-leetcode mx-auto mb-2" />
-               <div className="text-2xl font-bold">165</div>
+               <div className="text-2xl font-bold">{profile.problemsSolved}</div>
                <div className="text-xs text-muted-foreground">Problems Solved</div>
              </div>
              <div className="glass rounded-xl p-4 text-center">
                <Zap className="w-6 h-6 text-accent mx-auto mb-2" />
-               <div className="text-2xl font-bold">211</div>
+               <div className="text-2xl font-bold">{profile.totalSubmissions}</div>
                <div className="text-xs text-muted-foreground">Submissions</div>
              </div>
              <div className="glass rounded-xl p-4 text-center">
                <Trophy className="w-6 h-6 text-gfg mx-auto mb-2" />
-               <div className="text-2xl font-bold">23</div>
+               <div className="text-2xl font-bold">{profile.longestStreak}</div>
                <div className="text-xs text-muted-foreground">Max Streak</div>
              </div>
            </motion.div>
