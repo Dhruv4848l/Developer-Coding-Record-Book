@@ -1,5 +1,5 @@
  import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target, Flame } from "lucide-react";
+import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target, Info } from "lucide-react";
  import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -77,8 +77,6 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
   }, [leetcodeStats?.heatmap]);
   
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
-
-  const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
  
    return (
      <div className="min-h-screen bg-background">
@@ -191,109 +189,87 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
             )}
          </motion.div>
  
-          {/* LeetCode Heatmap */}
+          {/* LeetCode Submission Heatmap */}
          <motion.div
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.3 }}
            className="glass rounded-2xl p-8"
          >
-            <div className="flex items-center gap-3 mb-6">
-              <Flame className="w-6 h-6 text-leetcode" />
-              <h2 className="text-2xl font-bold">Submission Activity</h2>
-            </div>
-            
             {isLoading ? (
               <div className="space-y-4">
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
+                 <Skeleton className="h-6 w-full" />
                 <Skeleton className="h-32 w-full" />
               </div>
             ) : (
               <>
-                {/* Stats Row */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  <div className="text-center p-3 rounded-xl bg-leetcode/10">
-                      <div className="text-2xl font-bold text-leetcode">{profile?.totalSubmissions ?? 0}</div>
-                    <div className="text-xs text-muted-foreground">Total Submissions</div>
+                 {/* Header Row */}
+                 <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
+                   <div className="flex items-center gap-2">
+                     <span className="text-lg font-bold text-foreground">{profile?.totalSubmissions ?? 0}</span>
+                     <span className="text-muted-foreground">submissions in the past one year</span>
+                     <Info className="w-4 h-4 text-muted-foreground cursor-help" />
                   </div>
-                  <div className="text-center p-3 rounded-xl bg-success/10">
-                      <div className="text-2xl font-bold text-success">{profile?.activeDays ?? 0}</div>
-                    <div className="text-xs text-muted-foreground">Active Days</div>
-                  </div>
-                  <div className="text-center p-3 rounded-xl bg-warning/10">
-                      <div className="text-2xl font-bold text-warning">{profile?.currentStreak ?? 0}</div>
-                    <div className="text-xs text-muted-foreground">Current Streak</div>
-                  </div>
-                  <div className="text-center p-3 rounded-xl bg-primary/10">
-                      <div className="text-2xl font-bold text-primary">{profile?.longestStreak ?? 0}</div>
-                    <div className="text-xs text-muted-foreground">Max Streak</div>
+                   <div className="flex items-center gap-6 text-sm">
+                     <div>
+                       <span className="text-muted-foreground">Total active days: </span>
+                       <span className="font-semibold text-foreground">{profile?.activeDays ?? 0}</span>
+                     </div>
+                     <div>
+                       <span className="text-muted-foreground">Max streak: </span>
+                       <span className="font-semibold text-foreground">{profile?.longestStreak ?? 0}</span>
+                     </div>
+                     <div className="px-3 py-1 rounded bg-secondary/60 text-foreground text-sm">
+                       Current: {profile?.currentStreak ?? 0}
+                     </div>
                   </div>
                 </div>
 
                 {/* Heatmap Grid */}
-                <div className="overflow-x-auto pb-2">
+                 <div className="overflow-x-auto">
                   <div className="inline-block min-w-max">
-                    {/* Month Labels */}
-                    <div className="flex mb-2 ml-9 relative h-5">
-                      {monthLabels.map((label, index) => (
-                        <div
-                          key={`${label.month}-${index}`}
-                          className="text-xs text-muted-foreground absolute font-medium"
-                          style={{ left: `${label.position * 15}px` }}
-                        >
-                          {label.month}
-                        </div>
-                      ))}
+                     {/* Heatmap Cells */}
+                     <div className="flex gap-[3px]">
+                       {weeks.map((week, weekIndex) => (
+                         <div key={weekIndex} className="flex flex-col gap-[3px]">
+                           {week.map((day, dayIndex) => (
+                             <motion.div
+                               key={`${weekIndex}-${dayIndex}`}
+                               initial={{ opacity: 0, scale: 0 }}
+                               animate={{ opacity: 1, scale: 1 }}
+                               transition={{
+                                 duration: 0.02,
+                                 delay: weekIndex * 0.002,
+                               }}
+                               whileHover={day.count !== -1 ? { scale: 1.3, zIndex: 10 } : undefined}
+                               className={`w-[11px] h-[11px] rounded-sm ${
+                                 day.count === -1 
+                                   ? "bg-transparent" 
+                                   : getHeatmapColor(day.count)
+                               } ${day.count !== -1 ? "hover:ring-1 hover:ring-foreground/40 cursor-pointer" : ""} transition-all relative`}
+                               title={
+                                 day.count === -1 
+                                   ? undefined 
+                                   : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+                               }
+                             />
+                           ))}
+                         </div>
+                       ))}
                     </div>
 
-                    <div className="flex gap-[3px]">
-                      {/* Day Labels */}
-                      <div className="flex flex-col gap-[3px] pr-2">
-                        {dayLabels.map((day, i) => (
-                          <div
-                            key={`day-${i}`}
-                            className="h-[11px] text-[10px] text-muted-foreground flex items-center justify-end w-6"
-                          >
-                            {day}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Heatmap Cells */}
-                      <div className="flex gap-[3px]">
-                        {weeks.map((week, weekIndex) => (
-                          <div key={weekIndex} className="flex flex-col gap-[3px]">
-                            {week.map((day, dayIndex) => (
-                              <motion.div
-                                key={`${weekIndex}-${dayIndex}`}
-                                initial={{ opacity: 0, scale: 0 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{
-                                  duration: 0.02,
-                                  delay: weekIndex * 0.002,
-                                }}
-                                whileHover={day.count !== -1 ? { scale: 1.4, zIndex: 10 } : undefined}
-                                className={`w-[11px] h-[11px] rounded-[2px] ${
-                                  day.count === -1 
-                                    ? "bg-transparent" 
-                                    : getHeatmapColor(day.count)
-                                } ${day.count !== -1 ? "hover:ring-2 hover:ring-leetcode/60 cursor-pointer" : ""} transition-all relative`}
-                                title={
-                                  day.count === -1 
-                                    ? undefined 
-                                    : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
-                                }
-                              />
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                     {/* Month Labels at Bottom */}
+                     <div className="flex mt-2 relative h-5">
+                       {monthLabels.map((label, index) => (
+                         <div
+                           key={`${label.month}-${index}`}
+                           className="text-xs text-muted-foreground absolute"
+                           style={{ left: `${label.position * 14}px` }}
+                         >
+                           {label.month}
+                         </div>
+                       ))}
+                     </div>
 
                     {/* Legend */}
                     <div className="flex items-center justify-end gap-2 mt-4">
@@ -301,18 +277,11 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
                       {[0, 1, 2, 5, 8].map((count, index) => (
                         <div
                           key={index}
-                          className={`w-[11px] h-[11px] rounded-[2px] ${getHeatmapColor(count)}`}
+                           className={`w-[11px] h-[11px] rounded-sm ${getHeatmapColor(count)}`}
                         />
                       ))}
                       <span className="text-xs text-muted-foreground">More</span>
                     </div>
-
-                    {/* Last updated */}
-                    {leetcodeStats?.lastUpdated && (
-                      <div className="text-xs text-muted-foreground text-right mt-2">
-                        Last updated: {new Date(leetcodeStats.lastUpdated).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-                      </div>
-                    )}
                   </div>
                 </div>
               </>
