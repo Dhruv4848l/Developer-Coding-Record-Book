@@ -44,5 +44,7 @@ export function useCodolioStats(username: string = "dhruvmajiever191") {
     staleTime: FOUR_HOURS,
     refetchInterval: FOUR_HOURS,
     refetchOnWindowFocus: false,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
   });
 }
