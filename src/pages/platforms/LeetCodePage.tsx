@@ -64,6 +64,24 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
   
   return labels;
 };
+
+const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
+  const boundaries: Set<number> = new Set();
+  let currentMonth = -1;
+  
+  weeks.forEach((week, weekIndex) => {
+    const validDay = week.find(d => d.count !== -1);
+    if (validDay) {
+      const month = validDay.date.getMonth();
+      if (month !== currentMonth && weekIndex > 0) {
+        boundaries.add(weekIndex);
+      }
+      currentMonth = month;
+    }
+  });
+  
+  return boundaries;
+};
  
  const LeetCodePage = () => {
   const { data: leetcodeStats, isLoading, error } = useLeetCodeStats('Ydp5K7DIfv');
@@ -77,6 +95,7 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
   }, [leetcodeStats?.heatmap]);
   
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
+  const monthBoundaries = useMemo(() => getWeekMonthBoundaries(weeks), [weeks]);
  
    return (
      <div className="min-h-screen bg-background">
@@ -231,7 +250,10 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
                      {/* Heatmap Cells */}
                      <div className="flex gap-[3px]">
                        {weeks.map((week, weekIndex) => (
-                         <div key={weekIndex} className="flex flex-col gap-[3px]">
+                         <div 
+                           key={weekIndex} 
+                           className={`flex flex-col gap-[3px] ${monthBoundaries.has(weekIndex) ? 'ml-2' : ''}`}
+                         >
                            {week.map((day, dayIndex) => (
                              <motion.div
                                key={`${weekIndex}-${dayIndex}`}
