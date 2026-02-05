@@ -47,12 +47,21 @@ const processHeatmapData = (data: LeetCodeHeatmapDay[]) => {
 const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
   const labels: { month: string; position: number }[] = [];
   let currentMonth = -1;
+  let monthStartWeek = 0;
   
   weeks.forEach((week, weekIndex) => {
     const validDay = week.find(d => d.count !== -1);
     if (validDay) {
       const month = validDay.date.getMonth();
       if (month !== currentMonth) {
+        if (currentMonth !== -1) {
+          // Calculate center position for the previous month
+          const prevLabel = labels[labels.length - 1];
+          if (prevLabel) {
+            prevLabel.position = Math.floor((monthStartWeek + weekIndex - 1) / 2);
+          }
+        }
+        monthStartWeek = weekIndex;
         labels.push({
           month: validDay.date.toLocaleDateString('en-US', { month: 'short' }),
           position: weekIndex,
@@ -61,6 +70,12 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
       }
     }
   });
+
+  // Center the last month label
+  if (labels.length > 0) {
+    const lastLabel = labels[labels.length - 1];
+    lastLabel.position = Math.floor((monthStartWeek + weeks.length - 1) / 2);
+  }
   
   return labels;
 };
@@ -245,14 +260,14 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                 </div>
 
                 {/* Heatmap Grid */}
-                 <div className="overflow-x-auto">
-                  <div className="inline-block min-w-max">
+                 <div className="w-full">
+                  <div className="w-full">
                      {/* Heatmap Cells */}
-                     <div className="flex gap-[3px]">
+                     <div className="flex justify-between w-full">
                        {weeks.map((week, weekIndex) => (
                          <div 
                            key={weekIndex} 
-                           className={`flex flex-col gap-[3px] ${monthBoundaries.has(weekIndex) ? 'ml-2' : ''}`}
+                           className={`flex flex-col gap-[2px] ${monthBoundaries.has(weekIndex) ? 'ml-1' : ''}`}
                          >
                            {week.map((day, dayIndex) => (
                              <motion.div
@@ -264,7 +279,7 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                                  delay: weekIndex * 0.002,
                                }}
                                whileHover={day.count !== -1 ? { scale: 1.3, zIndex: 10 } : undefined}
-                               className={`w-[11px] h-[11px] rounded-sm ${
+                               className={`w-[10px] h-[10px] rounded-sm ${
                                  day.count === -1 
                                    ? "bg-transparent" 
                                    : getHeatmapColor(day.count)
@@ -281,12 +296,11 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                     </div>
 
                      {/* Month Labels at Bottom */}
-                     <div className="flex mt-2 relative h-5">
+                     <div className="flex justify-between w-full mt-2 px-1">
                        {monthLabels.map((label, index) => (
                          <div
                            key={`${label.month}-${index}`}
-                           className="text-xs text-muted-foreground absolute"
-                           style={{ left: `${label.position * 14}px` }}
+                           className="text-xs text-muted-foreground text-center flex-1"
                          >
                            {label.month}
                          </div>
@@ -294,12 +308,12 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                      </div>
 
                     {/* Legend */}
-                    <div className="flex items-center justify-end gap-2 mt-4">
+                    <div className="flex items-center justify-end gap-2 mt-3">
                       <span className="text-xs text-muted-foreground">Less</span>
                       {[0, 1, 2, 5, 8].map((count, index) => (
                         <div
                           key={index}
-                           className={`w-[11px] h-[11px] rounded-sm ${getHeatmapColor(count)}`}
+                           className={`w-[10px] h-[10px] rounded-sm ${getHeatmapColor(count)}`}
                         />
                       ))}
                       <span className="text-xs text-muted-foreground">More</span>
