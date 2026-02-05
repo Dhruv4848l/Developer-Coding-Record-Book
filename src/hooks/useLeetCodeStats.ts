@@ -57,11 +57,14 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
   return data as LeetCodeStats;
 }
 
+const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
 export function useLeetCodeStats(username: string = 'Ydp5K7DIfv') {
   return useQuery({
     queryKey: ["leetcode-stats", username],
     queryFn: () => fetchLeetCodeStats(username),
-    staleTime: 1000 * 60 * 30, // 30 min cache
+    staleTime: FOUR_HOURS,
+    refetchInterval: FOUR_HOURS,
     refetchOnWindowFocus: false,
     retry: 2,
   });

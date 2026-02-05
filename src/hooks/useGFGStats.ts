@@ -37,11 +37,14 @@ async function fetchGFGStats(username: string): Promise<GFGStats> {
   return data as GFGStats;
 }
 
+const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
 export function useGFGStats(username: string) {
   return useQuery({
     queryKey: ["gfg-stats", username],
     queryFn: () => fetchGFGStats(username),
-    staleTime: 1000 * 60 * 30, // 30 min cache
+    staleTime: FOUR_HOURS,
+    refetchInterval: FOUR_HOURS,
     refetchOnWindowFocus: false,
     retry: 2,
   });

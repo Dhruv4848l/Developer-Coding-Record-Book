@@ -65,11 +65,14 @@ async function fetchCodeforcesStats(handle: string): Promise<CodeforcesStats> {
   return response.data as CodeforcesStats;
 }
 
+const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
 export function useCodeforcesStats(handle: string) {
   return useQuery({
     queryKey: ["codeforces-stats", handle],
     queryFn: () => fetchCodeforcesStats(handle),
-    staleTime: 1000 * 60 * 30, // 30 min cache
+    staleTime: FOUR_HOURS,
+    refetchInterval: FOUR_HOURS,
     refetchOnWindowFocus: false,
     retry: 2,
   });
