@@ -14,103 +14,97 @@ const getHeatmapColor = (count: number): string => {
   return "bg-[#39d353]";
 };
 
-const processHeatmapData = (data: LeetCodeHeatmapDay[]) => {
-  const weeks: { date: Date; count: number }[][] = [];
+interface MonthData {
+  month: string;
+  year: number;
+  weeks: { date: Date; count: number }[][];
+}
+
+const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
+  if (!data || data.length === 0) return [];
+  
+  const months: MonthData[] = [];
+  let currentMonthKey = '';
+  let currentMonthWeeks: { date: Date; count: number }[][] = [];
   let currentWeek: { date: Date; count: number }[] = [];
   
   data.forEach((day, index) => {
     const date = new Date(day.date);
-    const dayOfWeek = date.getDay();
+    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
     
-    if (index === 0 && dayOfWeek !== 0) {
+    // Check if we've moved to a new month
+    if (monthKey !== currentMonthKey) {
+      // Save the previous month if it exists
+      if (currentMonthKey !== '') {
+        // Finish the current week if it has data
+        if (currentWeek.length > 0) {
+          // Pad the end of the last week
+          while (currentWeek.length < 7) {
+            currentWeek.push({ date: new Date(0), count: -1 });
+          }
+          currentMonthWeeks.push(currentWeek);
+        }
+        
+        const [prevYear, prevMonth] = currentMonthKey.split('-').map(Number);
+        months.push({
+          month: new Date(prevYear, prevMonth).toLocaleDateString('en-US', { month: 'short' }),
+          year: prevYear,
+          weeks: currentMonthWeeks,
+        });
+      }
+      
+      // Start new month
+      currentMonthKey = monthKey;
+      currentMonthWeeks = [];
+      currentWeek = [];
+      
+      // Pad the beginning of the first week based on day of week
+      const dayOfWeek = date.getDay();
       for (let i = 0; i < dayOfWeek; i++) {
         currentWeek.push({ date: new Date(0), count: -1 });
       }
     }
     
+    // Add the current day
     currentWeek.push({ date, count: day.count });
     
-    if (dayOfWeek === 6 || index === data.length - 1) {
-      if (index === data.length - 1) {
-        while (currentWeek.length < 7) {
-          currentWeek.push({ date: new Date(0), count: -1 });
-        }
-      }
-      weeks.push(currentWeek);
+    // If it's Saturday, finish the week
+    if (date.getDay() === 6) {
+      currentMonthWeeks.push(currentWeek);
       currentWeek = [];
     }
   });
   
-  return weeks;
-};
-
-const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
-  const labels: { month: string; position: number }[] = [];
-  let currentMonth = -1;
-  let monthStartWeek = 0;
-  
-  weeks.forEach((week, weekIndex) => {
-    const validDay = week.find(d => d.count !== -1);
-    if (validDay) {
-      const month = validDay.date.getMonth();
-      if (month !== currentMonth) {
-        if (currentMonth !== -1) {
-          // Calculate center position for the previous month
-          const prevLabel = labels[labels.length - 1];
-          if (prevLabel) {
-            prevLabel.position = Math.floor((monthStartWeek + weekIndex - 1) / 2);
-          }
-        }
-        monthStartWeek = weekIndex;
-        labels.push({
-          month: validDay.date.toLocaleDateString('en-US', { month: 'short' }),
-          position: weekIndex,
-        });
-        currentMonth = month;
-      }
+  // Don't forget to add the last month
+  if (currentWeek.length > 0) {
+    while (currentWeek.length < 7) {
+      currentWeek.push({ date: new Date(0), count: -1 });
     }
-  });
-
-  // Center the last month label
-  if (labels.length > 0) {
-    const lastLabel = labels[labels.length - 1];
-    lastLabel.position = Math.floor((monthStartWeek + weeks.length - 1) / 2);
+    currentMonthWeeks.push(currentWeek);
   }
   
-  return labels;
+  if (currentMonthKey !== '') {
+    const [year, month] = currentMonthKey.split('-').map(Number);
+    months.push({
+      month: new Date(year, month).toLocaleDateString('en-US', { month: 'short' }),
+      year: year,
+      weeks: currentMonthWeeks,
+    });
+  }
+  
+  return months;
 };
 
-const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
-  const boundaries: Set<number> = new Set();
-  let currentMonth = -1;
-  
-  weeks.forEach((week, weekIndex) => {
-    const validDay = week.find(d => d.count !== -1);
-    if (validDay) {
-      const month = validDay.date.getMonth();
-      if (month !== currentMonth && weekIndex > 0) {
-        boundaries.add(weekIndex);
-      }
-      currentMonth = month;
-    }
-  });
-  
-  return boundaries;
-};
- 
  const LeetCodePage = () => {
   const { data: leetcodeStats, isLoading, error } = useLeetCodeStats('Ydp5K7DIfv');
   
   const profile = leetcodeStats?.profile;
   const profileUrl = "https://leetcode.com/u/Ydp5K7DIfv";
  
-  const weeks = useMemo(() => {
+  const monthsData = useMemo(() => {
     if (!leetcodeStats?.heatmap) return [];
-    return processHeatmapData(leetcodeStats.heatmap);
+    return processHeatmapDataByMonth(leetcodeStats.heatmap);
   }, [leetcodeStats?.heatmap]);
-  
-  const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
-  const monthBoundaries = useMemo(() => getWeekMonthBoundaries(weeks), [weeks]);
  
    return (
      <div className="min-h-screen bg-background">
@@ -260,66 +254,59 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                 </div>
 
                 {/* Heatmap Grid */}
-                 <div className="w-full">
-                  <div className="w-full">
-                     {/* Heatmap Cells */}
-                     <div className="flex w-full">
-                       {weeks.map((week, weekIndex) => (
-                         <div 
-                           key={weekIndex} 
-                           className={`flex flex-col gap-[1px] ${monthBoundaries.has(weekIndex) ? 'ml-3' : 'ml-[1px]'}`}
-                         >
-                           {week.map((day, dayIndex) => (
-                             <motion.div
-                               key={`${weekIndex}-${dayIndex}`}
-                               initial={{ opacity: 0, scale: 0 }}
-                               animate={{ opacity: 1, scale: 1 }}
-                               transition={{
-                                 duration: 0.02,
-                                 delay: weekIndex * 0.002,
-                               }}
-                               whileHover={day.count !== -1 ? { scale: 1.3, zIndex: 10 } : undefined}
-                               className={`w-[11px] h-[11px] rounded-[2px] ${
-                                 day.count === -1 
-                                   ? "bg-transparent" 
-                                   : getHeatmapColor(day.count)
-                               } ${day.count !== -1 ? "hover:ring-1 hover:ring-[#39d353]/60 cursor-pointer" : ""} transition-all relative`}
-                               title={
-                                 day.count === -1 
-                                   ? undefined 
-                                   : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
-                               }
-                             />
+                 <div className="w-full overflow-x-auto">
+                   <div className="flex gap-4 min-w-max pb-2">
+                     {monthsData.map((monthData, monthIndex) => (
+                       <div key={`${monthData.month}-${monthData.year}`} className="flex flex-col">
+                         {/* Month Label */}
+                         <div className="text-xs text-muted-foreground mb-2 text-center font-medium">
+                           {monthData.month}
+                         </div>
+                         {/* Weeks Grid */}
+                         <div className="flex gap-[2px]">
+                           {monthData.weeks.map((week, weekIndex) => (
+                             <div key={weekIndex} className="flex flex-col gap-[2px]">
+                               {week.map((day, dayIndex) => (
+                                 <motion.div
+                                   key={`${monthIndex}-${weekIndex}-${dayIndex}`}
+                                   initial={{ opacity: 0, scale: 0 }}
+                                   animate={{ opacity: 1, scale: 1 }}
+                                   transition={{
+                                     duration: 0.02,
+                                     delay: (monthIndex * 5 + weekIndex) * 0.002,
+                                   }}
+                                   whileHover={day.count !== -1 ? { scale: 1.3, zIndex: 10 } : undefined}
+                                   className={`w-[11px] h-[11px] rounded-[2px] ${
+                                     day.count === -1 
+                                       ? "bg-transparent" 
+                                       : getHeatmapColor(day.count)
+                                   } ${day.count !== -1 ? "hover:ring-1 hover:ring-[#39d353]/60 cursor-pointer" : ""} transition-all relative`}
+                                   title={
+                                     day.count === -1 
+                                       ? undefined 
+                                       : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+                                   }
+                                 />
+                               ))}
+                             </div>
                            ))}
                          </div>
-                       ))}
-                    </div>
+                       </div>
+                     ))}
+                   </div>
 
-                     {/* Month Labels at Bottom */}
-                     <div className="flex justify-between w-full mt-2 px-1">
-                       {monthLabels.map((label, index) => (
-                         <div
-                           key={`${label.month}-${index}`}
-                           className="text-xs text-muted-foreground text-center flex-1"
-                         >
-                           {label.month}
-                         </div>
-                       ))}
-                     </div>
-
-                    {/* Legend */}
-                    <div className="flex items-center justify-end gap-2 mt-3">
-                      <span className="text-xs text-muted-foreground">Less</span>
-                      {[0, 1, 2, 5, 8].map((count, index) => (
-                        <div
-                          key={index}
-                           className={`w-[11px] h-[11px] rounded-[2px] ${getHeatmapColor(count)}`}
-                        />
-                      ))}
-                      <span className="text-xs text-muted-foreground">More</span>
-                    </div>
-                  </div>
-                </div>
+                   {/* Legend */}
+                   <div className="flex items-center justify-end gap-2 mt-4">
+                     <span className="text-xs text-muted-foreground">Less</span>
+                     {[0, 1, 2, 5, 8].map((count, index) => (
+                       <div
+                         key={index}
+                         className={`w-[11px] h-[11px] rounded-[2px] ${getHeatmapColor(count)}`}
+                       />
+                     ))}
+                     <span className="text-xs text-muted-foreground">More</span>
+                   </div>
+                 </div>
               </>
             )}
          </motion.div>
