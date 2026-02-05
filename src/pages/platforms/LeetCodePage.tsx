@@ -150,35 +150,35 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.1 }}
-           className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12"
+           className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12"
          >
             {isLoading ? (
               <>
-                <Skeleton className="h-28 w-full rounded-xl" />
-                <Skeleton className="h-28 w-full rounded-xl" />
-                <Skeleton className="h-28 w-full rounded-xl" />
-                <Skeleton className="h-28 w-full rounded-xl" />
+                <Skeleton className="h-24 sm:h-28 w-full rounded-xl" />
+                <Skeleton className="h-24 sm:h-28 w-full rounded-xl" />
+                <Skeleton className="h-24 sm:h-28 w-full rounded-xl" />
+                <Skeleton className="h-24 sm:h-28 w-full rounded-xl" />
               </>
             ) : (
               <>
-                <div className="glass rounded-xl p-6 text-center">
-                  <Trophy className="w-8 h-8 text-leetcode mx-auto mb-3" />
-                  <div className="text-3xl font-bold text-leetcode">{profile?.totalSolved ?? 0}</div>
+                <div className="glass rounded-xl p-4 sm:p-6 text-center">
+                  <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-leetcode mx-auto mb-2 sm:mb-3" />
+                  <div className="text-2xl sm:text-3xl font-bold text-leetcode">{profile?.totalSolved ?? 0}</div>
                   <div className="text-sm text-muted-foreground">Problems Solved</div>
                 </div>
-                <div className="glass rounded-xl p-6 text-center">
-                  <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
-                  <div className="text-3xl font-bold">{profile?.totalSubmissions ?? 0}</div>
+                <div className="glass rounded-xl p-4 sm:p-6 text-center">
+                  <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-2 sm:mb-3" />
+                  <div className="text-2xl sm:text-3xl font-bold">{profile?.totalSubmissions ?? 0}</div>
                   <div className="text-sm text-muted-foreground">Submissions</div>
                 </div>
-                <div className="glass rounded-xl p-6 text-center">
-                  <Target className="w-8 h-8 text-success mx-auto mb-3" />
-                  <div className="text-3xl font-bold text-success">{profile?.acceptanceRate ?? '0%'}</div>
+                <div className="glass rounded-xl p-4 sm:p-6 text-center">
+                  <Target className="w-6 h-6 sm:w-8 sm:h-8 text-success mx-auto mb-2 sm:mb-3" />
+                  <div className="text-2xl sm:text-3xl font-bold text-success">{profile?.acceptanceRate ?? '0%'}</div>
                   <div className="text-sm text-muted-foreground">Acceptance Rate</div>
                 </div>
-                <div className="glass rounded-xl p-6 text-center">
-                  <Trophy className="w-8 h-8 text-warning mx-auto mb-3" />
-                  <div className="text-3xl font-bold text-warning">#{profile?.ranking?.toLocaleString() ?? 0}</div>
+                <div className="glass rounded-xl p-4 sm:p-6 text-center overflow-hidden">
+                  <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-warning mx-auto mb-2 sm:mb-3" />
+                  <div className="text-xl sm:text-3xl font-bold text-warning truncate">#{profile?.ranking?.toLocaleString() ?? 0}</div>
                   <div className="text-sm text-muted-foreground">Global Ranking</div>
                 </div>
               </>
