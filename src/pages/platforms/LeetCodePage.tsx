@@ -4,7 +4,7 @@ import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target, Flame } from "luci
  import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo } from "react";
-import { useCodolioStats, HeatmapDay } from "@/hooks/useCodolioStats";
+import { useLeetCodeStats, LeetCodeHeatmapDay } from "@/hooks/useLeetCodeStats";
 
 const getHeatmapColor = (count: number): string => {
   if (count === 0) return "bg-secondary/40";
@@ -14,7 +14,7 @@ const getHeatmapColor = (count: number): string => {
   return "bg-[hsl(45,90%,55%)]";
 };
 
-const processHeatmapData = (data: HeatmapDay[]) => {
+const processHeatmapData = (data: LeetCodeHeatmapDay[]) => {
   const weeks: { date: Date; count: number }[][] = [];
   let currentWeek: { date: Date; count: number }[] = [];
   
@@ -66,24 +66,15 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
 };
  
  const LeetCodePage = () => {
-  const { data: codolioStats, isLoading } = useCodolioStats();
+  const { data: leetcodeStats, isLoading, error } = useLeetCodeStats('Ydp5K7DIfv');
   
-   const stats = {
-     username: "@Ydp5K7DIfv",
-    solved: codolioStats?.profile?.problemsSolved ?? 113,
-    easy: 60, // LeetCode specific breakdown
-    medium: 47,
-    hard: 6,
-    submissions: codolioStats?.profile?.totalSubmissions ?? 180,
-     acceptance: "62.8%",
-     ranking: "#385,921",
-     profileUrl: "https://leetcode.com/u/Ydp5K7DIfv",
-   };
+  const profile = leetcodeStats?.profile;
+  const profileUrl = "https://leetcode.com/u/Ydp5K7DIfv";
  
   const weeks = useMemo(() => {
-    if (!codolioStats?.heatmap) return [];
-    return processHeatmapData(codolioStats.heatmap);
-  }, [codolioStats?.heatmap]);
+    if (!leetcodeStats?.heatmap) return [];
+    return processHeatmapData(leetcodeStats.heatmap);
+  }, [leetcodeStats?.heatmap]);
   
   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
 
@@ -101,7 +92,7 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
                  Back to Dashboard
                </Button>
              </Link>
-             <a href={stats.profileUrl} target="_blank" rel="noopener noreferrer">
+              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
                <Button variant="outline" className="gap-2 border-leetcode/30 text-leetcode hover:bg-leetcode/10">
                  <ExternalLink className="w-4 h-4" />
                  View Profile
@@ -125,7 +116,7 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
            <h1 className="text-4xl md:text-5xl font-bold mb-4">
              Dhruv's <span className="text-leetcode">LeetCode</span> Profile
            </h1>
-           <p className="text-muted-foreground text-lg">{stats.username}</p>
+            <p className="text-muted-foreground text-lg">@{profile?.username || 'Ydp5K7DIfv'}</p>
          </motion.div>
  
          {/* Stats Grid */}
@@ -135,26 +126,37 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
            transition={{ delay: 0.1 }}
            className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12"
          >
-           <div className="glass rounded-xl p-6 text-center">
-             <Trophy className="w-8 h-8 text-leetcode mx-auto mb-3" />
-             <div className="text-3xl font-bold text-leetcode">{stats.solved}</div>
-             <div className="text-sm text-muted-foreground">Problems Solved</div>
-           </div>
-           <div className="glass rounded-xl p-6 text-center">
-             <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
-             <div className="text-3xl font-bold">{stats.submissions}</div>
-             <div className="text-sm text-muted-foreground">Submissions</div>
-           </div>
-           <div className="glass rounded-xl p-6 text-center">
-             <Target className="w-8 h-8 text-success mx-auto mb-3" />
-             <div className="text-3xl font-bold text-success">{stats.acceptance}</div>
-             <div className="text-sm text-muted-foreground">Acceptance Rate</div>
-           </div>
-           <div className="glass rounded-xl p-6 text-center">
-             <Trophy className="w-8 h-8 text-warning mx-auto mb-3" />
-             <div className="text-3xl font-bold text-warning">{stats.ranking}</div>
-             <div className="text-sm text-muted-foreground">Global Ranking</div>
-           </div>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-28 w-full rounded-xl" />
+                <Skeleton className="h-28 w-full rounded-xl" />
+                <Skeleton className="h-28 w-full rounded-xl" />
+                <Skeleton className="h-28 w-full rounded-xl" />
+              </>
+            ) : (
+              <>
+                <div className="glass rounded-xl p-6 text-center">
+                  <Trophy className="w-8 h-8 text-leetcode mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-leetcode">{profile?.totalSolved ?? 0}</div>
+                  <div className="text-sm text-muted-foreground">Problems Solved</div>
+                </div>
+                <div className="glass rounded-xl p-6 text-center">
+                  <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <div className="text-3xl font-bold">{profile?.totalSubmissions ?? 0}</div>
+                  <div className="text-sm text-muted-foreground">Submissions</div>
+                </div>
+                <div className="glass rounded-xl p-6 text-center">
+                  <Target className="w-8 h-8 text-success mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-success">{profile?.acceptanceRate ?? '0%'}</div>
+                  <div className="text-sm text-muted-foreground">Acceptance Rate</div>
+                </div>
+                <div className="glass rounded-xl p-6 text-center">
+                  <Trophy className="w-8 h-8 text-warning mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-warning">#{profile?.ranking?.toLocaleString() ?? 0}</div>
+                  <div className="text-sm text-muted-foreground">Global Ranking</div>
+                </div>
+              </>
+            )}
          </motion.div>
  
          {/* Difficulty Breakdown */}
@@ -165,20 +167,28 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
            className="glass rounded-2xl p-8 mb-12"
          >
            <h2 className="text-2xl font-bold mb-6">Difficulty Breakdown</h2>
-           <div className="grid grid-cols-3 gap-6">
-             <div className="text-center p-6 rounded-xl bg-success/10 border border-success/30">
-               <div className="text-4xl font-bold text-success mb-2">{stats.easy}</div>
-               <div className="text-success font-medium">Easy</div>
-             </div>
-             <div className="text-center p-6 rounded-xl bg-warning/10 border border-warning/30">
-               <div className="text-4xl font-bold text-warning mb-2">{stats.medium}</div>
-               <div className="text-warning font-medium">Medium</div>
-             </div>
-             <div className="text-center p-6 rounded-xl bg-destructive/10 border border-destructive/30">
-               <div className="text-4xl font-bold text-destructive mb-2">{stats.hard}</div>
-               <div className="text-destructive font-medium">Hard</div>
-             </div>
-           </div>
+            {isLoading ? (
+              <div className="grid grid-cols-3 gap-6">
+                <Skeleton className="h-24 w-full rounded-xl" />
+                <Skeleton className="h-24 w-full rounded-xl" />
+                <Skeleton className="h-24 w-full rounded-xl" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-6">
+                <div className="text-center p-6 rounded-xl bg-success/10 border border-success/30">
+                  <div className="text-4xl font-bold text-success mb-2">{profile?.easySolved ?? 0}</div>
+                  <div className="text-success font-medium">Easy</div>
+                </div>
+                <div className="text-center p-6 rounded-xl bg-warning/10 border border-warning/30">
+                  <div className="text-4xl font-bold text-warning mb-2">{profile?.mediumSolved ?? 0}</div>
+                  <div className="text-warning font-medium">Medium</div>
+                </div>
+                <div className="text-center p-6 rounded-xl bg-destructive/10 border border-destructive/30">
+                  <div className="text-4xl font-bold text-destructive mb-2">{profile?.hardSolved ?? 0}</div>
+                  <div className="text-destructive font-medium">Hard</div>
+                </div>
+              </div>
+            )}
          </motion.div>
  
           {/* LeetCode Heatmap */}
@@ -208,19 +218,19 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
                 {/* Stats Row */}
                 <div className="grid grid-cols-4 gap-4 mb-6">
                   <div className="text-center p-3 rounded-xl bg-leetcode/10">
-                    <div className="text-2xl font-bold text-leetcode">{codolioStats?.profile?.totalSubmissions ?? 0}</div>
+                      <div className="text-2xl font-bold text-leetcode">{profile?.totalSubmissions ?? 0}</div>
                     <div className="text-xs text-muted-foreground">Total Submissions</div>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-success/10">
-                    <div className="text-2xl font-bold text-success">{codolioStats?.profile?.activeDays ?? 0}</div>
+                      <div className="text-2xl font-bold text-success">{profile?.activeDays ?? 0}</div>
                     <div className="text-xs text-muted-foreground">Active Days</div>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-warning/10">
-                    <div className="text-2xl font-bold text-warning">{codolioStats?.profile?.currentStreak ?? 0}</div>
+                      <div className="text-2xl font-bold text-warning">{profile?.currentStreak ?? 0}</div>
                     <div className="text-xs text-muted-foreground">Current Streak</div>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-primary/10">
-                    <div className="text-2xl font-bold text-primary">{codolioStats?.profile?.longestStreak ?? 0}</div>
+                      <div className="text-2xl font-bold text-primary">{profile?.longestStreak ?? 0}</div>
                     <div className="text-xs text-muted-foreground">Max Streak</div>
                   </div>
                 </div>
@@ -298,9 +308,9 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
                     </div>
 
                     {/* Last updated */}
-                    {codolioStats?.lastUpdated && (
+                    {leetcodeStats?.lastUpdated && (
                       <div className="text-xs text-muted-foreground text-right mt-2">
-                        Last updated: {new Date(codolioStats.lastUpdated).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                        Last updated: {new Date(leetcodeStats.lastUpdated).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
                       </div>
                     )}
                   </div>
