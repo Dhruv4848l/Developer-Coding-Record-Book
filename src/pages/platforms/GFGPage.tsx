@@ -42,10 +42,6 @@
            animate={{ opacity: 1, y: 0 }}
            className="text-center mb-12"
          >
-           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gfg/10 border border-gfg/30 mb-6">
-             <Code2 className="w-5 h-5 text-gfg" />
-             <span className="text-gfg font-medium">GeeksforGeeks</span>
-           </div>
            <h1 className="text-4xl md:text-5xl font-bold mb-4">
              Dhruv's <span className="text-gfg">GeeksforGeeks</span> Profile
            </h1>
@@ -88,7 +84,6 @@
            transition={{ delay: 0.2 }}
            className="glass rounded-2xl p-12 text-center"
          >
-           <Code2 className="w-16 h-16 text-gfg mx-auto mb-6 opacity-50" />
            <h2 className="text-2xl font-bold mb-4">Profile Not Yet Active</h2>
            <p className="text-muted-foreground max-w-md mx-auto">
              Start solving problems on GeeksforGeeks to see your progress here!

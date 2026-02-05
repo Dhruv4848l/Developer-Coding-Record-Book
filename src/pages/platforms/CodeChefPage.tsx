@@ -50,10 +50,6 @@
            animate={{ opacity: 1, y: 0 }}
            className="text-center mb-12"
          >
-           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-codechef/10 border border-codechef/30 mb-6">
-             <Code2 className="w-5 h-5 text-codechef" />
-             <span className="text-codechef font-medium">CodeChef</span>
-           </div>
            <h1 className="text-4xl md:text-5xl font-bold mb-4">
              Dhruv's <span className="text-codechef">CodeChef</span> Profile
            </h1>

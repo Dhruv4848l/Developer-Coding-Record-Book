@@ -27,17 +27,6 @@
        <div className="container mx-auto px-6 relative z-10">
          <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
            {/* Logo/Brand */}
-           <motion.div
-             initial={{ opacity: 0, scale: 0.5 }}
-             animate={{ opacity: 1, scale: 1 }}
-             transition={{ duration: 0.6 }}
-             className="mb-6"
-           >
-             <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow mb-4 mx-auto">
-               <Code2 className="w-10 h-10 text-primary-foreground" />
-             </div>
-           </motion.div>
- 
            {/* Profile Avatar */}
            <motion.div
              initial={{ opacity: 0, y: 20 }}

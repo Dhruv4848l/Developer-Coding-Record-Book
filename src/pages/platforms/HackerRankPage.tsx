@@ -49,10 +49,6 @@
            animate={{ opacity: 1, y: 0 }}
            className="text-center mb-12"
          >
-           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-hackerrank/10 border border-hackerrank/30 mb-6">
-             <Code2 className="w-5 h-5 text-hackerrank" />
-             <span className="text-hackerrank font-medium">HackerRank</span>
-           </div>
            <h1 className="text-4xl md:text-5xl font-bold mb-4">
              Dhruv's <span className="text-hackerrank">HackerRank</span> Profile
            </h1>
