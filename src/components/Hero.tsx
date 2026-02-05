@@ -1,8 +1,18 @@
  import { motion } from "framer-motion";
-import { Code2, Zap, Trophy, MapPin, GraduationCap, Mail, Github } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+ import { Code2, Zap, Trophy, MapPin, GraduationCap, Mail, Github } from "lucide-react";
+ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+ import { useCodolioStats } from "@/hooks/useCodolioStats";
  
  export const Hero = () => {
+   const { data: codolioStats } = useCodolioStats();
+   
+   const profile = codolioStats?.profile ?? {
+     globalRank: 22122,
+     problemsSolved: 165,
+     totalSubmissions: 211,
+     longestStreak: 23,
+   };
+   
    return (
      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
        {/* Background Effects */}
@@ -95,28 +105,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
               <div className="flex items-center justify-center mb-2">
                 <Trophy className="w-6 h-6 text-primary" />
               </div>
-              <div className="text-2xl md:text-3xl font-bold">#22,122</div>
+              <div className="text-2xl md:text-3xl font-bold">#{profile.globalRank.toLocaleString()}</div>
               <div className="text-sm text-muted-foreground">Global Rank</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center mb-2">
                 <Code2 className="w-6 h-6 text-leetcode" />
               </div>
-              <div className="text-2xl md:text-3xl font-bold">165</div>
+              <div className="text-2xl md:text-3xl font-bold">{profile.problemsSolved}</div>
               <div className="text-sm text-muted-foreground">Total Questions</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center mb-2">
                 <Zap className="w-6 h-6 text-accent" />
               </div>
-              <div className="text-2xl md:text-3xl font-bold">211</div>
+              <div className="text-2xl md:text-3xl font-bold">{profile.totalSubmissions}</div>
               <div className="text-sm text-muted-foreground">Submissions</div>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center mb-2">
                 <Trophy className="w-6 h-6 text-gfg" />
               </div>
-              <div className="text-2xl md:text-3xl font-bold">23</div>
+              <div className="text-2xl md:text-3xl font-bold">{profile.longestStreak}</div>
               <div className="text-sm text-muted-foreground">Max Streak</div>
             </div>
            </motion.div>

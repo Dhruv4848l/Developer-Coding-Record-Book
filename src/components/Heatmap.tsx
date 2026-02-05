@@ -1,59 +1,131 @@
  import { motion } from "framer-motion";
  import { useMemo } from "react";
+ import { useCodolioStats, HeatmapDay } from "@/hooks/useCodolioStats";
+ import { Skeleton } from "@/components/ui/skeleton";
  
- // Generate heatmap data for the last 52 weeks with realistic submission counts
- const generateHeatmapData = () => {
-   const data: { count: number; date: Date }[] = [];
-   const today = new Date();
-   const startDate = new Date(today);
-   startDate.setDate(startDate.getDate() - 52 * 7);
+ const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
  
-   for (let i = 0; i < 52 * 7; i++) {
-     const date = new Date(startDate);
-     date.setDate(date.getDate() + i);
-     
-     // Generate realistic submission counts (0-15)
-     const rand = Math.random();
-     let count = 0;
-     if (rand < 0.35) count = 0;
-     else if (rand < 0.55) count = Math.floor(Math.random() * 1) + 1; // 1
-     else if (rand < 0.75) count = Math.floor(Math.random() * 3) + 2; // 2-4
-     else if (rand < 0.90) count = Math.floor(Math.random() * 4) + 5; // 5-8
-     else count = Math.floor(Math.random() * 7) + 9; // 9-15
-     
-     data.push({ count, date });
-   }
-   return data;
- };
- 
- const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
- const days = ["Mon", "", "Wed", "", "Fri", "", ""];
- 
- // Get color class based on submission count
+ // Get color based on submission count (LeetCode style - darker = more submissions)
  // 1 submission = darkest, 2-4 = dark, 5-8 = lighter, 9+ = lightest but visible
  const getHeatmapColor = (count: number): string => {
-   if (count === 0) return "bg-[hsl(222,47%,12%)]";
-   if (count === 1) return "bg-[hsl(190,95%,45%)]"; // Darkest cyan - 1 submission
-   if (count >= 2 && count <= 4) return "bg-[hsl(190,90%,55%)]"; // Dark cyan - 2-4
-   if (count >= 5 && count <= 8) return "bg-[hsl(190,85%,65%)]"; // Lighter cyan - 5-8
-   return "bg-[hsl(190,80%,75%)]"; // Lightest cyan (but still visible) - 9+
+   if (count === 0) return "bg-secondary/50";
+   if (count === 1) return "bg-[hsl(142,76%,20%)]"; // Darkest green - 1 submission
+   if (count >= 2 && count <= 4) return "bg-[hsl(142,76%,32%)]"; // Dark green - 2-4
+   if (count >= 5 && count <= 8) return "bg-[hsl(142,76%,42%)]"; // Medium green - 5-8
+   return "bg-[hsl(142,76%,52%)]"; // Bright green - 9+
+ };
+ 
+ // Get month labels with correct positions based on actual data
+ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
+   const labels: { month: string; position: number }[] = [];
+   let currentMonth = -1;
+   
+   weeks.forEach((week, weekIndex) => {
+     if (week.length > 0) {
+       const firstDayOfWeek = week[0].date;
+       const month = firstDayOfWeek.getMonth();
+       
+       if (month !== currentMonth) {
+         labels.push({
+           month: firstDayOfWeek.toLocaleDateString('en-US', { month: 'short' }),
+           position: weekIndex,
+         });
+         currentMonth = month;
+       }
+     }
+   });
+   
+   return labels;
+ };
+ 
+ // Process heatmap data into weeks (columns)
+ const processHeatmapData = (data: HeatmapDay[]) => {
+   const weeks: { date: Date; count: number }[][] = [];
+   let currentWeek: { date: Date; count: number }[] = [];
+   
+   data.forEach((day, index) => {
+     const date = new Date(day.date);
+     const dayOfWeek = date.getDay();
+     
+     // If this is the first day and it's not Sunday, pad the beginning
+     if (index === 0 && dayOfWeek !== 0) {
+       for (let i = 0; i < dayOfWeek; i++) {
+         currentWeek.push({ date: new Date(0), count: -1 }); // -1 = empty placeholder
+       }
+     }
+     
+     currentWeek.push({ date, count: day.count });
+     
+     // If it's Saturday or the last day, close the week
+     if (dayOfWeek === 6 || index === data.length - 1) {
+       // Pad the end of the last week if needed
+       if (index === data.length - 1) {
+         while (currentWeek.length < 7) {
+           currentWeek.push({ date: new Date(0), count: -1 });
+         }
+       }
+       weeks.push(currentWeek);
+       currentWeek = [];
+     }
+   });
+   
+   return weeks;
  };
  
  export const Heatmap = () => {
-   const heatmapData = useMemo(() => generateHeatmapData(), []);
- 
-   // Group data into weeks (columns)
+   const { data: codolioStats, isLoading, error } = useCodolioStats();
+   
    const weeks = useMemo(() => {
-     const result: { count: number; date: Date }[][] = [];
-     for (let i = 0; i < 52; i++) {
-       result.push(heatmapData.slice(i * 7, (i + 1) * 7));
+     if (!codolioStats?.heatmap) return [];
+     return processHeatmapData(codolioStats.heatmap);
+   }, [codolioStats?.heatmap]);
+   
+   const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
+   
+   const stats = useMemo(() => {
+     if (!codolioStats?.profile) {
+       return { totalSubmissions: 0, currentStreak: 0, longestStreak: 0 };
      }
-     return result;
-   }, [heatmapData]);
+     return {
+       totalSubmissions: codolioStats.profile.totalSubmissions,
+       currentStreak: codolioStats.profile.currentStreak,
+       longestStreak: codolioStats.profile.longestStreak,
+     };
+   }, [codolioStats?.profile]);
  
-   const totalContributions = heatmapData.reduce((a, b) => a + b.count, 0);
-   const currentStreak = 10;
-   const longestStreak = 23;
+   if (isLoading) {
+     return (
+       <section className="py-24 relative">
+         <div className="container mx-auto px-6">
+           <div className="text-center mb-12">
+             <h2 className="text-3xl md:text-4xl font-bold mb-4">
+               Your <span className="text-gradient">Consistency</span> Streak
+             </h2>
+           </div>
+           <div className="glass rounded-2xl p-8">
+             <div className="grid grid-cols-3 gap-8 mb-8">
+               <Skeleton className="h-16 w-full" />
+               <Skeleton className="h-16 w-full" />
+               <Skeleton className="h-16 w-full" />
+             </div>
+             <Skeleton className="h-32 w-full" />
+           </div>
+         </div>
+       </section>
+     );
+   }
+ 
+   if (error) {
+     return (
+       <section className="py-24 relative">
+         <div className="container mx-auto px-6">
+           <div className="glass rounded-2xl p-8 text-center">
+             <p className="text-destructive">Failed to load heatmap data</p>
+           </div>
+         </div>
+       </section>
+     );
+   }
  
    return (
      <section className="py-24 relative">
@@ -83,66 +155,74 @@
            {/* Stats Row */}
            <div className="grid grid-cols-3 gap-8 mb-8 text-center">
              <div>
-               <div className="text-3xl font-bold text-primary">{totalContributions}</div>
+               <div className="text-3xl font-bold text-primary">{stats.totalSubmissions}</div>
                <div className="text-sm text-muted-foreground">Total Submissions</div>
              </div>
              <div>
-               <div className="text-3xl font-bold text-success">{currentStreak}</div>
+               <div className="text-3xl font-bold text-success">{stats.currentStreak}</div>
                <div className="text-sm text-muted-foreground">Current Streak</div>
              </div>
              <div>
-               <div className="text-3xl font-bold text-warning">{longestStreak}</div>
+               <div className="text-3xl font-bold text-warning">{stats.longestStreak}</div>
                <div className="text-sm text-muted-foreground">Longest Streak</div>
              </div>
            </div>
  
-           {/* Heatmap Grid */}
+           {/* Heatmap Grid - LeetCode Style */}
            <div className="overflow-x-auto">
              <div className="min-w-[800px]">
                {/* Month Labels */}
-               <div className="flex mb-2 pl-10">
-                 {months.map((month, i) => (
+               <div className="flex mb-2 ml-10 relative h-4">
+                 {monthLabels.map((label, index) => (
                    <div
-                     key={month + i}
-                     className="text-xs text-muted-foreground"
-                     style={{ width: `${100 / 12}%` }}
+                     key={`${label.month}-${index}`}
+                     className="text-xs text-muted-foreground absolute"
+                     style={{ left: `${label.position * 14}px` }}
                    >
-                     {month}
+                     {label.month}
                    </div>
                  ))}
                </div>
  
-               <div className="flex gap-1">
+               <div className="flex gap-[3px]">
                  {/* Day Labels */}
-                 <div className="flex flex-col gap-1 pr-2">
-                   {days.map((day, i) => (
+                 <div className="flex flex-col gap-[3px] pr-2">
+                   {dayLabels.map((day, i) => (
                      <div
-                       key={i}
-                       className="h-3 text-xs text-muted-foreground flex items-center justify-end"
-                       style={{ width: "30px" }}
+                       key={day}
+                       className="h-[11px] text-[10px] text-muted-foreground flex items-center justify-end"
+                       style={{ width: "28px" }}
                      >
-                       {day}
+                       {i % 2 === 1 ? day : ""}
                      </div>
                    ))}
                  </div>
  
                  {/* Heatmap Cells */}
-                 <div className="flex gap-1 flex-1">
+                 <div className="flex gap-[3px]">
                    {weeks.map((week, weekIndex) => (
-                     <div key={weekIndex} className="flex flex-col gap-1">
-                        {week.map((day, dayIndex) => (
+                     <div key={weekIndex} className="flex flex-col gap-[3px]">
+                       {week.map((day, dayIndex) => (
                          <motion.div
                            key={`${weekIndex}-${dayIndex}`}
                            initial={{ opacity: 0, scale: 0 }}
                            whileInView={{ opacity: 1, scale: 1 }}
                            viewport={{ once: true }}
                            transition={{
-                             duration: 0.1,
-                             delay: weekIndex * 0.01 + dayIndex * 0.005,
+                             duration: 0.05,
+                             delay: weekIndex * 0.005,
                            }}
-                            whileHover={{ scale: 1.3 }}
-                            className={`w-3 h-3 rounded-sm ${getHeatmapColor(day.count)} hover:ring-2 hover:ring-primary transition-all cursor-pointer`}
-                            title={`${day.count} submissions on ${day.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`}
+                           whileHover={{ scale: 1.4, zIndex: 10 }}
+                           className={`w-[11px] h-[11px] rounded-sm ${
+                             day.count === -1 
+                               ? "bg-transparent" 
+                               : getHeatmapColor(day.count)
+                           } hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer relative`}
+                           title={
+                             day.count === -1 
+                               ? "" 
+                               : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+                           }
                          />
                        ))}
                      </div>
@@ -153,15 +233,32 @@
                {/* Legend */}
                <div className="flex items-center justify-end gap-2 mt-4">
                  <span className="text-xs text-muted-foreground">Less</span>
-                  {[0, 1, 3, 6, 10].map((count, index) => (
+                 {[0, 1, 3, 6, 10].map((count, index) => (
                    <div
-                      key={index}
-                      className={`w-3 h-3 rounded-sm ${getHeatmapColor(count)}`}
-                      title={count === 0 ? "No submissions" : count === 1 ? "1 submission" : count <= 4 ? "2-4 submissions" : count <= 8 ? "5-8 submissions" : "9+ submissions"}
+                     key={index}
+                     className={`w-[11px] h-[11px] rounded-sm ${getHeatmapColor(count)}`}
+                     title={
+                       count === 0 
+                         ? "No submissions" 
+                         : count === 1 
+                           ? "1 submission" 
+                           : count <= 4 
+                             ? "2-4 submissions" 
+                             : count <= 8 
+                               ? "5-8 submissions" 
+                               : "9+ submissions"
+                     }
                    />
                  ))}
                  <span className="text-xs text-muted-foreground">More</span>
                </div>
+ 
+               {/* Last updated info */}
+               {codolioStats?.lastUpdated && (
+                 <div className="text-xs text-muted-foreground text-right mt-2">
+                   Last updated: {new Date(codolioStats.lastUpdated).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                 </div>
+               )}
              </div>
            </div>
          </motion.div>
