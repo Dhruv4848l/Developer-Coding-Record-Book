@@ -23,11 +23,6 @@ import { Code2, BarChart3, Calendar, Trophy, ExternalLink } from "lucide-react";
              className="flex items-center gap-3 group"
              whileHover={{ scale: 1.02 }}
            >
-             <div className="relative">
-               <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                 <Code2 className="w-5 h-5 text-primary-foreground" />
-               </div>
-             </div>
              <div className="flex flex-col">
                <span className="text-lg font-bold text-foreground">
                  Dhruv<span className="text-gradient">'s</span>
