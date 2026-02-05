@@ -5,10 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
  import CoverPage from "./pages/CoverPage";
  import Dashboard from "./pages/Dashboard";
- import LeetCodePage from "./pages/platforms/LeetCodePage";
- import CodeChefPage from "./pages/platforms/CodeChefPage";
- import GFGPage from "./pages/platforms/GFGPage";
- import HackerRankPage from "./pages/platforms/HackerRankPage";
+  import LeetCodePage from "./pages/platforms/LeetCodePage";
+  import CodeChefPage from "./pages/platforms/CodeChefPage";
+  import CodeforcesPage from "./pages/platforms/CodeforcesPage";
+  import GFGPage from "./pages/platforms/GFGPage";
+  import HackerRankPage from "./pages/platforms/HackerRankPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
            <Route path="/dashboard" element={<Dashboard />} />
            <Route path="/platform/leetcode" element={<LeetCodePage />} />
            <Route path="/platform/codechef" element={<CodeChefPage />} />
+           <Route path="/platform/codeforces" element={<CodeforcesPage />} />
            <Route path="/platform/gfg" element={<GFGPage />} />
            <Route path="/platform/hackerrank" element={<HackerRankPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
