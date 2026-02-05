@@ -1,5 +1,6 @@
  import { motion } from "framer-motion";
- import { ExternalLink } from "lucide-react";
+ import { ExternalLink, ChevronRight } from "lucide-react";
+ import { Link } from "react-router-dom";
  
  const platforms = [
    {
@@ -7,6 +8,7 @@
     username: "@Ydp5K7DIfv",
     solved: 113,
     profileUrl: "https://leetcode.com/u/Ydp5K7DIfv",
+    route: "/platform/leetcode",
      colorClass: "text-leetcode",
      bgClass: "bg-leetcode/10",
      borderClass: "border-leetcode/30",
@@ -16,6 +18,7 @@
     username: "@dhruvmaji8b4b",
     solved: 0,
     profileUrl: "https://www.geeksforgeeks.org/user/dhruvmaji8b4b",
+    route: "/platform/gfg",
      colorClass: "text-gfg",
      bgClass: "bg-gfg/10",
      borderClass: "border-gfg/30",
@@ -25,6 +28,7 @@
     username: "@cooking_coder",
     solved: 48,
     profileUrl: "https://www.codechef.com/users/cooking_coder",
+    route: "/platform/codechef",
     colorClass: "text-codechef",
     bgClass: "bg-codechef/10",
     borderClass: "border-codechef/30",
@@ -34,6 +38,7 @@
     username: "@dhruvmajiever191",
     solved: 4,
     profileUrl: "https://www.hackerrank.com/profile/dhruvmajiever191",
+    route: "/platform/hackerrank",
     colorClass: "text-hackerrank",
     bgClass: "bg-hackerrank/10",
     borderClass: "border-hackerrank/30",
@@ -124,13 +129,18 @@
  
                 <div className="pt-4 border-t border-border flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Status</span>
-                  <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Verified</span>
+                    <span className="text-xs px-2 py-1 rounded-full bg-success/20 text-success">Verified</span>
                  </div>
                </div>
  
                <div className="mt-4 text-xs text-muted-foreground">
                  {platform.username}
                </div>
+
+                <Link to={platform.route} className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-secondary/50 hover:bg-secondary text-sm font-medium transition-colors group">
+                  View Details
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
              </motion.div>
            ))}
          </div>
