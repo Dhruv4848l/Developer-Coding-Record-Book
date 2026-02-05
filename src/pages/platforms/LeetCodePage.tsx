@@ -7,11 +7,11 @@ import { useMemo } from "react";
 import { useLeetCodeStats, LeetCodeHeatmapDay } from "@/hooks/useLeetCodeStats";
 
 const getHeatmapColor = (count: number): string => {
-  if (count === 0) return "bg-secondary/40";
-  if (count === 1) return "bg-[hsl(45,90%,25%)]";
-  if (count >= 2 && count <= 3) return "bg-[hsl(45,90%,35%)]";
-  if (count >= 4 && count <= 6) return "bg-[hsl(45,90%,45%)]";
-  return "bg-[hsl(45,90%,55%)]";
+  if (count === 0) return "bg-[#161b22]";
+  if (count === 1) return "bg-[#0e4429]";
+  if (count >= 2 && count <= 3) return "bg-[#006d32]";
+  if (count >= 4 && count <= 6) return "bg-[#26a641]";
+  return "bg-[#39d353]";
 };
 
 const processHeatmapData = (data: LeetCodeHeatmapDay[]) => {
@@ -279,11 +279,11 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                                  delay: weekIndex * 0.002,
                                }}
                                whileHover={day.count !== -1 ? { scale: 1.3, zIndex: 10 } : undefined}
-                               className={`w-[10px] h-[10px] rounded-sm ${
+                               className={`w-[11px] h-[11px] rounded-[2px] ${
                                  day.count === -1 
                                    ? "bg-transparent" 
                                    : getHeatmapColor(day.count)
-                               } ${day.count !== -1 ? "hover:ring-1 hover:ring-foreground/40 cursor-pointer" : ""} transition-all relative`}
+                               } ${day.count !== -1 ? "hover:ring-1 hover:ring-[#39d353]/60 cursor-pointer" : ""} transition-all relative`}
                                title={
                                  day.count === -1 
                                    ? undefined 
@@ -313,7 +313,7 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                       {[0, 1, 2, 5, 8].map((count, index) => (
                         <div
                           key={index}
-                           className={`w-[10px] h-[10px] rounded-sm ${getHeatmapColor(count)}`}
+                           className={`w-[11px] h-[11px] rounded-[2px] ${getHeatmapColor(count)}`}
                         />
                       ))}
                       <span className="text-xs text-muted-foreground">More</span>
