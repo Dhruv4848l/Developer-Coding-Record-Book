@@ -164,14 +164,6 @@
            </motion.div>
  
            {/* Scroll indicator */}
-           <motion.div
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             transition={{ duration: 0.5, delay: 1 }}
-             className="absolute bottom-8 left-1/2 -translate-x-1/2"
-           >
-             <div className="text-muted-foreground text-sm">Click to explore my coding journey</div>
-           </motion.div>
          </div>
        </div>
      </div>
