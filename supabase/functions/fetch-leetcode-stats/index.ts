@@ -32,6 +32,18 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
             count
           }
         }
+         submitStats {
+           acSubmissionNum {
+             difficulty
+             count
+             submissions
+           }
+           totalSubmissionNum {
+             difficulty
+             count
+             submissions
+           }
+         }
         submissionCalendar
       }
       userContestRanking(username: $username) {
@@ -75,6 +87,17 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
   const hardSolved = acStats.find((s: any) => s.difficulty === 'Hard')?.count || 0;
   const totalSolved = acStats.find((s: any) => s.difficulty === 'All')?.count || (easySolved + mediumSolved + hardSolved);
 
+   // Calculate acceptance rate
+   const submitStats = user.submitStats;
+   let acceptanceRate = '0%';
+   if (submitStats) {
+     const totalAcSubmissions = submitStats.acSubmissionNum?.find((s: any) => s.difficulty === 'All')?.submissions || 0;
+     const totalSubmissionsCount = submitStats.totalSubmissionNum?.find((s: any) => s.difficulty === 'All')?.submissions || 0;
+     if (totalSubmissionsCount > 0) {
+       acceptanceRate = ((totalAcSubmissions / totalSubmissionsCount) * 100).toFixed(1) + '%';
+     }
+   }
+
   // Parse submission calendar (JSON string -> object)
   let submissionCalendar: Record<string, number> = {};
   try {
@@ -94,7 +117,7 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
     mediumSolved,
     hardSolved,
     totalSubmissions,
-    acceptanceRate: '62.8%', // LeetCode doesn't expose this easily in public API
+     acceptanceRate,
     submissionCalendar,
   };
 }
