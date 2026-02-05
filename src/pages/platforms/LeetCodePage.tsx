@@ -17,11 +17,14 @@
    };
  
    const recentProblems = [
-     { name: "Two Sum", difficulty: "Easy", date: "2024-01-15" },
-     { name: "Add Two Numbers", difficulty: "Medium", date: "2024-01-14" },
-     { name: "Longest Substring", difficulty: "Medium", date: "2024-01-13" },
-     { name: "Median of Two Arrays", difficulty: "Hard", date: "2024-01-12" },
-     { name: "Valid Parentheses", difficulty: "Easy", date: "2024-01-11" },
+    { name: "Merge Intervals", difficulty: "Medium", date: "2026-02-05" },
+    { name: "Binary Tree Level Order Traversal", difficulty: "Medium", date: "2026-02-04" },
+    { name: "Climbing Stairs", difficulty: "Easy", date: "2026-02-03" },
+    { name: "Trapping Rain Water", difficulty: "Hard", date: "2026-02-02" },
+    { name: "Best Time to Buy and Sell Stock", difficulty: "Easy", date: "2026-02-01" },
+    { name: "Longest Palindromic Substring", difficulty: "Medium", date: "2026-01-31" },
+    { name: "Container With Most Water", difficulty: "Medium", date: "2026-01-30" },
+    { name: "3Sum", difficulty: "Medium", date: "2026-01-29" },
    ];
  
    return (
