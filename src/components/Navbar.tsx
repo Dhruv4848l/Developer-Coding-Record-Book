@@ -1,9 +1,7 @@
  import { motion } from "framer-motion";
- import { Code2, BarChart3, Calendar, Trophy, User } from "lucide-react";
- import { Button } from "@/components/ui/button";
+import { Code2, BarChart3, Calendar, Trophy, ExternalLink } from "lucide-react";
  
  const navItems = [
-   { label: "Profile", icon: User, href: "#profile" },
    { label: "Stats", icon: BarChart3, href: "#stats" },
    { label: "Events", icon: Calendar, href: "#events" },
    { label: "Leaderboard", icon: Trophy, href: "#leaderboard" },
@@ -57,15 +55,21 @@
              ))}
            </div>
  
-           {/* CTA Button */}
+          {/* Codolio Link */}
            <motion.div
              initial={{ opacity: 0, x: 20 }}
              animate={{ opacity: 1, x: 0 }}
              transition={{ delay: 0.4 }}
            >
-             <Button variant="glow" size="sm">
-               Get Started
-             </Button>
+            <a 
+              href="https://codolio.com/profile/KingKong_Coder" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all text-sm font-medium"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span className="hidden sm:inline">View on Codolio</span>
+            </a>
            </motion.div>
          </div>
        </div>

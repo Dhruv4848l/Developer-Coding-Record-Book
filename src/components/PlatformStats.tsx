@@ -4,41 +4,39 @@
  const platforms = [
    {
      name: "LeetCode",
-     username: "@dhruv_coder",
-     solved: 487,
-     rating: 1856,
+    username: "@Ydp5K7DIfv",
+    solved: 113,
+    profileUrl: "https://leetcode.com/u/Ydp5K7DIfv",
      colorClass: "text-leetcode",
      bgClass: "bg-leetcode/10",
      borderClass: "border-leetcode/30",
    },
    {
      name: "GeeksforGeeks",
-     username: "@dhruv_gfg",
-     solved: 312,
-     score: 2400,
+    username: "@dhruvmaji8b4b",
+    solved: 0,
+    profileUrl: "https://www.geeksforgeeks.org/user/dhruvmaji8b4b",
      colorClass: "text-gfg",
      bgClass: "bg-gfg/10",
      borderClass: "border-gfg/30",
    },
    {
-     name: "Codeforces",
-     username: "@dhruv_cf",
-     solved: 198,
-     rating: 1642,
-     rank: "Expert",
-     colorClass: "text-codeforces",
-     bgClass: "bg-codeforces/10",
-     borderClass: "border-codeforces/30",
+    name: "CodeChef",
+    username: "@cooking_coder",
+    solved: 48,
+    profileUrl: "https://www.codechef.com/users/cooking_coder",
+    colorClass: "text-codechef",
+    bgClass: "bg-codechef/10",
+    borderClass: "border-codechef/30",
    },
    {
-     name: "CodeChef",
-     username: "@dhruv_cc",
-     solved: 145,
-     rating: 1823,
-     stars: 4,
-     colorClass: "text-codechef",
-     bgClass: "bg-codechef/10",
-     borderClass: "border-codechef/30",
+    name: "HackerRank",
+    username: "@dhruvmajiever191",
+    solved: 4,
+    profileUrl: "https://www.hackerrank.com/profile/dhruvmajiever191",
+    colorClass: "text-hackerrank",
+    bgClass: "bg-hackerrank/10",
+    borderClass: "border-hackerrank/30",
    },
  ];
  
@@ -54,10 +52,10 @@
            className="text-center mb-16"
          >
            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-             Your Favourite <span className="text-gradient">Coding Platforms</span>
+            Dhruv's <span className="text-gradient">Coding Platforms</span>
            </h2>
            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-             All your progress streamlined in one place to simplify your coding journey
+            Verified profiles across multiple competitive programming platforms
            </p>
          </motion.div>
  
@@ -70,11 +68,29 @@
            className="glass rounded-2xl p-8 mb-12 text-center"
          >
            <div className="text-6xl md:text-8xl font-bold text-gradient mb-2">
-             1,142
+            165
            </div>
            <p className="text-muted-foreground text-lg">
              Total Problems Solved Across All Platforms
            </p>
+          <div className="flex flex-wrap justify-center gap-8 mt-6 text-sm">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">211</div>
+              <div className="text-muted-foreground">Submissions</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">42</div>
+              <div className="text-muted-foreground">Active Days</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">23</div>
+              <div className="text-muted-foreground">Max Streak</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">10</div>
+              <div className="text-muted-foreground">Current Streak</div>
+            </div>
+          </div>
          </motion.div>
  
          {/* Platform Cards */}
@@ -93,7 +109,9 @@
                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${platform.bgClass} ${platform.colorClass}`}>
                    {platform.name}
                  </div>
-                 <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                <a href={platform.profileUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
+                </a>
                </div>
  
                <div className="space-y-4">
@@ -104,24 +122,9 @@
                    </div>
                  </div>
  
-                 <div className="pt-4 border-t border-border">
-                   <div className="flex justify-between items-center">
-                     <span className="text-sm text-muted-foreground">
-                       {platform.rating ? "Rating" : "Score"}
-                     </span>
-                     <span className="font-semibold">
-                       {platform.rating || platform.score}
-                       {platform.stars && " ⭐".repeat(platform.stars)}
-                     </span>
-                   </div>
-                   {platform.rank && (
-                     <div className="flex justify-between items-center mt-2">
-                       <span className="text-sm text-muted-foreground">Rank</span>
-                       <span className={`font-semibold ${platform.colorClass}`}>
-                         {platform.rank}
-                       </span>
-                     </div>
-                   )}
+                <div className="pt-4 border-t border-border flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Status</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Verified</span>
                  </div>
                </div>
  
