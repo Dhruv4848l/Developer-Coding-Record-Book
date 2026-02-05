@@ -19,11 +19,11 @@ export interface CodeChefStats {
   lastUpdated: string;
 }
 
-const CODECHEF_USERNAME = "cooking_coder";
+const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
-async function fetchCodeChefStats(): Promise<CodeChefStats> {
+async function fetchCodeChefStats(username: string): Promise<CodeChefStats> {
   const { data, error } = await supabase.functions.invoke("fetch-codechef-stats", {
-    body: { username: CODECHEF_USERNAME },
+    body: { username },
   });
 
   if (error) {
@@ -33,11 +33,12 @@ async function fetchCodeChefStats(): Promise<CodeChefStats> {
   return data as CodeChefStats;
 }
 
-export function useCodeChefStats() {
+export function useCodeChefStats(username: string = "cooking_coder") {
   return useQuery({
-    queryKey: ["codechef-stats", CODECHEF_USERNAME],
-    queryFn: fetchCodeChefStats,
-    staleTime: 1000 * 60 * 60, // 1 hour cache
+    queryKey: ["codechef-stats", username],
+    queryFn: () => fetchCodeChefStats(username),
+    staleTime: FOUR_HOURS,
+    refetchInterval: FOUR_HOURS,
     refetchOnWindowFocus: false,
     retry: 2,
     retryDelay: 1000,

@@ -1,12 +1,19 @@
- import { motion } from "framer-motion";
- import { ExternalLink, ChevronRight } from "lucide-react";
- import { Link } from "react-router-dom";
- 
-const platforms = [
+import { motion } from "framer-motion";
+import { ExternalLink, ChevronRight, RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useLeetCodeStats } from "@/hooks/useLeetCodeStats";
+import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
+import { useGFGStats } from "@/hooks/useGFGStats";
+import { useCodeChefStats } from "@/hooks/useCodeChefStats";
+import { useCodolioStats } from "@/hooks/useCodolioStats";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
+const platformConfigs = [
   {
     name: "LeetCode",
     username: "@Ydp5K7DIfv",
-    solved: 112,
     profileUrl: "https://leetcode.com/u/Ydp5K7DIfv",
     route: "/platform/leetcode",
     colorClass: "text-leetcode",
@@ -16,7 +23,6 @@ const platforms = [
   {
     name: "Codeforces",
     username: "@dhruvmaji",
-    solved: 0,
     profileUrl: "https://codeforces.com/profile/dhruvmaji",
     route: "/platform/codeforces",
     colorClass: "text-codeforces",
@@ -26,7 +32,6 @@ const platforms = [
   {
     name: "GeeksforGeeks",
     username: "@dhruvmaji8b4b",
-    solved: 0,
     profileUrl: "https://www.geeksforgeeks.org/user/dhruvmaji8b4b",
     route: "/platform/gfg",
     colorClass: "text-gfg",
@@ -36,7 +41,6 @@ const platforms = [
   {
     name: "CodeChef",
     username: "@cooking_coder",
-    solved: 48,
     profileUrl: "https://www.codechef.com/users/cooking_coder",
     route: "/platform/codechef",
     colorClass: "text-codechef",
@@ -46,7 +50,6 @@ const platforms = [
   {
     name: "HackerRank",
     username: "@dhruvmajiever191",
-    solved: 4,
     profileUrl: "https://www.hackerrank.com/profile/dhruvmajiever191",
     route: "/platform/hackerrank",
     colorClass: "text-hackerrank",
@@ -55,88 +58,143 @@ const platforms = [
   },
 ];
  
- export const PlatformStats = () => {
-   return (
-     <section id="stats" className="py-24 relative">
-       <div className="container mx-auto px-6">
-         <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true }}
-           transition={{ duration: 0.5 }}
-           className="text-center mb-16"
-         >
-           <h2 className="text-3xl md:text-4xl font-bold mb-4">
+export const PlatformStats = () => {
+  // Fetch stats from all platforms with 4-hour auto-refresh
+  const { data: leetcodeStats, isLoading: leetcodeLoading } = useLeetCodeStats("Ydp5K7DIfv");
+  const { data: codeforcesStats, isLoading: codeforcesLoading } = useCodeforcesStats("dhruvmaji");
+  const { data: gfgStats, isLoading: gfgLoading } = useGFGStats("dhruvmaji8b4b");
+  const { data: codechefStats, isLoading: codechefLoading } = useCodeChefStats("cooking_coder");
+  const { data: hackerrankStats, isLoading: hackerrankLoading } = useCodolioStats("dhruvmajiever191");
+
+  // Build platforms array with dynamic solved counts
+  const platforms = platformConfigs.map((config) => {
+    let solved = 0;
+    let isLoading = false;
+
+    switch (config.name) {
+      case "LeetCode":
+        solved = leetcodeStats?.profile?.totalSolved || 0;
+        isLoading = leetcodeLoading;
+        break;
+      case "Codeforces":
+        solved = codeforcesStats?.profile?.problemsSolved || 0;
+        isLoading = codeforcesLoading;
+        break;
+      case "GeeksforGeeks":
+        solved = gfgStats?.problemsSolved || 0;
+        isLoading = gfgLoading;
+        break;
+      case "CodeChef":
+        solved = codechefStats?.profile?.problemsSolved || 0;
+        isLoading = codechefLoading;
+        break;
+      case "HackerRank":
+        solved = hackerrankStats?.profile?.problemsSolved || 0;
+        isLoading = hackerrankLoading;
+        break;
+    }
+
+    return { ...config, solved, isLoading };
+  });
+
+  // Calculate total problems solved
+  const totalSolved = platforms.reduce((sum, p) => sum + p.solved, 0);
+  const isAnyLoading = platforms.some((p) => p.isLoading);
+
+  return (
+    <section id="stats" className="py-24 relative">
+      <div className="container mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Dhruv's <span className="text-gradient">Coding Platforms</span>
-           </h2>
-           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Verified profiles across multiple competitive programming platforms
-           </p>
-         </motion.div>
- 
-         {/* Total Stats */}
-         <motion.div
-           initial={{ opacity: 0, scale: 0.95 }}
-           whileInView={{ opacity: 1, scale: 1 }}
-           viewport={{ once: true }}
-           transition={{ duration: 0.5 }}
-           className="glass rounded-2xl p-8 mb-12 text-center"
-         >
-           <div className="text-6xl md:text-8xl font-bold text-gradient mb-2">
-            165
-           </div>
-           <p className="text-muted-foreground text-lg">
-             Total Problems Solved Across All Platforms
-           </p>
-         </motion.div>
- 
-         {/* Platform Cards */}
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-           {platforms.map((platform, index) => (
-             <motion.div
-               key={platform.name}
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               viewport={{ once: true }}
-               transition={{ duration: 0.5, delay: index * 0.1 }}
-               whileHover={{ y: -5, scale: 1.02 }}
-               className={`rounded-2xl p-6 border bg-gradient-card ${platform.borderClass} hover:shadow-lg transition-all duration-300`}
-             >
-               <div className="flex items-center justify-between mb-6">
-                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${platform.bgClass} ${platform.colorClass}`}>
-                   {platform.name}
-                 </div>
+          </p>
+        </motion.div>
+
+        {/* Total Stats */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="glass rounded-2xl p-8 mb-12 text-center relative"
+        >
+          {isAnyLoading ? (
+            <Skeleton className="h-20 w-48 mx-auto mb-2" />
+          ) : (
+            <div className="text-6xl md:text-8xl font-bold text-gradient mb-2">
+              {totalSolved}
+            </div>
+          )}
+          <p className="text-muted-foreground text-lg">
+            Total Problems Solved Across All Platforms
+          </p>
+          {isAnyLoading && (
+            <div className="absolute top-4 right-4">
+              <RefreshCw className="w-5 h-5 text-muted-foreground animate-spin" />
+            </div>
+          )}
+        </motion.div>
+
+        {/* Platform Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          {platforms.map((platform, index) => (
+            <motion.div
+              key={platform.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ y: -5, scale: 1.02 }}
+              className={`rounded-2xl p-6 border bg-gradient-card ${platform.borderClass} hover:shadow-lg transition-all duration-300`}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className={`px-3 py-1 rounded-full text-sm font-medium ${platform.bgClass} ${platform.colorClass}`}>
+                  {platform.name}
+                </div>
                 <a href={platform.profileUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
                 </a>
-               </div>
- 
-               <div className="space-y-4">
-                 <div>
-                   <div className="text-sm text-muted-foreground mb-1">Problems Solved</div>
-                   <div className={`text-3xl font-bold ${platform.colorClass}`}>
-                     {platform.solved}
-                   </div>
-                 </div>
- 
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="text-sm text-muted-foreground mb-1">Problems Solved</div>
+                  {platform.isLoading ? (
+                    <Skeleton className="h-9 w-16" />
+                  ) : (
+                    <div className={`text-3xl font-bold ${platform.colorClass}`}>
+                      {platform.solved}
+                    </div>
+                  )}
+                </div>
+
                 <div className="pt-4 border-t border-border flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Status</span>
-                    <span className="text-xs px-2 py-1 rounded-full bg-success/20 text-success">Verified</span>
-                 </div>
-               </div>
- 
-               <div className="mt-4 text-xs text-muted-foreground">
-                 {platform.username}
-               </div>
+                  <span className="text-xs px-2 py-1 rounded-full bg-success/20 text-success">Verified</span>
+                </div>
+              </div>
 
-                <Link to={platform.route} className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-secondary/50 hover:bg-secondary text-sm font-medium transition-colors group">
-                  View Details
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-             </motion.div>
-           ))}
-         </div>
-       </div>
-     </section>
-   );
- };
+              <div className="mt-4 text-xs text-muted-foreground">
+                {platform.username}
+              </div>
+
+              <Link to={platform.route} className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-secondary/50 hover:bg-secondary text-sm font-medium transition-colors group">
+                View Details
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
