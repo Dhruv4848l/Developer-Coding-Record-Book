@@ -1,7 +1,6 @@
  import { Navbar } from "@/components/Navbar";
  import { Hero } from "@/components/Hero";
  import { PlatformStats } from "@/components/PlatformStats";
-import { Awards } from "@/components/Awards";
  import { CTASection } from "@/components/CTASection";
  import { Footer } from "@/components/Footer";
  
@@ -11,7 +10,6 @@ import { Awards } from "@/components/Awards";
        <Navbar />
        <Hero />
        <PlatformStats />
-      <Awards />
        <CTASection />
        <Footer />
      </div>
