@@ -2,28 +2,38 @@
  import { ExternalLink, ChevronRight } from "lucide-react";
  import { Link } from "react-router-dom";
  
- const platforms = [
-   {
-     name: "LeetCode",
+const platforms = [
+  {
+    name: "LeetCode",
     username: "@Ydp5K7DIfv",
-    solved: 113,
+    solved: 112,
     profileUrl: "https://leetcode.com/u/Ydp5K7DIfv",
     route: "/platform/leetcode",
-     colorClass: "text-leetcode",
-     bgClass: "bg-leetcode/10",
-     borderClass: "border-leetcode/30",
-   },
-   {
-     name: "GeeksforGeeks",
+    colorClass: "text-leetcode",
+    bgClass: "bg-leetcode/10",
+    borderClass: "border-leetcode/30",
+  },
+  {
+    name: "Codeforces",
+    username: "@dhruvmaji",
+    solved: 0,
+    profileUrl: "https://codeforces.com/profile/dhruvmaji",
+    route: "/platform/codeforces",
+    colorClass: "text-codeforces",
+    bgClass: "bg-codeforces/10",
+    borderClass: "border-codeforces/30",
+  },
+  {
+    name: "GeeksforGeeks",
     username: "@dhruvmaji8b4b",
     solved: 0,
     profileUrl: "https://www.geeksforgeeks.org/user/dhruvmaji8b4b",
     route: "/platform/gfg",
-     colorClass: "text-gfg",
-     bgClass: "bg-gfg/10",
-     borderClass: "border-gfg/30",
-   },
-   {
+    colorClass: "text-gfg",
+    bgClass: "bg-gfg/10",
+    borderClass: "border-gfg/30",
+  },
+  {
     name: "CodeChef",
     username: "@cooking_coder",
     solved: 48,
@@ -32,8 +42,8 @@
     colorClass: "text-codechef",
     bgClass: "bg-codechef/10",
     borderClass: "border-codechef/30",
-   },
-   {
+  },
+  {
     name: "HackerRank",
     username: "@dhruvmajiever191",
     solved: 4,
@@ -42,8 +52,8 @@
     colorClass: "text-hackerrank",
     bgClass: "bg-hackerrank/10",
     borderClass: "border-hackerrank/30",
-   },
- ];
+  },
+];
  
  export const PlatformStats = () => {
    return (
@@ -81,7 +91,7 @@
          </motion.div>
  
          {/* Platform Cards */}
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
            {platforms.map((platform, index) => (
              <motion.div
                key={platform.name}
