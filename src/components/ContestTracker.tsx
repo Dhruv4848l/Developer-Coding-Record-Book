@@ -1,47 +1,32 @@
  import { motion } from "framer-motion";
- import { Calendar, Clock, ExternalLink, Bell } from "lucide-react";
+import { Calendar, Clock, ExternalLink, Bell, Loader2 } from "lucide-react";
  import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useContests } from "@/hooks/useContests";
  
- const upcomingContests = [
-   {
-     platform: "LeetCode",
-     name: "Weekly Contest 385",
-     date: "Feb 9, 2026",
-     time: "8:00 AM IST",
-     duration: "1h 30m",
-     colorClass: "text-leetcode",
-     bgClass: "bg-leetcode/10",
-   },
-   {
-     platform: "Codeforces",
-     name: "Codeforces Round #934 (Div. 2)",
-     date: "Feb 10, 2026",
-     time: "8:35 PM IST",
-     duration: "2h",
-     colorClass: "text-codeforces",
-     bgClass: "bg-codeforces/10",
-   },
-   {
-     platform: "CodeChef",
-     name: "Starters 120",
-     date: "Feb 12, 2026",
-     time: "8:00 PM IST",
-     duration: "2h",
-     colorClass: "text-codechef",
-     bgClass: "bg-codechef/10",
-   },
-   {
-     platform: "LeetCode",
-     name: "Biweekly Contest 125",
-     date: "Feb 15, 2026",
-     time: "8:00 PM IST",
-     duration: "1h 30m",
-     colorClass: "text-leetcode",
-     bgClass: "bg-leetcode/10",
-   },
- ];
+const formatContestDate = (isoString: string) => {
+  const date = new Date(isoString);
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  });
+};
+
+const formatContestTime = (isoString: string) => {
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: true,
+    timeZoneName: 'short'
+  });
+};
  
  export const ContestTracker = () => {
+  const { data, isLoading, error } = useContests();
+  const contests = data?.contests || [];
+
    return (
      <section id="events" className="py-24 relative">
        <div className="container mx-auto px-6">
@@ -61,7 +46,30 @@
          </motion.div>
  
          <div className="max-w-3xl mx-auto space-y-4">
-           {upcomingContests.map((contest, index) => (
+          {isLoading ? (
+            <>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="glass rounded-xl p-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex-1 space-y-3">
+                      <Skeleton className="h-6 w-48" />
+                      <Skeleton className="h-4 w-64" />
+                    </div>
+                    <Skeleton className="h-9 w-24" />
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : error ? (
+            <div className="glass rounded-xl p-8 text-center">
+              <p className="text-muted-foreground">Failed to load contests. Please try again later.</p>
+            </div>
+          ) : contests.length === 0 ? (
+            <div className="glass rounded-xl p-8 text-center">
+              <p className="text-muted-foreground">No upcoming contests found.</p>
+            </div>
+          ) : (
+            contests.map((contest, index) => (
              <motion.div
                key={contest.name}
                initial={{ opacity: 0, y: 20 }}
@@ -76,16 +84,16 @@
                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${contest.bgClass} ${contest.colorClass}`}>
                      {contest.platform}
                    </span>
-                   <h3 className="font-semibold">{contest.name}</h3>
+                  <h3 className="font-semibold line-clamp-1">{contest.name}</h3>
                  </div>
                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                    <span className="flex items-center gap-1.5">
                      <Calendar className="w-4 h-4" />
-                     {contest.date}
+                    {formatContestDate(contest.startTime)}
                    </span>
                    <span className="flex items-center gap-1.5">
                      <Clock className="w-4 h-4" />
-                     {contest.time}
+                    {formatContestTime(contest.startTime)}
                    </span>
                    <span className="text-foreground font-medium">
                      {contest.duration}
@@ -98,12 +106,15 @@
                    <Bell className="w-4 h-4" />
                    Remind
                  </Button>
-                 <Button variant="ghost" size="icon" className="h-9 w-9">
+                <a href={contest.url} target="_blank" rel="noopener noreferrer">
+                  <Button variant="ghost" size="icon" className="h-9 w-9">
                    <ExternalLink className="w-4 h-4" />
-                 </Button>
+                  </Button>
+                </a>
                </div>
              </motion.div>
-           ))}
+            ))
+          )}
          </div>
        </div>
      </section>
