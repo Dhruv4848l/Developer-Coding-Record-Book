@@ -50,13 +50,9 @@ export interface CodeforcesStats {
 }
 
 async function fetchCodeforcesStats(handle: string): Promise<CodeforcesStats> {
-  const { data, error } = await supabase.functions.invoke("fetch-codeforces-stats", {
-    body: null,
-    headers: {},
+  const response = await supabase.functions.invoke("fetch-codeforces-stats", {
+    body: { handle },
   });
-  
-  // Pass handle as query param via URL
-  const response = await supabase.functions.invoke(`fetch-codeforces-stats?handle=${handle}`);
   
   if (response.error) {
     throw new Error(response.error.message);

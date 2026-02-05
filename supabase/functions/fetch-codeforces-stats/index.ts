@@ -174,8 +174,17 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const handle = url.searchParams.get('handle') || 'tourist'; // Default to a known user for testing
+    let handle = 'Ordinary_Coder_420';
+    
+    // Try to get handle from request body
+    try {
+      const body = await req.json();
+      if (body?.handle) {
+        handle = body.handle;
+      }
+    } catch {
+      // If no body, use default handle
+    }
     
     const [userInfo, submissions, ratingHistory] = await Promise.all([
       fetchUserInfo(handle),
