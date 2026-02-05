@@ -194,23 +194,23 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
          >
            <h2 className="text-2xl font-bold mb-6">Difficulty Breakdown</h2>
             {isLoading ? (
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                 <Skeleton className="h-24 w-full rounded-xl" />
                 <Skeleton className="h-24 w-full rounded-xl" />
                 <Skeleton className="h-24 w-full rounded-xl" />
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-6">
-                <div className="text-center p-6 rounded-xl bg-success/10 border border-success/30">
-                  <div className="text-4xl font-bold text-success mb-2">{profile?.easySolved ?? 0}</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                <div className="text-center p-4 sm:p-6 rounded-xl bg-success/10 border border-success/30">
+                  <div className="text-3xl sm:text-4xl font-bold text-success mb-1 sm:mb-2">{profile?.easySolved ?? 0}</div>
                   <div className="text-success font-medium">Easy</div>
                 </div>
-                <div className="text-center p-6 rounded-xl bg-warning/10 border border-warning/30">
-                  <div className="text-4xl font-bold text-warning mb-2">{profile?.mediumSolved ?? 0}</div>
+                <div className="text-center p-4 sm:p-6 rounded-xl bg-warning/10 border border-warning/30">
+                  <div className="text-3xl sm:text-4xl font-bold text-warning mb-1 sm:mb-2">{profile?.mediumSolved ?? 0}</div>
                   <div className="text-warning font-medium">Medium</div>
                 </div>
-                <div className="text-center p-6 rounded-xl bg-destructive/10 border border-destructive/30">
-                  <div className="text-4xl font-bold text-destructive mb-2">{profile?.hardSolved ?? 0}</div>
+                <div className="text-center p-4 sm:p-6 rounded-xl bg-destructive/10 border border-destructive/30">
+                  <div className="text-3xl sm:text-4xl font-bold text-destructive mb-1 sm:mb-2">{profile?.hardSolved ?? 0}</div>
                   <div className="text-destructive font-medium">Hard</div>
                 </div>
               </div>
@@ -222,7 +222,7 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ delay: 0.3 }}
-           className="glass rounded-2xl p-8"
+           className="glass rounded-2xl p-4 sm:p-8"
          >
             {isLoading ? (
               <div className="space-y-4">
@@ -232,10 +232,10 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
             ) : (
               <>
                  {/* Header Row */}
-                 <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-                   <div className="flex items-center gap-2">
-                     <span className="text-lg font-bold text-foreground">{profile?.totalSubmissions ?? 0}</span>
-                     <span className="text-muted-foreground">submissions in the past one year</span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+                   <div className="flex items-center gap-2 flex-wrap">
+                     <span className="text-base sm:text-lg font-bold text-foreground">{profile?.totalSubmissions ?? 0}</span>
+                     <span className="text-muted-foreground text-sm sm:text-base">submissions in the past one year</span>
                   </div>
                 </div>
 
