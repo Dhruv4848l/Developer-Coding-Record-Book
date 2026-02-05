@@ -13,6 +13,10 @@ export interface LeetCodeProfile {
   currentStreak: number;
   longestStreak: number;
   activeDays: number;
+  contestRating: number;
+  contestGlobalRanking: number;
+  contestTopPercentage: string;
+  attendedContestsCount: number;
 }
 
 export interface LeetCodeHeatmapDay {
@@ -20,9 +24,20 @@ export interface LeetCodeHeatmapDay {
   count: number;
 }
 
+export interface ContestHistoryItem {
+  contestName: string;
+  startTime: number;
+  ranking: number;
+  problemsSolved: number;
+  totalProblems: number;
+  rating: number;
+  finishTime: number;
+}
+
 export interface LeetCodeStats {
   profile: LeetCodeProfile;
   heatmap: LeetCodeHeatmapDay[];
+  contestHistory: ContestHistoryItem[];
   lastUpdated: string;
 }
 

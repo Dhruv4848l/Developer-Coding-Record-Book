@@ -1,10 +1,11 @@
- import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target, Info } from "lucide-react";
- import { Link } from "react-router-dom";
- import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo } from "react";
 import { useLeetCodeStats, LeetCodeHeatmapDay } from "@/hooks/useLeetCodeStats";
+import { LeetCodeContestSection } from "@/components/LeetCodeContestSection";
 
 const getHeatmapColor = (count: number): string => {
   if (count === 0) return "bg-[#161b22]";
@@ -212,7 +213,18 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
               </div>
             )}
          </motion.div>
- 
+
+         {/* Contest Section */}
+         {!isLoading && (
+           <LeetCodeContestSection
+             contestRating={profile?.contestRating || 0}
+             contestGlobalRanking={profile?.contestGlobalRanking || 0}
+             contestTopPercentage={profile?.contestTopPercentage || "0"}
+             attendedContestsCount={profile?.attendedContestsCount || 0}
+             contestHistory={leetcodeStats?.contestHistory || []}
+           />
+         )}
+
           {/* LeetCode Submission Heatmap */}
          <motion.div
            initial={{ opacity: 0, y: 20 }}

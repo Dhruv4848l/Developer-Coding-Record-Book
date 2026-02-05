@@ -92,14 +92,20 @@ async function fetchRatingHistory(username: string): Promise<{ rating: number; h
 
 async function fetchCodeChefProfile(username: string): Promise<CodeChefStats | null> {
   try {
+    // Use a shorter timeout with AbortController
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
     const response = await fetch(`https://www.codechef.com/users/${username}`, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
-        'Cache-Control': 'no-cache',
       },
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       console.error('CodeChef profile page not ok:', response.status);
@@ -108,9 +114,6 @@ async function fetchCodeChefProfile(username: string): Promise<CodeChefStats | n
 
     const html = await response.text();
     console.log('Fetched HTML, length:', html.length);
-    
-    // Log a snippet of the HTML for debugging
-    console.log('HTML snippet (first 2000 chars):', html.substring(0, 2000));
 
     // Initialize default values
     let rating = 0;
@@ -121,12 +124,29 @@ async function fetchCodeChefProfile(username: string): Promise<CodeChefStats | n
     let problemsSolved = 0;
     let contestsParticipated = 0;
 
-    // Extract rating - multiple patterns
+    // Extract problems solved - look for the section with fully solved count
+    const solvedPatterns = [
+      /<h3[^>]*>Fully Solved[^<]*<\/h3>\s*<span[^>]*>(\d+)/i,
+      /Fully\s*Solved[^0-9]*(\d+)/i,
+      /Problems\s*Solved[^0-9]*(\d+)/i,
+      /"problemsSolved":\s*(\d+)/i,
+      /fully_solved[":]+\s*(\d+)/i,
+    ];
+
+    for (const pattern of solvedPatterns) {
+      const match = html.match(pattern);
+      if (match) {
+        problemsSolved = parseInt(match[1]);
+        console.log('Found problems solved:', problemsSolved);
+        break;
+      }
+    }
+
+    // Extract rating
     const ratingPatterns = [
       /class="rating"[^>]*>\s*(\d+)/is,
       /rating-number[^>]*>\s*(\d+)/is,
-      /currentRating[":]+\s*(\d+)/i,
-      /<div[^>]*rating[^>]*>(\d+)</i,
+      /"currentRating":\s*(\d+)/i,
     ];
 
     for (const pattern of ratingPatterns) {
@@ -139,62 +159,30 @@ async function fetchCodeChefProfile(username: string): Promise<CodeChefStats | n
     }
 
     // Extract highest rating
-    const highestMatch = html.match(/Highest Rating[^0-9]*(\d+)/i) ||
-                         html.match(/highestRating[":]+\s*(\d+)/i);
+    const highestMatch = html.match(/Highest Rating[^0-9]*(\d+)/i);
     if (highestMatch) {
       highestRating = parseInt(highestMatch[1]);
     }
 
-    // Extract stars - look for star symbols or star count
-    const starsMatch = html.match(/(\d+)\s*(?:★|star)/i) ||
-                       html.match(/rating-star[^>]*>([★]+)/);
+    // Extract stars
+    const starsMatch = html.match(/(\d+)\s*(?:★|star)/i);
     if (starsMatch) {
-      stars = starsMatch[1].length === 1 ? parseInt(starsMatch[1]) : starsMatch[1].length;
+      stars = parseInt(starsMatch[1]);
     }
 
     // Extract global rank
-    const globalRankMatch = html.match(/Global\s*Rank[^0-9]*(\d+)/i) ||
-                            html.match(/globalRank[":]+\s*(\d+)/i);
+    const globalRankMatch = html.match(/Global\s*Rank[^0-9]*(\d+)/i);
     if (globalRankMatch) {
       globalRank = parseInt(globalRankMatch[1]);
     }
 
     // Extract country rank  
-    const countryRankMatch = html.match(/Country\s*Rank[^0-9]*(\d+)/i) ||
-                              html.match(/countryRank[":]+\s*(\d+)/i);
+    const countryRankMatch = html.match(/Country\s*Rank[^0-9]*(\d+)/i);
     if (countryRankMatch) {
       countryRank = parseInt(countryRankMatch[1]);
     }
 
-    // Extract problems solved
-    const solvedPatterns = [
-      /Fully\s*Solved[^0-9]*(\d+)/i,
-      /Problems\s*Solved[^0-9]*(\d+)/i,
-      /fully_solved[":]+\s*(\d+)/i,
-      /problemsSolved[":]+\s*(\d+)/i,
-    ];
-
-    for (const pattern of solvedPatterns) {
-      const match = html.match(pattern);
-      if (match) {
-        problemsSolved = parseInt(match[1]);
-        break;
-      }
-    }
-
-    // Try to extract from JSON embedded in script tags
-    const jsonMatch = html.match(/window\.__INITIAL_STATE__\s*=\s*({[^<]+})/);
-    if (jsonMatch) {
-      try {
-        const jsonData = JSON.parse(jsonMatch[1]);
-        console.log('Found JSON data in page');
-        // Extract values from JSON if available
-      } catch (e) {
-        console.log('Could not parse embedded JSON');
-      }
-    }
-
-    // Look for rating data array to count contests
+    // Count contests from rating graph data
     const ratingArrayMatch = html.match(/all_rating\s*=\s*\[([^\]]*)\]/);
     if (ratingArrayMatch && ratingArrayMatch[1].trim()) {
       const ratings = ratingArrayMatch[1].split(',').filter(r => r.trim());
@@ -231,7 +219,11 @@ async function fetchCodeChefProfile(username: string): Promise<CodeChefStats | n
     console.log('Parsed stats:', JSON.stringify(stats));
     return stats;
   } catch (error) {
-    console.error('Error fetching CodeChef profile:', error);
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Request timed out');
+    } else {
+      console.error('Error fetching CodeChef profile:', error);
+    }
     return null;
   }
 }
