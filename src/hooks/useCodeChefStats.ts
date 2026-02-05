@@ -39,5 +39,7 @@ export function useCodeChefStats() {
     queryFn: fetchCodeChefStats,
     staleTime: 1000 * 60 * 60, // 1 hour cache
     refetchOnWindowFocus: false,
+    retry: 2,
+    retryDelay: 1000,
   });
 }

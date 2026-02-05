@@ -5,6 +5,16 @@ const corsHeaders = {
 
 const LEETCODE_GRAPHQL_URL = 'https://leetcode.com/graphql';
 
+interface ContestHistoryItem {
+  contestName: string;
+  startTime: number;
+  ranking: number;
+  problemsSolved: number;
+  totalProblems: number;
+  rating: number;
+  finishTime: number;
+}
+
 interface LeetCodeStats {
   username: string;
   ranking: number;
@@ -15,6 +25,31 @@ interface LeetCodeStats {
   totalSubmissions: number;
   acceptanceRate: string;
   submissionCalendar: Record<string, number>;
+  contestRating: number;
+  contestGlobalRanking: number;
+  contestTopPercentage: string;
+  attendedContestsCount: number;
+  contestHistory: ContestHistoryItem[];
+}
+
+interface ContestInfo {
+  contestId: number;
+  contestName: string;
+  contestSlug: string;
+  startTime: number;
+  finishTime: number;
+  ranking: number;
+  problemsSolved: number;
+  totalProblems: number;
+  rating: number;
+  ratingChange: number;
+}
+
+interface ContestRankingInfo {
+  attendedContestsCount: number;
+  rating: number;
+  globalRanking: number;
+  topPercentage: number;
 }
 
 async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
@@ -47,8 +82,23 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
         submissionCalendar
       }
       userContestRanking(username: $username) {
+        attendedContestsCount
         rating
         globalRanking
+        topPercentage
+      }
+      userContestRankingHistory(username: $username) {
+        attended
+        rating
+        ranking
+        trendDirection
+        problemsSolved
+        totalProblems
+        finishTimeInSeconds
+        contest {
+          title
+          startTime
+        }
       }
     }
   `;
@@ -87,16 +137,16 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
   const hardSolved = acStats.find((s: any) => s.difficulty === 'Hard')?.count || 0;
   const totalSolved = acStats.find((s: any) => s.difficulty === 'All')?.count || (easySolved + mediumSolved + hardSolved);
 
-   // Calculate acceptance rate
-   const submitStats = user.submitStats;
-   let acceptanceRate = '0%';
-   if (submitStats) {
-     const totalAcSubmissions = submitStats.acSubmissionNum?.find((s: any) => s.difficulty === 'All')?.submissions || 0;
-     const totalSubmissionsCount = submitStats.totalSubmissionNum?.find((s: any) => s.difficulty === 'All')?.submissions || 0;
-     if (totalSubmissionsCount > 0) {
-       acceptanceRate = ((totalAcSubmissions / totalSubmissionsCount) * 100).toFixed(1) + '%';
-     }
-   }
+  // Calculate acceptance rate
+  const submitStats = user.submitStats;
+  let acceptanceRate = '0%';
+  if (submitStats) {
+    const totalAcSubmissions = submitStats.acSubmissionNum?.find((s: any) => s.difficulty === 'All')?.submissions || 0;
+    const totalSubmissionsCount = submitStats.totalSubmissionNum?.find((s: any) => s.difficulty === 'All')?.submissions || 0;
+    if (totalSubmissionsCount > 0) {
+      acceptanceRate = ((totalAcSubmissions / totalSubmissionsCount) * 100).toFixed(1) + '%';
+    }
+  }
 
   // Parse submission calendar (JSON string -> object)
   let submissionCalendar: Record<string, number> = {};
@@ -109,16 +159,39 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
   // Calculate total submissions from calendar
   const totalSubmissions = Object.values(submissionCalendar).reduce((sum, count) => sum + count, 0);
 
+  // Parse contest ranking info
+  const contestRanking = data.data?.userContestRanking;
+  const contestHistory = data.data?.userContestRankingHistory || [];
+
+  // Process contest history - only attended contests
+  const attendedContests = contestHistory
+    .filter((c: any) => c.attended)
+    .map((c: any) => ({
+      contestName: c.contest?.title || 'Unknown Contest',
+      startTime: c.contest?.startTime || 0,
+      ranking: c.ranking || 0,
+      problemsSolved: c.problemsSolved || 0,
+      totalProblems: c.totalProblems || 0,
+      rating: Math.round(c.rating || 0),
+      finishTime: c.finishTimeInSeconds || 0,
+    }))
+    .sort((a: any, b: any) => b.startTime - a.startTime); // Most recent first
+
   return {
     username: user.username,
-    ranking: user.profile?.ranking || data.data?.userContestRanking?.globalRanking || 0,
+    ranking: user.profile?.ranking || contestRanking?.globalRanking || 0,
     totalSolved,
     easySolved,
     mediumSolved,
     hardSolved,
     totalSubmissions,
-     acceptanceRate,
+    acceptanceRate,
     submissionCalendar,
+    contestRating: contestRanking?.rating ? Math.round(contestRanking.rating) : 0,
+    contestGlobalRanking: contestRanking?.globalRanking || 0,
+    contestTopPercentage: contestRanking?.topPercentage ? contestRanking.topPercentage.toFixed(2) : '0',
+    attendedContestsCount: contestRanking?.attendedContestsCount || 0,
+    contestHistory: attendedContests,
   };
 }
 
@@ -220,7 +293,12 @@ Deno.serve(async (req) => {
         totalSubmissions: stats.totalSubmissions,
         acceptanceRate: stats.acceptanceRate,
         ...streaks,
+        contestRating: stats.contestRating,
+        contestGlobalRanking: stats.contestGlobalRanking,
+        contestTopPercentage: stats.contestTopPercentage,
+        attendedContestsCount: stats.attendedContestsCount,
       },
+      contestHistory: stats.contestHistory,
       heatmap,
       lastUpdated: new Date().toISOString(),
     };
