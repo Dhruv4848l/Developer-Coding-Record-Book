@@ -2,41 +2,9 @@
 import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target, Flame } from "lucide-react";
  import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo } from "react";
-
-// Generate LeetCode heatmap data for last 12 months
-const generateHeatmapData = () => {
-  const data: { date: Date; count: number }[] = [];
-  const today = new Date();
-  const startDate = new Date(today);
-  startDate.setDate(startDate.getDate() - 365);
-  
-  // Align to Sunday
-  const dayOfWeek = startDate.getDay();
-  startDate.setDate(startDate.getDate() - dayOfWeek);
-  
-  const currentDate = new Date(startDate);
-  while (currentDate <= today) {
-    const dateStr = currentDate.toISOString().split('T')[0];
-    let hash = 0;
-    for (let i = 0; i < dateStr.length; i++) {
-      hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
-      hash = hash & hash;
-    }
-    const normalized = Math.abs(hash % 100);
-    
-    let count = 0;
-    if (normalized >= 40) count = 1;
-    if (normalized >= 55) count = 2 + (hash % 2);
-    if (normalized >= 75) count = 4 + (hash % 3);
-    if (normalized >= 90) count = 7 + (hash % 4);
-    
-    data.push({ date: new Date(currentDate), count });
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-  
-  return data;
-};
+import { useCodolioStats, HeatmapDay } from "@/hooks/useCodolioStats";
 
 const getHeatmapColor = (count: number): string => {
   if (count === 0) return "bg-secondary/40";
@@ -46,12 +14,13 @@ const getHeatmapColor = (count: number): string => {
   return "bg-[hsl(45,90%,55%)]";
 };
 
-const processHeatmapData = (data: { date: Date; count: number }[]) => {
+const processHeatmapData = (data: HeatmapDay[]) => {
   const weeks: { date: Date; count: number }[][] = [];
   let currentWeek: { date: Date; count: number }[] = [];
   
   data.forEach((day, index) => {
-    const dayOfWeek = day.date.getDay();
+    const date = new Date(day.date);
+    const dayOfWeek = date.getDay();
     
     if (index === 0 && dayOfWeek !== 0) {
       for (let i = 0; i < dayOfWeek; i++) {
@@ -59,7 +28,7 @@ const processHeatmapData = (data: { date: Date; count: number }[]) => {
       }
     }
     
-    currentWeek.push(day);
+    currentWeek.push({ date, count: day.count });
     
     if (dayOfWeek === 6 || index === data.length - 1) {
       if (index === data.length - 1) {
@@ -97,32 +66,26 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
 };
  
  const LeetCodePage = () => {
+  const { data: codolioStats, isLoading } = useCodolioStats();
+  
    const stats = {
      username: "@Ydp5K7DIfv",
-     solved: 113,
-     easy: 60,
-     medium: 47,
-     hard: 6,
-     submissions: 180,
+    solved: codolioStats?.profile?.problemsSolved ?? 113,
+    easy: 60, // LeetCode specific breakdown
+    medium: 47,
+    hard: 6,
+    submissions: codolioStats?.profile?.totalSubmissions ?? 180,
      acceptance: "62.8%",
      ranking: "#385,921",
      profileUrl: "https://leetcode.com/u/Ydp5K7DIfv",
    };
  
-  const heatmapData = useMemo(() => generateHeatmapData(), []);
-  const weeks = useMemo(() => processHeatmapData(heatmapData), [heatmapData]);
-  const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
+  const weeks = useMemo(() => {
+    if (!codolioStats?.heatmap) return [];
+    return processHeatmapData(codolioStats.heatmap);
+  }, [codolioStats?.heatmap]);
   
-  const totalSubmissions = heatmapData.reduce((sum, day) => sum + day.count, 0);
-  const activeDays = heatmapData.filter(day => day.count > 0).length;
-  const currentStreak = useMemo(() => {
-    let streak = 0;
-    for (let i = heatmapData.length - 1; i >= 0; i--) {
-      if (heatmapData[i].count > 0) streak++;
-      else break;
-    }
-    return streak;
-  }, [heatmapData]);
+  const monthLabels = useMemo(() => getMonthLabels(weeks), [weeks]);
 
   const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
  
@@ -230,95 +193,120 @@ const getMonthLabels = (weeks: { date: Date; count: number }[][]) => {
               <h2 className="text-2xl font-bold">Submission Activity</h2>
             </div>
             
-            {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="text-center p-3 rounded-xl bg-leetcode/10">
-                <div className="text-2xl font-bold text-leetcode">{totalSubmissions}</div>
-                <div className="text-xs text-muted-foreground">Total Submissions</div>
+            {isLoading ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                </div>
+                <Skeleton className="h-32 w-full" />
               </div>
-              <div className="text-center p-3 rounded-xl bg-success/10">
-                <div className="text-2xl font-bold text-success">{activeDays}</div>
-                <div className="text-xs text-muted-foreground">Active Days</div>
-              </div>
-              <div className="text-center p-3 rounded-xl bg-warning/10">
-                <div className="text-2xl font-bold text-warning">{currentStreak}</div>
-                <div className="text-xs text-muted-foreground">Current Streak</div>
-              </div>
-            </div>
-
-            {/* Heatmap Grid */}
-            <div className="overflow-x-auto pb-2">
-              <div className="inline-block min-w-max">
-                {/* Month Labels */}
-                <div className="flex mb-2 ml-9 relative h-5">
-                  {monthLabels.map((label, index) => (
-                    <div
-                      key={`${label.month}-${index}`}
-                      className="text-xs text-muted-foreground absolute font-medium"
-                      style={{ left: `${label.position * 15}px` }}
-                    >
-                      {label.month}
-                    </div>
-                  ))}
+            ) : (
+              <>
+                {/* Stats Row */}
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  <div className="text-center p-3 rounded-xl bg-leetcode/10">
+                    <div className="text-2xl font-bold text-leetcode">{codolioStats?.profile?.totalSubmissions ?? 0}</div>
+                    <div className="text-xs text-muted-foreground">Total Submissions</div>
+                  </div>
+                  <div className="text-center p-3 rounded-xl bg-success/10">
+                    <div className="text-2xl font-bold text-success">{codolioStats?.profile?.activeDays ?? 0}</div>
+                    <div className="text-xs text-muted-foreground">Active Days</div>
+                  </div>
+                  <div className="text-center p-3 rounded-xl bg-warning/10">
+                    <div className="text-2xl font-bold text-warning">{codolioStats?.profile?.currentStreak ?? 0}</div>
+                    <div className="text-xs text-muted-foreground">Current Streak</div>
+                  </div>
+                  <div className="text-center p-3 rounded-xl bg-primary/10">
+                    <div className="text-2xl font-bold text-primary">{codolioStats?.profile?.longestStreak ?? 0}</div>
+                    <div className="text-xs text-muted-foreground">Max Streak</div>
+                  </div>
                 </div>
 
-                <div className="flex gap-[3px]">
-                  {/* Day Labels */}
-                  <div className="flex flex-col gap-[3px] pr-2">
-                    {dayLabels.map((day, i) => (
-                      <div
-                        key={`day-${i}`}
-                        className="h-[11px] text-[10px] text-muted-foreground flex items-center justify-end w-6"
-                      >
-                        {day}
-                      </div>
-                    ))}
-                 </div>
+                {/* Heatmap Grid */}
+                <div className="overflow-x-auto pb-2">
+                  <div className="inline-block min-w-max">
+                    {/* Month Labels */}
+                    <div className="flex mb-2 ml-9 relative h-5">
+                      {monthLabels.map((label, index) => (
+                        <div
+                          key={`${label.month}-${index}`}
+                          className="text-xs text-muted-foreground absolute font-medium"
+                          style={{ left: `${label.position * 15}px` }}
+                        >
+                          {label.month}
+                        </div>
+                      ))}
+                    </div>
 
-                  {/* Heatmap Cells */}
-                  <div className="flex gap-[3px]">
-                    {weeks.map((week, weekIndex) => (
-                      <div key={weekIndex} className="flex flex-col gap-[3px]">
-                        {week.map((day, dayIndex) => (
-                          <motion.div
-                            key={`${weekIndex}-${dayIndex}`}
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{
-                              duration: 0.02,
-                              delay: weekIndex * 0.002,
-                            }}
-                            whileHover={day.count !== -1 ? { scale: 1.4, zIndex: 10 } : undefined}
-                            className={`w-[11px] h-[11px] rounded-[2px] ${
-                              day.count === -1 
-                                ? "bg-transparent" 
-                                : getHeatmapColor(day.count)
-                            } ${day.count !== -1 ? "hover:ring-2 hover:ring-leetcode/60 cursor-pointer" : ""} transition-all relative`}
-                            title={
-                              day.count === -1 
-                                ? undefined 
-                                : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
-                            }
-                          />
+                    <div className="flex gap-[3px]">
+                      {/* Day Labels */}
+                      <div className="flex flex-col gap-[3px] pr-2">
+                        {dayLabels.map((day, i) => (
+                          <div
+                            key={`day-${i}`}
+                            className="h-[11px] text-[10px] text-muted-foreground flex items-center justify-end w-6"
+                          >
+                            {day}
+                          </div>
                         ))}
                       </div>
-                    ))}
-                 </div>
-               </div>
 
-                {/* Legend */}
-                <div className="flex items-center justify-end gap-2 mt-4">
-                  <span className="text-xs text-muted-foreground">Less</span>
-                  {[0, 1, 2, 5, 8].map((count, index) => (
-                    <div
-                      key={index}
-                      className={`w-[11px] h-[11px] rounded-[2px] ${getHeatmapColor(count)}`}
-                    />
-                  ))}
-                  <span className="text-xs text-muted-foreground">More</span>
+                      {/* Heatmap Cells */}
+                      <div className="flex gap-[3px]">
+                        {weeks.map((week, weekIndex) => (
+                          <div key={weekIndex} className="flex flex-col gap-[3px]">
+                            {week.map((day, dayIndex) => (
+                              <motion.div
+                                key={`${weekIndex}-${dayIndex}`}
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{
+                                  duration: 0.02,
+                                  delay: weekIndex * 0.002,
+                                }}
+                                whileHover={day.count !== -1 ? { scale: 1.4, zIndex: 10 } : undefined}
+                                className={`w-[11px] h-[11px] rounded-[2px] ${
+                                  day.count === -1 
+                                    ? "bg-transparent" 
+                                    : getHeatmapColor(day.count)
+                                } ${day.count !== -1 ? "hover:ring-2 hover:ring-leetcode/60 cursor-pointer" : ""} transition-all relative`}
+                                title={
+                                  day.count === -1 
+                                    ? undefined 
+                                    : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`
+                                }
+                              />
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Legend */}
+                    <div className="flex items-center justify-end gap-2 mt-4">
+                      <span className="text-xs text-muted-foreground">Less</span>
+                      {[0, 1, 2, 5, 8].map((count, index) => (
+                        <div
+                          key={index}
+                          className={`w-[11px] h-[11px] rounded-[2px] ${getHeatmapColor(count)}`}
+                        />
+                      ))}
+                      <span className="text-xs text-muted-foreground">More</span>
+                    </div>
+
+                    {/* Last updated */}
+                    {codolioStats?.lastUpdated && (
+                      <div className="text-xs text-muted-foreground text-right mt-2">
+                        Last updated: {new Date(codolioStats.lastUpdated).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-           </div>
+              </>
+            )}
          </motion.div>
        </div>
      </div>
