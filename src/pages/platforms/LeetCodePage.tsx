@@ -232,30 +232,16 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
             ) : (
               <>
                  {/* Header Row */}
-                 <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
+                 <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
                    <div className="flex items-center gap-2">
                      <span className="text-lg font-bold text-foreground">{profile?.totalSubmissions ?? 0}</span>
                      <span className="text-muted-foreground">submissions in the past one year</span>
-                     <Info className="w-4 h-4 text-muted-foreground cursor-help" />
-                  </div>
-                   <div className="flex items-center gap-6 text-sm">
-                     <div>
-                       <span className="text-muted-foreground">Total active days: </span>
-                       <span className="font-semibold text-foreground">{profile?.activeDays ?? 0}</span>
-                     </div>
-                     <div>
-                       <span className="text-muted-foreground">Max streak: </span>
-                       <span className="font-semibold text-foreground">{profile?.longestStreak ?? 0}</span>
-                     </div>
-                     <div className="px-3 py-1 rounded bg-secondary/60 text-foreground text-sm">
-                       Current: {profile?.currentStreak ?? 0}
-                     </div>
                   </div>
                 </div>
 
                 {/* Heatmap Grid */}
                  <div className="w-full overflow-x-auto">
-                   <div className="flex gap-4 min-w-max pb-2">
+                   <div className="flex gap-4 min-w-max pb-2 items-start">
                      {monthsData.map((monthData, monthIndex) => (
                        <div key={`${monthData.month}-${monthData.year}`} className="flex flex-col">
                          {/* Month Label */}
@@ -293,6 +279,22 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
                          </div>
                        </div>
                      ))}
+                     
+                     {/* Stats on the right side */}
+                     <div className="flex flex-col gap-3 ml-6 pt-5">
+                       <div className="text-sm">
+                         <span className="text-muted-foreground">Total active days: </span>
+                         <span className="font-bold text-foreground">{profile?.activeDays ?? 0}</span>
+                       </div>
+                       <div className="text-sm">
+                         <span className="text-muted-foreground">Max streak: </span>
+                         <span className="font-bold text-foreground">{profile?.longestStreak ?? 0}</span>
+                       </div>
+                       <div className="text-sm px-3 py-1.5 rounded-md bg-secondary/60 text-foreground">
+                         <span className="text-muted-foreground">Current: </span>
+                         <span className="font-bold">{profile?.currentStreak ?? 0}</span>
+                       </div>
+                     </div>
                    </div>
 
                    {/* Legend */}
