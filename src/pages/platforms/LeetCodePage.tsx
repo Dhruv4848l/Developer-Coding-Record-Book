@@ -263,11 +263,11 @@ const getWeekMonthBoundaries = (weeks: { date: Date; count: number }[][]) => {
                  <div className="w-full">
                   <div className="w-full">
                      {/* Heatmap Cells */}
-                     <div className="flex justify-between w-full">
+                     <div className="flex w-full">
                        {weeks.map((week, weekIndex) => (
                          <div 
                            key={weekIndex} 
-                           className={`flex flex-col gap-[2px] ${monthBoundaries.has(weekIndex) ? 'ml-1' : ''}`}
+                           className={`flex flex-col gap-[1px] ${monthBoundaries.has(weekIndex) ? 'ml-3' : 'ml-[1px]'}`}
                          >
                            {week.map((day, dayIndex) => (
                              <motion.div
