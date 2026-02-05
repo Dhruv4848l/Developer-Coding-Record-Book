@@ -1,5 +1,4 @@
  import { Navbar } from "@/components/Navbar";
- import { Hero } from "@/components/Hero";
  import { PlatformStats } from "@/components/PlatformStats";
  import { CTASection } from "@/components/CTASection";
  import { Footer } from "@/components/Footer";
@@ -8,8 +7,9 @@
    return (
      <div className="min-h-screen bg-background">
        <Navbar />
-       <Hero />
-       <PlatformStats />
+      <div className="pt-20">
+        <PlatformStats />
+      </div>
        <CTASection />
        <Footer />
      </div>
