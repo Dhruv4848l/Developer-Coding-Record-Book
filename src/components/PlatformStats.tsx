@@ -6,9 +6,8 @@ import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
 import { useGFGStats } from "@/hooks/useGFGStats";
 import { useCodeChefStats } from "@/hooks/useCodeChefStats";
 import { useCodolioStats } from "@/hooks/useCodolioStats";
+import { useAtCoderStats } from "@/hooks/useAtCoderStats";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
 const platformConfigs = [
   {
@@ -56,15 +55,25 @@ const platformConfigs = [
     bgClass: "bg-hackerrank/10",
     borderClass: "border-hackerrank/30",
   },
+  {
+    name: "AtCoder",
+    username: "@MrCoder420",
+    profileUrl: "https://atcoder.jp/users/MrCoder420",
+    route: "/platform/atcoder",
+    colorClass: "text-atcoder",
+    bgClass: "bg-atcoder/10",
+    borderClass: "border-atcoder/30",
+  },
 ];
- 
+
 export const PlatformStats = () => {
-  // Fetch stats from all platforms with 4-hour auto-refresh
+  // Fetch stats from all platforms
   const { data: leetcodeStats, isLoading: leetcodeLoading } = useLeetCodeStats("Ydp5K7DIfv");
   const { data: codeforcesStats, isLoading: codeforcesLoading } = useCodeforcesStats("dhruvmaji");
   const { data: gfgStats, isLoading: gfgLoading } = useGFGStats("dhruvmaji8b4b");
   const { data: codechefStats, isLoading: codechefLoading } = useCodeChefStats("cooking_coder");
   const { data: hackerrankStats, isLoading: hackerrankLoading } = useCodolioStats("dhruvmajiever191");
+  const { data: atcoderStats, isLoading: atcoderLoading } = useAtCoderStats("MrCoder420");
 
   // Build platforms array with dynamic solved counts
   const platforms = platformConfigs.map((config) => {
@@ -91,6 +100,10 @@ export const PlatformStats = () => {
       case "HackerRank":
         solved = hackerrankStats?.profile?.problemsSolved || 0;
         isLoading = hackerrankLoading;
+        break;
+      case "AtCoder":
+        solved = atcoderStats?.profile?.problemsSolved || 0;
+        isLoading = atcoderLoading;
         break;
     }
 
@@ -145,7 +158,7 @@ export const PlatformStats = () => {
         </motion.div>
 
         {/* Platform Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {platforms.map((platform, index) => (
             <motion.div
               key={platform.name}
