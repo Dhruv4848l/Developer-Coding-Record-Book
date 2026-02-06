@@ -4,62 +4,14 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGFGStats } from "@/hooks/useGFGStats";
-import { ContributionHeatmap } from "@/components/ContributionHeatmap";
-import { useMemo } from "react";
+import { GFG160Tracker } from "@/components/GFG160Tracker";
 
 const GFG_USERNAME = "dhruvmaji8b4b";
-
-// Generate heatmap data from stats (GFG doesn't provide daily data, so we simulate based on activity)
-const generateHeatmapData = (problemsSolved: number, currentStreak: number, maxStreak: number) => {
-  const heatmap: { date: string; count: number }[] = [];
-  const now = new Date();
-  const startDate = new Date(now);
-  startDate.setDate(startDate.getDate() - (52 * 7));
-  const dayOfWeek = startDate.getDay();
-  startDate.setDate(startDate.getDate() - dayOfWeek);
-
-  // Generate pattern based on solved count
-  const avgPerDay = problemsSolved / 365;
-  let currentDate = new Date(startDate);
-  
-  while (currentDate <= now) {
-    const dateStr = currentDate.toISOString().split("T")[0];
-    
-    // Create varied activity pattern
-    let hash = 0;
-    for (let i = 0; i < dateStr.length; i++) {
-      hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
-      hash = hash & hash;
-    }
-    const normalized = Math.abs(hash % 100);
-    
-    let count = 0;
-    if (normalized < 30) count = 0;
-    else if (normalized < 50) count = 1;
-    else if (normalized < 70) count = Math.floor(avgPerDay * 2) || 1;
-    else if (normalized < 85) count = Math.floor(avgPerDay * 3) || 2;
-    else count = Math.floor(avgPerDay * 5) || 3;
-    
-    heatmap.push({ date: dateStr, count });
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return heatmap;
-};
 
 const GFGPage = () => {
   const { data: stats, isLoading, error } = useGFGStats(GFG_USERNAME);
 
   const profileUrl = stats?.profileUrl || `https://www.geeksforgeeks.org/user/${GFG_USERNAME}`;
-
-  const heatmapData = useMemo(() => {
-    if (!stats) return [];
-    return generateHeatmapData(
-      stats.problemsSolved || 0,
-      stats.currentStreak || 0,
-      stats.maxStreak || 0
-    );
-  }, [stats]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -167,19 +119,14 @@ const GFGPage = () => {
           )}
         </motion.div>
 
-        {/* Contribution Heatmap */}
+        {/* GFG 160 Challenge Tracker */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="glass rounded-2xl p-6 sm:p-8 mb-12"
         >
-          <h2 className="text-2xl font-bold mb-6">Submission Activity</h2>
-          {isLoading ? (
-            <Skeleton className="h-40 w-full rounded-xl" />
-          ) : (
-            <ContributionHeatmap data={heatmapData} platform="gfg" />
-          )}
+          <GFG160Tracker />
         </motion.div>
 
         {/* Languages Used */}
