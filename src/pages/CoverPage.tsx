@@ -31,19 +31,17 @@ const CoverPage = () => {
     (hackerrankStats?.profile?.problemsSolved || 0) +
     (atcoderStats?.profile?.problemsSolved || 0);
 
-  const totalSubmissions = 
-    (leetcodeStats?.profile?.totalSubmissions || 0) +
-    (codeforcesStats?.profile?.totalSubmissions || 0) +
-    (atcoderStats?.profile?.acceptedSubmissions || 0);
+  // Use Codolio's aggregate totalSubmissions as it tracks all platforms
+  const totalSubmissions = hackerrankStats?.profile?.totalSubmissions || 0;
 
-  const maxStreak = Math.max(
-    leetcodeStats?.profile?.longestStreak || 0,
-    codeforcesStats?.profile?.longestStreak || 0,
-    hackerrankStats?.profile?.longestStreak || 0
-  );
+  // Use Codolio's aggregate longestStreak
+  const maxStreak = hackerrankStats?.profile?.longestStreak || 0;
 
-  // Use codolio for global rank
-  const globalRank = hackerrankStats?.profile?.globalRank || 22122;
+  // Use Codolio's aggregate activeDays for display
+  const activeDays = hackerrankStats?.profile?.activeDays || 0;
+
+  // Use Codolio for global rank
+  const globalRank = hackerrankStats?.profile?.globalRank || 0;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
