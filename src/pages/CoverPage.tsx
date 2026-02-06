@@ -1,47 +1,12 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Code2, ChevronRight, Trophy, Zap, MapPin, GraduationCap } from "lucide-react";
+import { ChevronRight, MapPin, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useLeetCodeStats } from "@/hooks/useLeetCodeStats";
-import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
-import { useGFGStats } from "@/hooks/useGFGStats";
-import { useCodeChefStats } from "@/hooks/useCodeChefStats";
-import { useCodolioStats } from "@/hooks/useCodolioStats";
-import { useAtCoderStats } from "@/hooks/useAtCoderStats";
 import { ContactBalloons } from "@/components/ContactBalloons";
 
 const CoverPage = () => {
   const navigate = useNavigate();
-  
-  // Fetch all platform stats for accurate total
-  const { data: leetcodeStats } = useLeetCodeStats("Ydp5K7DIfv");
-  const { data: codeforcesStats } = useCodeforcesStats("Ordinary_Coder_420");
-  const { data: gfgStats } = useGFGStats("dhruvmaji8b4b");
-  const { data: codechefStats } = useCodeChefStats("cooking_coder");
-  const { data: hackerrankStats } = useCodolioStats("dhruvmajiever191");
-  const { data: atcoderStats } = useAtCoderStats("MrCoder420");
-
-  // Calculate totals from actual API data
-  const totalProblemsSolved = 
-    (leetcodeStats?.profile?.totalSolved || 0) +
-    (codeforcesStats?.profile?.problemsSolved || 0) +
-    (gfgStats?.problemsSolved || 0) +
-    (codechefStats?.profile?.problemsSolved || 0) +
-    (hackerrankStats?.profile?.problemsSolved || 0) +
-    (atcoderStats?.profile?.problemsSolved || 0);
-
-  // Use Codolio's aggregate totalSubmissions as it tracks all platforms
-  const totalSubmissions = hackerrankStats?.profile?.totalSubmissions || 0;
-
-  // Use Codolio's aggregate longestStreak
-  const maxStreak = hackerrankStats?.profile?.longestStreak || 0;
-
-  // Use Codolio's aggregate activeDays for display
-  const activeDays = hackerrankStats?.profile?.activeDays || 0;
-
-  // Use Codolio for global rank
-  const globalRank = hackerrankStats?.profile?.globalRank || 0;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
@@ -110,35 +75,6 @@ const CoverPage = () => {
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass text-sm">
               <GraduationCap className="w-4 h-4 text-primary" />
               <span className="text-foreground">Parul Institute of Engineering and Technology</span>
-            </div>
-          </motion.div>
-
-          {/* Quick Stats Preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 w-full max-w-2xl"
-          >
-            <div className="glass rounded-xl p-4 text-center">
-              <Trophy className="w-6 h-6 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold">#{globalRank.toLocaleString()}</div>
-              <div className="text-xs text-muted-foreground">Global Rank</div>
-            </div>
-            <div className="glass rounded-xl p-4 text-center">
-              <Code2 className="w-6 h-6 text-leetcode mx-auto mb-2" />
-              <div className="text-2xl font-bold">{totalProblemsSolved}</div>
-              <div className="text-xs text-muted-foreground">Problems Solved</div>
-            </div>
-            <div className="glass rounded-xl p-4 text-center">
-              <Zap className="w-6 h-6 text-accent mx-auto mb-2" />
-              <div className="text-2xl font-bold">{totalSubmissions}</div>
-              <div className="text-xs text-muted-foreground">Submissions</div>
-            </div>
-            <div className="glass rounded-xl p-4 text-center">
-              <Trophy className="w-6 h-6 text-gfg mx-auto mb-2" />
-              <div className="text-2xl font-bold">{maxStreak}</div>
-              <div className="text-xs text-muted-foreground">Max Streak</div>
             </div>
           </motion.div>
 
