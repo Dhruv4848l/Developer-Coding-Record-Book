@@ -67,7 +67,7 @@ async function fetchCodeforcesStats(handle: string): Promise<CodeforcesStats> {
 
 const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
-export function useCodeforcesStats(handle: string) {
+export function useCodeforcesStats(handle: string = "Ordinary_Coder_420") {
   return useQuery({
     queryKey: ["codeforces-stats", handle],
     queryFn: () => fetchCodeforcesStats(handle),

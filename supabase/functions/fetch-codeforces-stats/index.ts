@@ -213,7 +213,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    let handle = 'dhruvmaji';
+    let handle = 'Ordinary_Coder_420';
     
     try {
       const body = await req.json();
@@ -290,7 +290,7 @@ Deno.serve(async (req) => {
     console.error('Error fetching Codeforces stats:', error);
     
     // Return fallback data on error
-    const fallbackStats = getFallbackStats('dhruvmaji');
+    const fallbackStats = getFallbackStats('Ordinary_Coder_420');
     return new Response(JSON.stringify(fallbackStats), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
