@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodolioStats } from "@/hooks/useCodolioStats";
-import { ContributionHeatmap } from "@/components/ContributionHeatmap";
 
 const HackerRankPage = () => {
   const { data: stats, isLoading, error } = useCodolioStats("dhruvmajiever191");
@@ -87,19 +86,6 @@ const HackerRankPage = () => {
             </>
           )}
         </motion.div>
-
-        {/* Heatmap */}
-        {stats?.heatmap && stats.heatmap.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="glass rounded-2xl p-6 sm:p-8 mb-12"
-          >
-            <h2 className="text-2xl font-bold mb-6">Submission Activity</h2>
-            <ContributionHeatmap data={stats.heatmap} platform="hackerrank" />
-          </motion.div>
-        )}
 
         {/* Badges */}
         <motion.div
