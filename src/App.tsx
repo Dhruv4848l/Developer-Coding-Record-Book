@@ -10,6 +10,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
   import CodeforcesPage from "./pages/platforms/CodeforcesPage";
   import GFGPage from "./pages/platforms/GFGPage";
   import HackerRankPage from "./pages/platforms/HackerRankPage";
+  import AtCoderPage from "./pages/platforms/AtCoderPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
            <Route path="/platform/codeforces" element={<CodeforcesPage />} />
            <Route path="/platform/gfg" element={<GFGPage />} />
            <Route path="/platform/hackerrank" element={<HackerRankPage />} />
+           <Route path="/platform/atcoder" element={<AtCoderPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

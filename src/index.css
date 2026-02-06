@@ -49,10 +49,12 @@
      --gfg: 120 61% 34%;
      /* Codeforces blue */
      --codeforces: 204 70% 53%;
-     /* Codechef brown */
-     --codechef: 25 65% 40%;
-     /* HackerRank green */
-     --hackerrank: 152 69% 31%;
+      /* Codechef brown */
+      --codechef: 25 65% 40%;
+      /* HackerRank green */
+      --hackerrank: 152 69% 31%;
+      /* AtCoder cyan */
+      --atcoder: 190 95% 45%;
  
      --border: 222 30% 18%;
      --input: 222 30% 15%;
