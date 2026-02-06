@@ -24,7 +24,9 @@ export interface GFGStats {
 }
 
 async function fetchGFGStats(username: string): Promise<GFGStats> {
-  const { data, error } = await supabase.functions.invoke(`fetch-gfg-stats?username=${username}`);
+  const { data, error } = await supabase.functions.invoke("fetch-gfg-stats", {
+    body: { username },
+  });
   
   if (error) {
     throw new Error(error.message);
