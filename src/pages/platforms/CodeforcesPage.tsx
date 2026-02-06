@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
 
-const CODEFORCES_HANDLE = "dhruvmaji";
+const CODEFORCES_HANDLE = "Ordinary_Coder_420";
 
 const CodeforcesPage = () => {
   const { data: stats, isLoading, error } = useCodeforcesStats(CODEFORCES_HANDLE);

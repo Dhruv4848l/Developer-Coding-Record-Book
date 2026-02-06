@@ -16,7 +16,7 @@ const CoverPage = () => {
   
   // Fetch all platform stats for accurate total
   const { data: leetcodeStats } = useLeetCodeStats("Ydp5K7DIfv");
-  const { data: codeforcesStats } = useCodeforcesStats("dhruvmaji");
+  const { data: codeforcesStats } = useCodeforcesStats("Ordinary_Coder_420");
   const { data: gfgStats } = useGFGStats("dhruvmaji8b4b");
   const { data: codechefStats } = useCodeChefStats("cooking_coder");
   const { data: hackerrankStats } = useCodolioStats("dhruvmajiever191");

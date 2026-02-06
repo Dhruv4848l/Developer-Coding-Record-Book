@@ -21,8 +21,8 @@ const platformConfigs = [
   },
   {
     name: "Codeforces",
-    username: "@dhruvmaji",
-    profileUrl: "https://codeforces.com/profile/dhruvmaji",
+    username: "@Ordinary_Coder_420",
+    profileUrl: "https://codeforces.com/profile/Ordinary_Coder_420",
     route: "/platform/codeforces",
     colorClass: "text-codeforces",
     bgClass: "bg-codeforces/10",
@@ -69,7 +69,7 @@ const platformConfigs = [
 export const PlatformStats = () => {
   // Fetch stats from all platforms
   const { data: leetcodeStats, isLoading: leetcodeLoading } = useLeetCodeStats("Ydp5K7DIfv");
-  const { data: codeforcesStats, isLoading: codeforcesLoading } = useCodeforcesStats("dhruvmaji");
+  const { data: codeforcesStats, isLoading: codeforcesLoading } = useCodeforcesStats("Ordinary_Coder_420");
   const { data: gfgStats, isLoading: gfgLoading } = useGFGStats("dhruvmaji8b4b");
   const { data: codechefStats, isLoading: codechefLoading } = useCodeChefStats("cooking_coder");
   const { data: hackerrankStats, isLoading: hackerrankLoading } = useCodolioStats("dhruvmajiever191");
