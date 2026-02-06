@@ -48,48 +48,72 @@ const socialPlatforms: SocialPlatform[] = [
   },
 ];
 
-// Positions for balloons when expanded (relative to button center)
+// Arc positions for balloons - positioned above the button in an arc
 const balloonPositions = [
-  { x: -120, y: -160 }, // LinkedIn - top left
-  { x: 120, y: -160 },  // WhatsApp - top right
-  { x: -180, y: -80 },  // Email - left
-  { x: 180, y: -80 },   // Instagram - right
-  { x: 0, y: -200 },    // Telegram - top center
+  { x: -100, y: -90 },  // LinkedIn - left
+  { x: -50, y: -130 },  // WhatsApp - upper left
+  { x: 0, y: -150 },    // Email - top center
+  { x: 50, y: -130 },   // Instagram - upper right
+  { x: 100, y: -90 },   // Telegram - right
 ];
 
 export const ContactBalloons = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPopping, setIsPopping] = useState(false);
 
-  const handleMouseEnter = useCallback(() => {
-    if (!isPopping) {
+  const handleClick = useCallback(() => {
+    if (isPopping) return;
+    
+    if (isExpanded) {
+      // Pop the balloons
+      setIsPopping(true);
+      setTimeout(() => {
+        setIsExpanded(false);
+        setIsPopping(false);
+      }, 600);
+    } else {
       setIsExpanded(true);
     }
-  }, [isPopping]);
+  }, [isExpanded, isPopping]);
 
-  const handleMouseLeave = useCallback(() => {
+  const handleBalloonClick = useCallback((e: React.MouseEvent, url: string) => {
+    e.stopPropagation();
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (!isExpanded || isPopping) return;
     setIsPopping(true);
-    // Wait for pop animation then close
     setTimeout(() => {
       setIsExpanded(false);
       setIsPopping(false);
-    }, 500);
-  }, []);
+    }, 600);
+  }, [isExpanded, isPopping]);
 
   return (
-    <div
-      className="relative inline-block"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="relative inline-block">
+      {/* Backdrop to close balloons when clicking outside */}
+      <AnimatePresence>
+        {isExpanded && !isPopping && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-10"
+            onClick={handleClose}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Contact Me Button */}
       <motion.button
-        className="relative px-8 py-4 rounded-2xl font-semibold text-lg overflow-hidden group"
+        className="relative px-8 py-4 rounded-2xl font-semibold text-lg overflow-hidden group z-20"
         style={{
           background: "linear-gradient(135deg, hsl(190 95% 50%) 0%, hsl(260 80% 60%) 50%, hsl(330 80% 55%) 100%)",
         }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        onClick={handleClick}
       >
         <span className="relative z-10 text-white">Contact Me</span>
         <motion.div
@@ -100,91 +124,80 @@ export const ContactBalloons = () => {
         />
       </motion.button>
 
-      {/* Balloon Container */}
+      {/* Balloon Container - positioned absolutely above the button */}
       <AnimatePresence>
         {isExpanded && (
-          <div className="absolute left-1/2 top-0 pointer-events-none">
+          <div className="absolute left-1/2 bottom-full mb-4 z-30 pointer-events-none">
             {socialPlatforms.map((platform, index) => {
               const position = balloonPositions[index];
               const Icon = platform.icon;
 
               return (
-                <motion.a
+                <motion.div
                   key={platform.name}
-                  href={platform.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute pointer-events-auto"
+                  className="absolute pointer-events-auto cursor-pointer"
+                  style={{
+                    left: position.x,
+                    top: position.y,
+                    transform: "translate(-50%, -50%)",
+                  }}
                   initial={{ 
-                    x: 0, 
-                    y: 0, 
                     scale: 0,
                     opacity: 0,
                   }}
                   animate={isPopping ? {
-                    scale: [1, 1.3, 0],
-                    opacity: [1, 1, 0],
-                    transition: { 
-                      duration: 0.4,
-                      delay: index * 0.05,
-                    }
+                    scale: [1, 1.5, 0],
+                    opacity: [1, 0.8, 0],
+                    rotate: [0, 15, -15, 0],
                   } : { 
-                    x: position.x, 
-                    y: position.y, 
                     scale: 1,
                     opacity: 1,
-                    transition: {
-                      type: "spring",
-                      stiffness: 200,
-                      damping: 15,
-                      delay: index * 0.08,
-                    }
                   }}
                   exit={{
-                    scale: [1, 1.3, 0],
-                    opacity: [1, 1, 0],
-                    transition: { duration: 0.3 }
+                    scale: [1, 1.5, 0],
+                    opacity: [1, 0.8, 0],
+                    rotate: [0, 15, -15, 0],
                   }}
-                  style={{
-                    left: "-28px",
-                    top: "-28px",
+                  transition={isPopping ? {
+                    duration: 0.4,
+                    delay: index * 0.08,
+                    ease: "easeOut",
+                  } : {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                    delay: index * 0.1,
                   }}
-                  whileHover={{ scale: 1.15 }}
+                  onClick={(e) => handleBalloonClick(e, platform.url)}
                 >
                   {/* Balloon */}
-                  <div className="relative">
+                  <div className="relative group/balloon">
                     {/* String connecting to button */}
                     <motion.div
                       className="absolute left-1/2 top-full w-[2px] origin-top"
                       style={{
-                        height: Math.sqrt(position.x ** 2 + position.y ** 2) - 28,
-                        background: `linear-gradient(to bottom, ${platform.color}88, transparent)`,
-                        transform: `translateX(-50%) rotate(${Math.atan2(-position.x, -position.y) * (180 / Math.PI)}deg)`,
-                        transformOrigin: "top center",
+                        height: Math.abs(position.y) - 20,
+                        background: `linear-gradient(to bottom, ${platform.color}88, ${platform.color}22)`,
+                        transform: "translateX(-50%)",
                       }}
-                      initial={{ scaleY: 0 }}
-                      animate={isPopping ? { scaleY: 0 } : { scaleY: 1 }}
-                      transition={{ duration: 0.3, delay: index * 0.08 }}
+                      initial={{ scaleY: 0, opacity: 0 }}
+                      animate={isPopping ? { scaleY: 0, opacity: 0 } : { scaleY: 1, opacity: 1 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
                     />
                     
-                    {/* Balloon shape */}
+                    {/* Balloon shape with pop particles */}
                     <motion.div
-                      className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg cursor-pointer relative"
+                      className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg relative"
                       style={{
                         background: platform.bgColor,
                         border: `2px solid ${platform.color}`,
                         boxShadow: `0 4px 20px ${platform.color}40`,
                       }}
-                      animate={!isPopping ? {
-                        y: [0, -8, 0],
-                      } : {}}
-                      transition={{
-                        y: {
-                          duration: 2 + index * 0.3,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }
+                      whileHover={{ 
+                        scale: 1.15,
+                        boxShadow: `0 6px 30px ${platform.color}60`,
                       }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
                     >
                       <div style={{ color: platform.color }}>
                         <Icon className="w-6 h-6" />
@@ -192,7 +205,7 @@ export const ContactBalloons = () => {
                       
                       {/* Balloon shine */}
                       <div 
-                        className="absolute top-2 left-2 w-3 h-3 rounded-full opacity-50"
+                        className="absolute top-2 left-2 w-3 h-3 rounded-full opacity-40"
                         style={{ background: `${platform.color}` }}
                       />
 
@@ -200,28 +213,50 @@ export const ContactBalloons = () => {
                       <div
                         className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0"
                         style={{
-                          borderLeft: "4px solid transparent",
-                          borderRight: "4px solid transparent",
-                          borderTop: `6px solid ${platform.color}`,
+                          borderLeft: "5px solid transparent",
+                          borderRight: "5px solid transparent",
+                          borderTop: `8px solid ${platform.color}`,
                         }}
                       />
+
+                      {/* Pop particles - visible during popping */}
+                      {isPopping && (
+                        <>
+                          {[...Array(6)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="absolute w-2 h-2 rounded-full"
+                              style={{ background: platform.color }}
+                              initial={{ x: 0, y: 0, opacity: 1 }}
+                              animate={{
+                                x: Math.cos((i * 60 * Math.PI) / 180) * 40,
+                                y: Math.sin((i * 60 * Math.PI) / 180) * 40,
+                                opacity: 0,
+                                scale: 0,
+                              }}
+                              transition={{ duration: 0.4, delay: index * 0.08 }}
+                            />
+                          ))}
+                        </>
+                      )}
                     </motion.div>
 
                     {/* Platform label */}
                     <motion.div
-                      className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium px-2 py-0.5 rounded-full"
+                      className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium px-2 py-1 rounded-full"
                       style={{
                         background: platform.bgColor,
                         color: platform.color,
+                        border: `1px solid ${platform.color}40`,
                       }}
-                      initial={{ opacity: 0 }}
-                      animate={isPopping ? { opacity: 0 } : { opacity: 1 }}
-                      transition={{ delay: 0.3 + index * 0.08 }}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={isPopping ? { opacity: 0, y: -10 } : { opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
                     >
                       {platform.name}
                     </motion.div>
                   </div>
-                </motion.a>
+                </motion.div>
               );
             })}
           </div>
