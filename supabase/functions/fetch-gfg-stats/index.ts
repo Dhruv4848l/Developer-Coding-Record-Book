@@ -178,8 +178,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const username = url.searchParams.get('username') || 'dhruvmaji8b4b';
+    let username = 'dhruvmaji8b4b';
+    
+    // Try to get username from request body first (POST)
+    try {
+      const body = await req.json();
+      if (body?.username) {
+        username = body.username;
+      }
+    } catch {
+      // If no body, try URL params
+      const url = new URL(req.url);
+      const urlUsername = url.searchParams.get('username');
+      if (urlUsername) {
+        username = urlUsername;
+      }
+    }
     
     console.log('Fetching GFG stats for:', username);
     
