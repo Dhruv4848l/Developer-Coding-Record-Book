@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Code2, Trophy, Star, Award, Globe, MapPin, Loader2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Code2, Trophy, Star, Award, Globe, MapPin, Loader2, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCodeChefStats } from "@/hooks/useCodeChefStats";
@@ -41,12 +41,19 @@ const CodeChefPage = () => {
       <div className="glass sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/dashboard">
-              <Button variant="ghost" className="gap-2">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Dashboard
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link to="/">
+                <Button variant="ghost" size="icon" className="h-9 w-9" title="Return to Profile">
+                  <User className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link to="/dashboard">
+                <Button variant="ghost" className="gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Dashboard
+                </Button>
+              </Link>
+            </div>
             <a href={profileUrl} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" className="gap-2 border-codechef/30 text-codechef hover:bg-codechef/10">
                 <ExternalLink className="w-4 h-4" />

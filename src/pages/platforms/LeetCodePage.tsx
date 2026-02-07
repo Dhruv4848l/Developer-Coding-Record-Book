@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target } from "lucide-react";
+import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -112,20 +112,27 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
        {/* Header */}
        <div className="glass sticky top-0 z-50">
          <div className="container mx-auto px-6 py-4">
-           <div className="flex items-center justify-between">
-             <Link to="/dashboard">
-               <Button variant="ghost" className="gap-2">
-                 <ArrowLeft className="w-4 h-4" />
-                 Back to Dashboard
-               </Button>
-             </Link>
-              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-               <Button variant="outline" className="gap-2 border-leetcode/30 text-leetcode hover:bg-leetcode/10">
-                 <ExternalLink className="w-4 h-4" />
-                 View Profile
-               </Button>
-             </a>
-           </div>
+          <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Link to="/">
+                  <Button variant="ghost" size="icon" className="h-9 w-9" title="Return to Profile">
+                    <User className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link to="/dashboard">
+                  <Button variant="ghost" className="gap-2">
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Dashboard
+                  </Button>
+                </Link>
+              </div>
+               <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="gap-2 border-leetcode/30 text-leetcode hover:bg-leetcode/10">
+                  <ExternalLink className="w-4 h-4" />
+                  View Profile
+                </Button>
+              </a>
+            </div>
          </div>
        </div>
  
