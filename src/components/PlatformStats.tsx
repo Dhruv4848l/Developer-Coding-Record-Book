@@ -165,8 +165,8 @@ export const PlatformStats = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
-              whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.15 } }}
+              transition={{ duration: 0.15, delay: index * 0.08 }}
+              whileHover={{ y: -5, scale: 1.02, transition: { type: "tween", duration: 0.15 } }}
               className={`rounded-2xl p-6 border bg-gradient-card ${platform.borderClass} hover:shadow-lg transition-all duration-150`}
             >
               <div className="flex items-center justify-between mb-6">
