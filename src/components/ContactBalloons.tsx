@@ -125,38 +125,12 @@ export const ContactBalloons = () => {
       {/* Hover animation styles */}
       <style>{`
         .gooey-btn {
-          animation: gooey-gradient 4s ease infinite;
           position: relative;
-          overflow: hidden;
           transition: box-shadow 0.25s, transform 0.25s;
         }
-        .gooey-btn::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          background: linear-gradient(135deg, hsl(330 80% 55%) 0%, hsl(190 95% 50%) 50%, hsl(260 80% 60%) 100%);
-          background-size: 200% 200%;
-          animation: gooey-gradient 4s ease infinite;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          z-index: 0;
-        }
-        .gooey-btn:hover::before {
-          opacity: 1;
-        }
         .gooey-btn:hover {
-          box-shadow: 0 0.5em 0.5em -0.4em hsl(190 95% 50% / 0.7), 0 0 30px hsl(190 95% 50% / 0.4), 0 0 60px hsl(260 80% 60% / 0.2);
+          box-shadow: 0 0.5em 0.5em -0.4em hsl(190 95% 50% / 0.7);
           transform: translateY(-0.25em) !important;
-        }
-        .gooey-btn > * {
-          position: relative;
-          z-index: 1;
-        }
-        @keyframes gooey-gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
         }
       `}</style>
     </>
