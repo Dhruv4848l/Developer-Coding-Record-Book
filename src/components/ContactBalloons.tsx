@@ -39,7 +39,7 @@ export const ContactBalloons = () => {
 
   return (
     <>
-      {/* SVG goo filter */}
+      {/* SVG goo filter for connected blob effect */}
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" className="absolute w-0 h-0" aria-hidden="true">
         <defs>
           <filter id="shadowed-goo">
@@ -56,26 +56,24 @@ export const ContactBalloons = () => {
 
       <div
         ref={menuRef}
-        className="relative"
+        className="relative inline-block"
         style={{
           filter: "url('#shadowed-goo')",
-          height: 56,
-          width: isOpen ? 540 : 200,
-          transition: "width 400ms ease",
         }}
       >
-        {/* Main toggle - pill with text */}
+        {/* Main toggle pill */}
         <button
           onClick={toggle}
-          className="absolute left-0 top-0 z-20 cursor-pointer flex items-center justify-center font-semibold text-white whitespace-nowrap"
+          className="gooey-btn relative z-20 cursor-pointer font-semibold text-white whitespace-nowrap"
           style={{
             height: 56,
-            paddingLeft: 24,
-            paddingRight: 24,
+            paddingLeft: 28,
+            paddingRight: 28,
             borderRadius: 28,
             background: "linear-gradient(135deg, hsl(190 95% 50%) 0%, hsl(260 80% 60%) 50%, hsl(330 80% 55%) 100%)",
+            backgroundSize: "200% 200%",
             border: "none",
-            transform: isOpen ? "scale(0.9)" : "scale(1)",
+            transform: isOpen ? "scale(0.92)" : "scale(1)",
             transition: isOpen
               ? "transform 200ms linear"
               : "transform 400ms cubic-bezier(0.175, 0.885, 0.320, 1.275)",
@@ -85,29 +83,29 @@ export const ContactBalloons = () => {
           Connect with me!!
         </button>
 
-        {/* Items expand to the right, horizontally in a line */}
+        {/* Items that slide out to the right, staying connected via goo */}
         {socialPlatforms.map((platform, index) => {
           const Icon = platform.icon;
-          const xOffset = isOpen ? (index + 1) * 64 + 140 : 0;
+          // Items slide from behind the button to the right
+          const xOffset = isOpen ? 160 + index * 58 : 20;
           return (
             <button
               key={platform.name}
               onClick={() => handleItemClick(platform.url)}
-              className="absolute top-1/2 flex items-center justify-center text-white"
+              className="absolute top-0 flex items-center justify-center text-white hover:brightness-125 hover:scale-110 transition-all duration-200"
               style={{
                 width: 56,
                 height: 56,
                 borderRadius: "100%",
-                background: isOpen ? platform.color : "hsl(260 80% 60%)",
+                background: platform.color,
                 border: "none",
-                cursor: "pointer",
-                left: 24,
-                marginTop: -28,
-                transform: `translate3d(${xOffset}px, 0, 0)`,
-                transitionProperty: "transform, background",
+                cursor: isOpen ? "pointer" : "default",
+                left: 0,
+                transform: `translate3d(${xOffset}px, 0, 0) scale(${isOpen ? 1 : 0.4})`,
+                transitionProperty: "transform, opacity",
                 transitionTimingFunction: isOpen
                   ? "cubic-bezier(0.165, 0.840, 0.440, 1.000)"
-                  : "ease-out",
+                  : "ease-in",
                 transitionDuration: isOpen
                   ? `${90 + 80 * (index + 1)}ms`
                   : "180ms",
@@ -123,6 +121,42 @@ export const ContactBalloons = () => {
           );
         })}
       </div>
+
+      {/* Hover animation styles */}
+      <style>{`
+        .gooey-btn {
+          animation: gooey-gradient 4s ease infinite;
+          position: relative;
+          overflow: hidden;
+        }
+        .gooey-btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: linear-gradient(135deg, hsl(330 80% 55%) 0%, hsl(190 95% 50%) 50%, hsl(260 80% 60%) 100%);
+          background-size: 200% 200%;
+          animation: gooey-gradient 4s ease infinite;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: 0;
+        }
+        .gooey-btn:hover::before {
+          opacity: 1;
+        }
+        .gooey-btn:hover {
+          box-shadow: 0 0 30px hsl(190 95% 50% / 0.5), 0 0 60px hsl(260 80% 60% / 0.3);
+        }
+        .gooey-btn > * {
+          position: relative;
+          z-index: 1;
+        }
+        @keyframes gooey-gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
     </>
   );
 };
