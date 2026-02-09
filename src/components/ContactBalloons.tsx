@@ -75,8 +75,8 @@ export const ContactBalloons = () => {
             border: "none",
             transform: isOpen ? "scale(0.92)" : "scale(1)",
             transition: isOpen
-              ? "transform 200ms linear"
-              : "transform 400ms cubic-bezier(0.175, 0.885, 0.320, 1.275)",
+              ? "transform 200ms linear, box-shadow 0.25s, translateY 0.25s"
+              : "transform 400ms cubic-bezier(0.175, 0.885, 0.320, 1.275), box-shadow 0.25s",
           }}
           aria-label="Connect with me"
         >
@@ -87,7 +87,7 @@ export const ContactBalloons = () => {
         {socialPlatforms.map((platform, index) => {
           const Icon = platform.icon;
           // Items slide from behind the button to the right
-          const xOffset = isOpen ? 160 + index * 58 : 20;
+          const xOffset = isOpen ? 180 + index * 62 : 20;
           return (
             <button
               key={platform.name}
@@ -128,6 +128,7 @@ export const ContactBalloons = () => {
           animation: gooey-gradient 4s ease infinite;
           position: relative;
           overflow: hidden;
+          transition: box-shadow 0.25s, transform 0.25s;
         }
         .gooey-btn::before {
           content: '';
@@ -145,7 +146,8 @@ export const ContactBalloons = () => {
           opacity: 1;
         }
         .gooey-btn:hover {
-          box-shadow: 0 0 30px hsl(190 95% 50% / 0.5), 0 0 60px hsl(260 80% 60% / 0.3);
+          box-shadow: 0 0.5em 0.5em -0.4em hsl(190 95% 50% / 0.7), 0 0 30px hsl(190 95% 50% / 0.4), 0 0 60px hsl(260 80% 60% / 0.2);
+          transform: translateY(-0.25em) !important;
         }
         .gooey-btn > * {
           position: relative;
