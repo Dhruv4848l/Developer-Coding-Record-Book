@@ -78,21 +78,12 @@ const CoverPage = () => {
             </div>
           </motion.div>
 
-          {/* Contact Balloons Button */}
+          {/* CTA + Contact row */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.65 }}
-            className="mb-12 relative z-20"
-          >
-            <ContactBalloons />
-          </motion.div>
-
-          {/* CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
+            className="flex items-center gap-4 relative z-20"
           >
             <Button
               onClick={() => navigate("/dashboard")}
@@ -102,6 +93,7 @@ const CoverPage = () => {
               More Details
               <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
+            <ContactBalloons />
           </motion.div>
         </div>
       </div>
