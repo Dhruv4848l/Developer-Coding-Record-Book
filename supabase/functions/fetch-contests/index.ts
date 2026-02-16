@@ -5,6 +5,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const rateLimiter = new Map<string, number[]>();
+function checkRateLimit(ip: string, limit = 15, windowMs = 60000): boolean {
+  const now = Date.now();
+  const requests = (rateLimiter.get(ip) || []).filter(t => now - t < windowMs);
+  if (requests.length >= limit) return false;
+  requests.push(now);
+  rateLimiter.set(ip, requests);
+  return true;
+}
+
 interface Contest {
   platform: string;
   name: string;
@@ -161,6 +171,11 @@ async function fetchCodeChefContests(): Promise<Contest[]> {
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+  if (!checkRateLimit(clientIP)) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
   try {

@@ -3,6 +3,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+function validateUsername(username: unknown): { valid: boolean; error?: string } {
+  if (!username || typeof username !== 'string') return { valid: false, error: 'Username is required' };
+  if (username.length < 1 || username.length > 50) return { valid: false, error: 'Username must be between 1 and 50 characters' };
+  if (!/^[a-zA-Z0-9_.\-]+$/.test(username)) return { valid: false, error: 'Username contains invalid characters' };
+  return { valid: true };
+}
+
+const rateLimiter = new Map<string, number[]>();
+function checkRateLimit(ip: string, limit = 15, windowMs = 60000): boolean {
+  const now = Date.now();
+  const requests = (rateLimiter.get(ip) || []).filter(t => now - t < windowMs);
+  if (requests.length >= limit) return false;
+  requests.push(now);
+  rateLimiter.set(ip, requests);
+  return true;
+}
+
 interface CodeChefStats {
   profile: {
     username: string;
@@ -233,10 +250,14 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+  if (!checkRateLimit(clientIP)) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
+
   try {
     let username = 'cooking_coder';
 
-    // Try to get username from request body
     try {
       const body = await req.json();
       if (body?.username) {
@@ -244,6 +265,11 @@ Deno.serve(async (req) => {
       }
     } catch {
       // If no body, use default username
+    }
+
+    const validation = validateUsername(username);
+    if (!validation.valid) {
+      return new Response(JSON.stringify({ error: validation.error }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     console.log('Fetching CodeChef stats for:', username);

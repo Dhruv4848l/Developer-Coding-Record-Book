@@ -3,6 +3,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+const rateLimiter = new Map<string, number[]>();
+function checkRateLimit(ip: string, limit = 15, windowMs = 60000): boolean {
+  const now = Date.now();
+  const requests = (rateLimiter.get(ip) || []).filter(t => now - t < windowMs);
+  if (requests.length >= limit) return false;
+  requests.push(now);
+  rateLimiter.set(ip, requests);
+  return true;
+}
+
 // For HackerRank, we only count programming problems (not badges/certifications)
 // This data is for @dhruvmajiever191 on HackerRank
 const getHackerRankStats = () => {
@@ -104,6 +114,11 @@ const getHackerRankStats = () => {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+  if (!checkRateLimit(clientIP)) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
   try {
