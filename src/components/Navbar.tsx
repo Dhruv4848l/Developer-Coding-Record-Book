@@ -15,7 +15,14 @@ export const Navbar = () => {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 glass"
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{
+        background: "rgba(255, 255, 255, 0.05)",
+        backdropFilter: "blur(20px) saturate(150%)",
+        WebkitBackdropFilter: "blur(20px) saturate(150%)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)",
+      }}
     >
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
@@ -23,7 +30,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-3">
             <Link to="/">
               <motion.div
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-300 cursor-pointer"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all duration-300 cursor-pointer"
                 whileHover={{ scale: 1.02 }}
               >
                 <User className="w-4 h-4" />
@@ -36,10 +43,10 @@ export const Navbar = () => {
               whileHover={{ scale: 1.02 }}
             >
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-foreground">
-                  Dhruv<span className="text-gradient">'s</span>
+                <span className="text-lg font-bold text-white">
+                  Dhruv<span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, hsl(190, 95%, 60%), hsl(260, 80%, 65%))" }}>'s</span>
                 </span>
-                <span className="text-xs text-muted-foreground -mt-1 tracking-wider">
+                <span className="text-xs text-white/40 -mt-1 tracking-wider">
                   CODE VAULT
                 </span>
               </div>
@@ -55,7 +62,7 @@ export const Navbar = () => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-300"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all duration-300"
               >
                 <item.icon className="w-4 h-4" />
                 <span className="text-sm font-medium">{item.label}</span>
@@ -75,7 +82,12 @@ export const Navbar = () => {
                 href="https://codolio.com/profile/KingKong_Coder" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all text-sm font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  background: "rgba(0, 210, 255, 0.1)",
+                  border: "1px solid rgba(0, 210, 255, 0.25)",
+                  color: "hsl(190, 95%, 60%)",
+                }}
               >
                 <ExternalLink className="w-4 h-4" />
                 <span className="hidden sm:inline">View on Codolio</span>

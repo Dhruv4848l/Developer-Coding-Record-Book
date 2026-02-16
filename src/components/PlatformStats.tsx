@@ -67,7 +67,6 @@ const platformConfigs = [
 ];
 
 export const PlatformStats = () => {
-  // Fetch stats from all platforms
   const { data: leetcodeStats, isLoading: leetcodeLoading } = useLeetCodeStats("Ydp5K7DIfv");
   const { data: codeforcesStats, isLoading: codeforcesLoading } = useCodeforcesStats("Ordinary_Coder_420");
   const { data: gfgStats, isLoading: gfgLoading } = useGFGStats("dhruvmaji8b4b");
@@ -75,44 +74,30 @@ export const PlatformStats = () => {
   const { data: hackerrankStats, isLoading: hackerrankLoading } = useCodolioStats("dhruvmajiever191");
   const { data: atcoderStats, isLoading: atcoderLoading } = useAtCoderStats("MrCoder420");
 
-  // Build platforms array with dynamic solved counts
   const platforms = platformConfigs.map((config) => {
     let solved = 0;
     let isLoading = false;
-
     switch (config.name) {
-      case "LeetCode":
-        solved = leetcodeStats?.profile?.totalSolved || 0;
-        isLoading = leetcodeLoading;
-        break;
-      case "Codeforces":
-        solved = codeforcesStats?.profile?.problemsSolved || 0;
-        isLoading = codeforcesLoading;
-        break;
-      case "GeeksforGeeks":
-        solved = gfgStats?.problemsSolved || 0;
-        isLoading = gfgLoading;
-        break;
-      case "CodeChef":
-        solved = codechefStats?.profile?.problemsSolved || 0;
-        isLoading = codechefLoading;
-        break;
-      case "HackerRank":
-        solved = hackerrankStats?.profile?.problemsSolved || 0;
-        isLoading = hackerrankLoading;
-        break;
-      case "AtCoder":
-        solved = atcoderStats?.profile?.problemsSolved || 0;
-        isLoading = atcoderLoading;
-        break;
+      case "LeetCode": solved = leetcodeStats?.profile?.totalSolved || 0; isLoading = leetcodeLoading; break;
+      case "Codeforces": solved = codeforcesStats?.profile?.problemsSolved || 0; isLoading = codeforcesLoading; break;
+      case "GeeksforGeeks": solved = gfgStats?.problemsSolved || 0; isLoading = gfgLoading; break;
+      case "CodeChef": solved = codechefStats?.profile?.problemsSolved || 0; isLoading = codechefLoading; break;
+      case "HackerRank": solved = hackerrankStats?.profile?.problemsSolved || 0; isLoading = hackerrankLoading; break;
+      case "AtCoder": solved = atcoderStats?.profile?.problemsSolved || 0; isLoading = atcoderLoading; break;
     }
-
     return { ...config, solved, isLoading };
   });
 
-  // Calculate total problems solved
   const totalSolved = platforms.reduce((sum, p) => sum + p.solved, 0);
   const isAnyLoading = platforms.some((p) => p.isLoading);
+
+  const glassStyle = {
+    background: "rgba(255, 255, 255, 0.05)",
+    backdropFilter: "blur(20px) saturate(150%)",
+    WebkitBackdropFilter: "blur(20px) saturate(150%)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    boxShadow: "0 8px 32px rgba(31, 38, 135, 0.15)",
+  };
 
   return (
     <section id="stats" className="py-24 relative">
@@ -124,10 +109,10 @@ export const PlatformStats = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Dhruv's <span className="text-gradient">Coding Platforms</span>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            Dhruv's <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, hsl(190, 95%, 60%), hsl(260, 80%, 65%))" }}>Coding Platforms</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-white/50 text-lg max-w-2xl mx-auto">
             Verified profiles across multiple competitive programming platforms
           </p>
         </motion.div>
@@ -138,21 +123,24 @@ export const PlatformStats = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="glass rounded-2xl p-8 mb-12 text-center relative"
+          className="rounded-2xl p-8 mb-12 text-center relative"
+          style={glassStyle}
         >
           {isAnyLoading ? (
             <Skeleton className="h-20 w-48 mx-auto mb-2" />
           ) : (
-            <div className="text-6xl md:text-8xl font-bold text-gradient mb-2">
+            <div className="text-6xl md:text-8xl font-bold mb-2 bg-clip-text text-transparent"
+              style={{ backgroundImage: "linear-gradient(135deg, hsl(190, 95%, 60%), hsl(260, 80%, 65%), hsl(330, 80%, 55%))" }}
+            >
               {totalSolved}
             </div>
           )}
-          <p className="text-muted-foreground text-lg">
+          <p className="text-white/50 text-lg">
             Total Problems Solved Across All Platforms
           </p>
           {isAnyLoading && (
             <div className="absolute top-4 right-4">
-              <RefreshCw className="w-5 h-5 text-muted-foreground animate-spin" />
+              <RefreshCw className="w-5 h-5 text-white/30 animate-spin" />
             </div>
           )}
         </motion.div>
@@ -167,20 +155,26 @@ export const PlatformStats = () => {
               viewport={{ once: true }}
               transition={{ type: "tween", duration: 0.08 }}
               whileHover={{ y: -5, scale: 1.02, transition: { type: "tween", duration: 0.12 } }}
-              className={`glass-card rounded-2xl p-6 border ${platform.borderClass} hover:shadow-lg transition-all duration-[50ms]`}
+              className="rounded-2xl p-6 transition-all duration-300"
+              style={{
+                background: "rgba(255, 255, 255, 0.04)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                boxShadow: "0 4px 24px rgba(0, 0, 0, 0.1)",
+              }}
             >
               <div className="flex items-center justify-between mb-6">
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${platform.bgClass} ${platform.colorClass}`}>
                   {platform.name}
                 </div>
                 <a href={platform.profileUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
+                  <ExternalLink className="w-4 h-4 text-white/30 hover:text-white/70 transition-colors" />
                 </a>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">Problems Solved</div>
+                  <div className="text-sm text-white/40 mb-1">Problems Solved</div>
                   {platform.isLoading ? (
                     <Skeleton className="h-9 w-16" />
                   ) : (
@@ -190,17 +184,19 @@ export const PlatformStats = () => {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-border flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Status</span>
+                <div className="pt-4 flex items-center justify-between" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+                  <span className="text-sm text-white/40">Status</span>
                   <span className="text-xs px-2 py-1 rounded-full bg-success/20 text-success">Verified</span>
                 </div>
               </div>
 
-              <div className="mt-4 text-xs text-muted-foreground">
+              <div className="mt-4 text-xs text-white/30">
                 {platform.username}
               </div>
 
-              <Link to={platform.route} className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-secondary/50 hover:bg-secondary text-sm font-medium transition-colors group">
+              <Link to={platform.route} className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all group text-white/70 hover:text-white"
+                style={{ background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.08)" }}
+              >
                 View Details
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
