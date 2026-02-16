@@ -4,8 +4,60 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { useAtCoderStats } from "@/hooks/useAtCoderStats";
-import { ContributionHeatmap } from "@/components/ContributionHeatmap";
+import { useAtCoderStats, AtCoderHeatmapDay } from "@/hooks/useAtCoderStats";
+import { useMemo } from "react";
+
+const getHeatmapColor = (count: number): string => {
+  if (count === 0) return "bg-white/5";
+  if (count === 1) return "bg-[hsl(190,95%,20%)]";
+  if (count >= 2 && count <= 3) return "bg-[hsl(190,95%,30%)]";
+  if (count >= 4 && count <= 6) return "bg-[hsl(190,95%,40%)]";
+  return "bg-[hsl(190,95%,50%)]";
+};
+
+interface MonthData {
+  month: string;
+  year: number;
+  weeks: { date: Date; count: number }[][];
+}
+
+const processHeatmapDataByMonth = (data: AtCoderHeatmapDay[]): MonthData[] => {
+  if (!data || data.length === 0) return [];
+  const months: MonthData[] = [];
+  let currentMonthKey = '';
+  let currentMonthWeeks: { date: Date; count: number }[][] = [];
+  let currentWeek: { date: Date; count: number }[] = [];
+  data.forEach((day) => {
+    const date = new Date(day.date);
+    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+    if (monthKey !== currentMonthKey) {
+      if (currentMonthKey !== '') {
+        if (currentWeek.length > 0) {
+          while (currentWeek.length < 7) currentWeek.push({ date: new Date(0), count: -1 });
+          currentMonthWeeks.push(currentWeek);
+        }
+        const [prevYear, prevMonth] = currentMonthKey.split('-').map(Number);
+        months.push({ month: new Date(prevYear, prevMonth).toLocaleDateString('en-US', { month: 'short' }), year: prevYear, weeks: currentMonthWeeks });
+      }
+      currentMonthKey = monthKey;
+      currentMonthWeeks = [];
+      currentWeek = [];
+      const dayOfWeek = date.getDay();
+      for (let i = 0; i < dayOfWeek; i++) currentWeek.push({ date: new Date(0), count: -1 });
+    }
+    currentWeek.push({ date, count: day.count });
+    if (date.getDay() === 6) { currentMonthWeeks.push(currentWeek); currentWeek = []; }
+  });
+  if (currentWeek.length > 0) {
+    while (currentWeek.length < 7) currentWeek.push({ date: new Date(0), count: -1 });
+    currentMonthWeeks.push(currentWeek);
+  }
+  if (currentMonthKey !== '') {
+    const [year, month] = currentMonthKey.split('-').map(Number);
+    months.push({ month: new Date(year, month).toLocaleDateString('en-US', { month: 'short' }), year, weeks: currentMonthWeeks });
+  }
+  return months;
+};
 
 const ATCODER_USERNAME = "MrCoder420";
 
@@ -29,7 +81,27 @@ const AtCoderPage = () => {
   const { data: stats, isLoading, error } = useAtCoderStats(ATCODER_USERNAME);
   const profile = stats?.profile;
   const profileUrl = `https://atcoder.jp/users/${ATCODER_USERNAME}`;
+  const monthsData = useMemo(() => {
+    if (!stats?.heatmap) return [];
+    return processHeatmapDataByMonth(stats.heatmap);
+  }, [stats?.heatmap]);
 
+  const totalActiveDays = stats?.heatmap?.filter((d) => d.count > 0).length ?? 0;
+  let currentStreak = 0;
+  if (stats?.heatmap) {
+    for (let i = stats.heatmap.length - 1; i >= 0; i--) {
+      if (stats.heatmap[i].count > 0) currentStreak++;
+      else break;
+    }
+  }
+  let maxStreak = 0;
+  let tempStreak = 0;
+  if (stats?.heatmap) {
+    for (const day of stats.heatmap) {
+      if (day.count > 0) { tempStreak++; maxStreak = Math.max(maxStreak, tempStreak); }
+      else tempStreak = 0;
+    }
+  }
   return (
     <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
@@ -87,10 +159,60 @@ const AtCoderPage = () => {
           )}
         </motion.div>
 
-        {stats?.heatmap && stats.heatmap.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl p-6 sm:p-8 mb-12" style={glassStyle}>
-            <h2 className="text-2xl font-bold mb-6 text-white">Submission Activity</h2>
-            <ContributionHeatmap data={stats.heatmap} platform="atcoder" />
+        {monthsData.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl p-4 sm:p-8 mb-12" style={glassStyle}>
+            {isLoading ? (
+              <div className="space-y-4"><Skeleton className="h-6 w-full" /><Skeleton className="h-32 w-full" /></div>
+            ) : (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-base sm:text-lg font-bold text-white">{profile?.acceptedSubmissions ?? 0}</span>
+                    <span className="text-white/40 text-sm sm:text-base">submissions in the past one year</span>
+                  </div>
+                </div>
+                <div className="w-full overflow-x-auto">
+                  <div className="flex gap-4 min-w-max pb-2 items-start">
+                    {monthsData.map((monthData, monthIndex) => (
+                      <div key={`${monthData.month}-${monthData.year}`} className="flex flex-col">
+                        <div className="text-xs text-white/40 mb-2 text-center font-medium">{monthData.month}</div>
+                        <div className="flex gap-[2px]">
+                          {monthData.weeks.map((week, weekIndex) => (
+                            <div key={weekIndex} className="flex flex-col gap-[2px]">
+                              {week.map((day, dayIndex) => (
+                                <motion.div
+                                  key={`${monthIndex}-${weekIndex}-${dayIndex}`}
+                                  initial={{ opacity: 0, scale: 0 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ duration: 0.02, delay: (monthIndex * 5 + weekIndex) * 0.002 }}
+                                  whileHover={day.count !== -1 ? { scale: 1.3, zIndex: 10 } : undefined}
+                                  className={`w-[11px] h-[11px] rounded-[2px] ${day.count === -1 ? "bg-transparent" : getHeatmapColor(day.count)} ${day.count !== -1 ? "hover:ring-1 hover:ring-atcoder/60 cursor-pointer" : ""} transition-all relative`}
+                                  title={day.count === -1 ? undefined : `${day.count} submission${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}`}
+                                />
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    <div className="flex flex-col gap-3 ml-6 pt-5">
+                      <div className="text-sm"><span className="text-white/40">Total active days: </span><span className="font-bold text-white">{totalActiveDays}</span></div>
+                      <div className="text-sm"><span className="text-white/40">Max streak: </span><span className="font-bold text-white">{maxStreak}</span></div>
+                      <div className="text-sm px-3 py-1.5 rounded-md text-white" style={{ background: "rgba(255,255,255,0.06)" }}>
+                        <span className="text-white/40">Current: </span><span className="font-bold">{currentStreak}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end gap-2 mt-4">
+                    <span className="text-xs text-white/40">Less</span>
+                    {[0, 1, 2, 5, 8].map((count, index) => (
+                      <div key={index} className={`w-[11px] h-[11px] rounded-[2px] ${getHeatmapColor(count)}`} />
+                    ))}
+                    <span className="text-xs text-white/40">More</span>
+                  </div>
+                </div>
+              </>
+            )}
           </motion.div>
         )}
 
