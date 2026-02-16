@@ -147,7 +147,7 @@ const LeetCodePage = () => {
 
         {/* Difficulty Breakdown */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl p-8 mb-12" style={glassStyle}>
-          <h2 className="text-2xl font-bold mb-6 text-white">Difficulty Breakdown</h2>
+          <h2 className="text-3xl font-bold mb-8 text-white">Difficulty Breakdown</h2>
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {[1,2,3].map(i => <Skeleton key={i} className="h-24 w-full rounded-xl" />)}
@@ -159,11 +159,11 @@ const LeetCodePage = () => {
                 { value: profile?.mediumSolved ?? 0, label: "Medium", color: "hsl(38, 92%, 50%)" },
                 { value: profile?.hardSolved ?? 0, label: "Hard", color: "hsl(0, 84%, 60%)" },
               ].map((d, i) => (
-                <div key={i} className="text-center p-4 sm:p-6 rounded-xl" style={{
+                <div key={i} className="text-center p-6 sm:p-8 rounded-xl" style={{
                   background: `${d.color}15`, border: `1px solid ${d.color}40`,
                 }}>
-                  <div className="text-3xl sm:text-4xl font-bold mb-1 sm:mb-2" style={{ color: d.color }}>{d.value}</div>
-                  <div className="font-medium" style={{ color: d.color }}>{d.label}</div>
+                  <div className="text-5xl sm:text-6xl font-bold mb-2 sm:mb-3" style={{ color: d.color }}>{d.value}</div>
+                  <div className="text-lg font-semibold" style={{ color: d.color }}>{d.label}</div>
                 </div>
               ))}
             </div>
