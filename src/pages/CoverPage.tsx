@@ -153,25 +153,32 @@ const CoverPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
-              className="flex flex-col items-center gap-4"
+              className="flex flex-wrap items-center justify-center gap-5"
             >
               <button
                 onClick={() => navigate("/dashboard")}
-                className="group relative px-8 py-4 text-lg font-semibold rounded-2xl text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
+                className="group relative px-9 py-4 rounded-full text-base font-semibold cursor-pointer transition-all duration-300 overflow-hidden hover:-translate-y-[3px]"
                 style={{
-                  background: "rgba(0, 210, 255, 0.15)",
-                  backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(0, 210, 255, 0.3)",
-                  boxShadow: "0 4px 24px rgba(0, 210, 255, 0.15)",
+                  background: "rgba(0, 212, 255, 0.15)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(0, 212, 255, 0.3)",
+                  color: "#00d4ff",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(0, 212, 255, 0.25)";
+                  e.currentTarget.style.borderColor = "rgba(0, 212, 255, 0.5)";
+                  e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 212, 255, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(0, 212, 255, 0.15)";
+                  e.currentTarget.style.borderColor = "rgba(0, 212, 255, 0.3)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   More Details
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background: "rgba(0, 210, 255, 0.25)" }}
-                />
               </button>
               <ContactBalloons />
             </motion.div>

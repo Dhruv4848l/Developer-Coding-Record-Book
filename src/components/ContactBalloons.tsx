@@ -64,23 +64,23 @@ export const ContactBalloons = () => {
         {/* Main toggle pill */}
         <button
           onClick={toggle}
-          className="gooey-btn relative z-20 cursor-pointer font-semibold text-white dark:text-white whitespace-nowrap"
+          className="gooey-btn relative z-20 cursor-pointer font-semibold text-white whitespace-nowrap transition-all duration-300 overflow-hidden hover:-translate-y-[3px]"
           style={{
             height: 56,
-            paddingLeft: 28,
-            paddingRight: 28,
-            borderRadius: 28,
-            background: "linear-gradient(135deg, hsl(190 95% 50%) 0%, hsl(260 80% 60%) 50%, hsl(330 80% 55%) 100%)",
-            backgroundSize: "200% 200%",
-            border: "none",
+            paddingLeft: 36,
+            paddingRight: 36,
+            borderRadius: 50,
+            background: "linear-gradient(135deg, rgba(123, 47, 247, 0.3), rgba(241, 7, 163, 0.3))",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255, 255, 255, 0.18)",
             transform: isOpen ? "scale(0.92)" : "scale(1)",
             transition: isOpen
-              ? "transform 200ms linear, box-shadow 0.25s, translateY 0.25s"
+              ? "transform 200ms linear, box-shadow 0.25s"
               : "transform 400ms cubic-bezier(0.175, 0.885, 0.320, 1.275), box-shadow 0.25s",
           }}
           aria-label="Connect with me"
         >
-          Connect with me!!
+          <span className="relative z-10">Connect with me!!</span>
         </button>
 
         {/* Items that slide out upward, staying connected via goo */}
@@ -127,11 +127,21 @@ export const ContactBalloons = () => {
       <style>{`
         .gooey-btn {
           position: relative;
-          transition: box-shadow 0.25s, transform 0.25s;
+        }
+        .gooey-btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 50px;
+          background: linear-gradient(135deg, #7b2ff7, #f107a3);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .gooey-btn:hover::before {
+          opacity: 1;
         }
         .gooey-btn:hover {
-          box-shadow: 0 0.5em 0.5em -0.4em hsl(190 95% 50% / 0.7);
-          transform: translateY(-0.25em) !important;
+          box-shadow: 0 10px 30px rgba(123, 47, 247, 0.4);
         }
       `}</style>
     </>
