@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink, Code2, Trophy, Award, Star, Loader2, User } fr
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { GlassBackground } from "@/components/GlassBackground";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodolioStats } from "@/hooks/useCodolioStats";
 
@@ -20,7 +21,8 @@ const HackerRankPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
+      <GlassBackground variant="subtle" />
       {/* Header */}
       <div className="glass sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">

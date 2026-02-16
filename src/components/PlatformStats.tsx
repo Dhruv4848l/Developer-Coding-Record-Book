@@ -167,7 +167,7 @@ export const PlatformStats = () => {
               viewport={{ once: true }}
               transition={{ type: "tween", duration: 0.08 }}
               whileHover={{ y: -5, scale: 1.02, transition: { type: "tween", duration: 0.12 } }}
-              className={`rounded-2xl p-6 border bg-gradient-card ${platform.borderClass} hover:shadow-lg transition-all duration-[50ms]`}
+              className={`glass-card rounded-2xl p-6 border ${platform.borderClass} hover:shadow-lg transition-all duration-[50ms]`}
             >
               <div className="flex items-center justify-between mb-6">
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${platform.bgClass} ${platform.colorClass}`}>

@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink, Code2, Trophy, Star, Award, Globe, MapPin, Loa
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { GlassBackground } from "@/components/GlassBackground";
 import { useCodeChefStats } from "@/hooks/useCodeChefStats";
 
 const CodeChefPage = () => {
@@ -12,7 +13,8 @@ const CodeChefPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen relative flex items-center justify-center">
+        <GlassBackground variant="subtle" />
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-codechef animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading CodeChef stats...</p>
@@ -23,7 +25,8 @@ const CodeChefPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen relative flex items-center justify-center">
+        <GlassBackground variant="subtle" />
         <div className="text-center">
           <p className="text-destructive mb-4">Failed to load CodeChef stats</p>
           <Link to="/dashboard">
@@ -37,7 +40,8 @@ const CodeChefPage = () => {
   const profile = stats?.profile;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
+      <GlassBackground variant="subtle" />
       {/* Header */}
       <div className="glass sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
