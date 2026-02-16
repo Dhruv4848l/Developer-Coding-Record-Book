@@ -83,16 +83,15 @@ export const ContactBalloons = () => {
           Connect with me!!
         </button>
 
-        {/* Items that slide out to the right, staying connected via goo */}
+        {/* Items that slide out upward, staying connected via goo */}
         {socialPlatforms.map((platform, index) => {
           const Icon = platform.icon;
-          // Items slide from behind the button to the right
-          const xOffset = isOpen ? 180 + index * 62 : 20;
+          const yOffset = isOpen ? -(62 + index * 58) : 0;
           return (
             <button
               key={platform.name}
               onClick={() => handleItemClick(platform.url)}
-              className="absolute top-0 flex items-center justify-center text-white hover:brightness-125 hover:scale-110 transition-all duration-200"
+              className="absolute flex items-center justify-center text-white hover:brightness-125 hover:scale-110 transition-all duration-200"
               style={{
                 width: 56,
                 height: 56,
@@ -100,8 +99,10 @@ export const ContactBalloons = () => {
                 background: platform.color,
                 border: "none",
                 cursor: isOpen ? "pointer" : "default",
-                left: 0,
-                transform: `translate3d(${xOffset}px, 0, 0) scale(${isOpen ? 1 : 0.4})`,
+                left: "50%",
+                top: 0,
+                marginLeft: -28,
+                transform: `translate3d(0, ${yOffset}px, 0) scale(${isOpen ? 1 : 0.4})`,
                 transitionProperty: "transform, opacity",
                 transitionTimingFunction: isOpen
                   ? "cubic-bezier(0.165, 0.840, 0.440, 1.000)"
