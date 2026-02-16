@@ -64,10 +64,10 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
   try {
     console.log('Fetching AtCoder profile for:', username);
     
-    // Fetch from AtCoder Problems API (community API that provides stats)
+    // Fetch from AtCoder APIs - use official history endpoint for all contests
     const [profileResponse, historyResponse, submissionResponse] = await Promise.all([
       fetchWithTimeout(`https://kenkoooo.com/atcoder/atcoder-api/v3/user/ac_rank?user=${username}`),
-      fetchWithTimeout(`https://kenkoooo.com/atcoder/atcoder-api/v3/user/rating_history?user=${username}`),
+      fetchWithTimeout(`https://atcoder.jp/users/${username}/history/json`),
       fetchWithTimeout(`https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions?user=${username}&from_second=0`),
     ]);
 
@@ -85,26 +85,29 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
       acceptedSubmissions = rankData?.count || 0;
     }
 
-    // Parse rating history
+    // Parse contest history from AtCoder's official endpoint
     if (historyResponse.ok) {
       const historyData = await historyResponse.json();
+      console.log('Contest history entries:', Array.isArray(historyData) ? historyData.length : 0);
       if (Array.isArray(historyData) && historyData.length > 0) {
-        // Get latest rating
-        const latestContest = historyData[historyData.length - 1];
-        rating = latestContest.NewRating || 0;
+        // Get latest rating from the most recent rated contest
+        const ratedContests = historyData.filter((c: any) => c.IsRated !== false);
+        if (ratedContests.length > 0) {
+          const latestRated = ratedContests[ratedContests.length - 1];
+          rating = latestRated.NewRating || 0;
+          highestRating = ratedContests.reduce((max: number, c: any) => 
+            Math.max(max, c.NewRating || 0), 0);
+        }
         
-        // Find highest rating
-        highestRating = historyData.reduce((max: number, c: any) => 
-          Math.max(max, c.NewRating || 0), 0);
-        
-        // Map contest history (last 10)
+        // Map ALL contest history (last 10), fields from official API:
+        // ContestName, ContestScreenName, Place, OldRating, NewRating, Performance, IsRated, EndTime
         contestHistory = historyData.slice(-10).reverse().map((c: any) => ({
-          contestName: c.ContestScreenName || 'Unknown Contest',
+          contestName: c.ContestName || c.ContestScreenName || 'Unknown Contest',
           rank: c.Place || 0,
           performance: c.Performance || 0,
           newRating: c.NewRating || 0,
           ratingChange: (c.NewRating || 0) - (c.OldRating || 0),
-          date: new Date((c.EndTime || 0) * 1000).toISOString().split('T')[0],
+          date: c.EndTime ? new Date(c.EndTime).toISOString().split('T')[0] : 'Unknown',
         }));
       }
     }
@@ -158,7 +161,7 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
         rankColor: color,
         country: 'India',
         affiliation: '',
-        contestsParticipated: contestHistory.length > 0 ? contestHistory.length : 0,
+        contestsParticipated: contestHistory.length,
         problemsSolved,
         acceptedSubmissions,
         globalRank: acRank,
