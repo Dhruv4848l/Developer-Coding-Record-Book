@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Code2, Trophy, Star, Award, Globe, MapPin, Loader2, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ThemeToggle";
+
 import { useCodeChefStats } from "@/hooks/useCodeChefStats";
 
 const glassStyle = {
@@ -70,7 +70,7 @@ const CodeChefPage = () => {
               <Link to="/dashboard"><Button variant="ghost" className="gap-2 text-white/60 hover:text-white hover:bg-white/10"><ArrowLeft className="w-4 h-4" />Back to Dashboard</Button></Link>
             </div>
             <div className="flex items-center gap-2">
-              <ThemeToggle />
+              
               <a href={profileUrl} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="gap-2 border-codechef/30 text-codechef hover:bg-codechef/10"><ExternalLink className="w-4 h-4" />View Profile</Button>
               </a>
