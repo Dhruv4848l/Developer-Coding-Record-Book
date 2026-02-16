@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink, Trophy, TrendingUp, Target, Award, Zap, Code2,
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAtCoderStats } from "@/hooks/useAtCoderStats";
 import { ContributionHeatmap } from "@/components/ContributionHeatmap";
 
@@ -33,12 +34,15 @@ const AtCoderPage = () => {
                 </Button>
               </Link>
             </div>
-            <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="gap-2 border-atcoder/30 text-atcoder hover:bg-atcoder/10">
-                <ExternalLink className="w-4 h-4" />
-                View Profile
-              </Button>
-            </a>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="gap-2 border-atcoder/30 text-atcoder hover:bg-atcoder/10">
+                  <ExternalLink className="w-4 h-4" />
+                  View Profile
+                </Button>
+              </a>
+            </div>
           </div>
         </div>
       </div>

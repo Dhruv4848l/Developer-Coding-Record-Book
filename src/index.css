@@ -1,158 +1,220 @@
- @tailwind base;
- @tailwind components;
- @tailwind utilities;
- 
- @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
- 
- @layer base {
-   :root {
-     /* Dark coding theme */
-     --background: 222 47% 6%;
-     --foreground: 210 40% 98%;
- 
-     --card: 222 47% 8%;
-     --card-foreground: 210 40% 98%;
- 
-     --popover: 222 47% 10%;
-     --popover-foreground: 210 40% 98%;
- 
-     /* Cyan/Blue primary */
-     --primary: 190 95% 50%;
-     --primary-foreground: 222 47% 6%;
- 
-     /* Darker secondary */
-     --secondary: 222 47% 12%;
-     --secondary-foreground: 210 40% 98%;
- 
-     --muted: 222 47% 14%;
-     --muted-foreground: 215 20% 55%;
- 
-     /* Accent - Electric cyan */
-     --accent: 175 80% 45%;
-     --accent-foreground: 222 47% 6%;
- 
-     /* Success green */
-     --success: 142 76% 45%;
-     --success-foreground: 210 40% 98%;
- 
-     /* Warning orange */
-     --warning: 38 92% 50%;
-     --warning-foreground: 222 47% 6%;
- 
-     /* Destructive red */
-     --destructive: 0 84% 60%;
-     --destructive-foreground: 210 40% 98%;
- 
-     /* Leetcode orange */
-     --leetcode: 33 100% 50%;
-     /* GFG green */
-     --gfg: 120 61% 34%;
-     /* Codeforces blue */
-     --codeforces: 204 70% 53%;
-      /* Codechef brown */
-      --codechef: 25 65% 40%;
-      /* HackerRank green */
-      --hackerrank: 152 69% 31%;
-      /* AtCoder cyan */
-      --atcoder: 190 95% 45%;
- 
-     --border: 222 30% 18%;
-     --input: 222 30% 15%;
-     --ring: 190 95% 50%;
- 
-     --radius: 0.75rem;
- 
-     /* Gradients */
-     --gradient-primary: linear-gradient(135deg, hsl(190 95% 50%) 0%, hsl(175 80% 45%) 100%);
-     --gradient-hero: linear-gradient(135deg, hsl(190 95% 50%) 0%, hsl(260 80% 60%) 50%, hsl(330 80% 55%) 100%);
-     --gradient-card: linear-gradient(145deg, hsl(222 47% 10%) 0%, hsl(222 47% 7%) 100%);
-     --gradient-glow: radial-gradient(circle at 50% 0%, hsl(190 95% 50% / 0.15) 0%, transparent 50%);
- 
-     /* Shadows */
-     --shadow-sm: 0 2px 8px hsl(222 47% 4% / 0.3);
-     --shadow-md: 0 4px 16px hsl(222 47% 4% / 0.4);
-     --shadow-lg: 0 8px 32px hsl(222 47% 4% / 0.5);
-     --shadow-glow: 0 0 40px hsl(190 95% 50% / 0.2);
- 
-     /* Sidebar */
-     --sidebar-background: 222 47% 8%;
-     --sidebar-foreground: 210 40% 90%;
-     --sidebar-primary: 190 95% 50%;
-     --sidebar-primary-foreground: 222 47% 6%;
-     --sidebar-accent: 222 47% 14%;
-     --sidebar-accent-foreground: 210 40% 98%;
-     --sidebar-border: 222 30% 18%;
-     --sidebar-ring: 190 95% 50%;
-   }
- }
- 
- @layer base {
-   * {
-     @apply border-border;
-   }
- 
-   body {
-     @apply bg-background text-foreground font-sans antialiased;
-     font-family: 'Inter', system-ui, sans-serif;
-   }
- 
-   h1, h2, h3, h4, h5, h6 {
-     font-family: 'Inter', system-ui, sans-serif;
-     @apply font-bold tracking-tight;
-   }
- 
-   code, pre, .font-mono {
-     font-family: 'JetBrains Mono', monospace;
-   }
- }
- 
- @layer utilities {
-   .text-gradient {
-     background: var(--gradient-hero);
-     -webkit-background-clip: text;
-     -webkit-text-fill-color: transparent;
-     background-clip: text;
-   }
- 
-   .bg-gradient-primary {
-     background: var(--gradient-primary);
-   }
- 
-   .bg-gradient-card {
-     background: var(--gradient-card);
-   }
- 
-   .bg-glow {
-     background: var(--gradient-glow);
-   }
- 
-   .shadow-glow {
-     box-shadow: var(--shadow-glow);
-   }
- 
-   .glass {
-     background: hsl(222 47% 10% / 0.7);
-     backdrop-filter: blur(12px);
-     border: 1px solid hsl(222 30% 20% / 0.5);
-   }
- 
-   .animate-float {
-     animation: float 6s ease-in-out infinite;
-   }
- 
-   .animate-pulse-slow {
-     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-   }
- 
-   @keyframes float {
-     0%, 100% { transform: translateY(0px); }
-     50% { transform: translateY(-10px); }
-   }
- 
-   /* Heatmap cell colors */
-   .heatmap-0 { background-color: hsl(222 47% 12%); }
-   .heatmap-1 { background-color: hsl(190 60% 20%); }
-   .heatmap-2 { background-color: hsl(190 70% 30%); }
-   .heatmap-3 { background-color: hsl(190 80% 40%); }
-   .heatmap-4 { background-color: hsl(190 95% 50%); }
- }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@layer base {
+  :root {
+    /* Light mode - Glassmorphism */
+    --background: 220 20% 97%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 190 95% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 14% 90%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 175 80% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --leetcode: 33 100% 50%;
+    --gfg: 120 61% 34%;
+    --codeforces: 204 70% 53%;
+    --codechef: 25 65% 40%;
+    --hackerrank: 152 69% 31%;
+    --atcoder: 190 95% 45%;
+
+    --border: 220 13% 88%;
+    --input: 220 13% 90%;
+    --ring: 190 95% 42%;
+
+    --radius: 0.75rem;
+
+    --gradient-primary: linear-gradient(135deg, hsl(190 95% 42%) 0%, hsl(175 80% 40%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(190 95% 42%) 0%, hsl(260 80% 55%) 50%, hsl(330 80% 50%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 20% 96%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(190 95% 42% / 0.1) 0%, transparent 50%);
+
+    --shadow-sm: 0 2px 8px hsl(220 20% 80% / 0.3);
+    --shadow-md: 0 4px 16px hsl(220 20% 80% / 0.3);
+    --shadow-lg: 0 8px 32px hsl(220 20% 80% / 0.3);
+    --shadow-glow: 0 0 40px hsl(190 95% 42% / 0.15);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 190 95% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 95%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 13% 88%;
+    --sidebar-ring: 190 95% 42%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 190 95% 50%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 222 47% 12%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 222 47% 14%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 175 80% 45%;
+    --accent-foreground: 222 47% 6%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 6%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --leetcode: 33 100% 50%;
+    --gfg: 120 61% 34%;
+    --codeforces: 204 70% 53%;
+    --codechef: 25 65% 40%;
+    --hackerrank: 152 69% 31%;
+    --atcoder: 190 95% 45%;
+
+    --border: 222 30% 18%;
+    --input: 222 30% 15%;
+    --ring: 190 95% 50%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(190 95% 50%) 0%, hsl(175 80% 45%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(190 95% 50%) 0%, hsl(260 80% 60%) 50%, hsl(330 80% 55%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(222 47% 10%) 0%, hsl(222 47% 7%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(190 95% 50% / 0.15) 0%, transparent 50%);
+
+    --shadow-sm: 0 2px 8px hsl(222 47% 4% / 0.3);
+    --shadow-md: 0 4px 16px hsl(222 47% 4% / 0.4);
+    --shadow-lg: 0 8px 32px hsl(222 47% 4% / 0.5);
+    --shadow-glow: 0 0 40px hsl(190 95% 50% / 0.2);
+
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 190 95% 50%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 47% 14%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 30% 18%;
+    --sidebar-ring: 190 95% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply font-bold tracking-tight;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .bg-glow {
+    background: var(--gradient-glow);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .glass {
+    background: hsl(222 47% 10% / 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(222 30% 20% / 0.5);
+    box-shadow: none;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Heatmap cell colors */
+  .heatmap-0 { background-color: hsl(var(--muted)); }
+  .heatmap-1 { background-color: hsl(190 60% 70%); }
+  .heatmap-2 { background-color: hsl(190 70% 55%); }
+  .heatmap-3 { background-color: hsl(190 80% 45%); }
+  .heatmap-4 { background-color: hsl(190 95% 40%); }
+
+  .dark .heatmap-1 { background-color: hsl(190 60% 20%); }
+  .dark .heatmap-2 { background-color: hsl(190 70% 30%); }
+  .dark .heatmap-3 { background-color: hsl(190 80% 40%); }
+  .dark .heatmap-4 { background-color: hsl(190 95% 50%); }
+}

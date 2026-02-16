@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart3, Calendar, Trophy, ExternalLink, User } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link } from "react-router-dom";
 
 const navItems = [
@@ -62,22 +63,25 @@ export const Navbar = () => {
             ))}
           </div>
 
-          {/* Codolio Link */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <a 
-              href="https://codolio.com/profile/KingKong_Coder" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all text-sm font-medium"
+          {/* Right side actions */}
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
             >
-              <ExternalLink className="w-4 h-4" />
-              <span className="hidden sm:inline">View on Codolio</span>
-            </a>
-          </motion.div>
+              <a 
+                href="https://codolio.com/profile/KingKong_Coder" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all text-sm font-medium"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span className="hidden sm:inline">View on Codolio</span>
+              </a>
+            </motion.div>
+          </div>
         </div>
       </div>
     </motion.nav>

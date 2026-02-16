@@ -2,17 +2,18 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Code2, Trophy, Zap, Target, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMemo } from "react";
 import { useLeetCodeStats, LeetCodeHeatmapDay } from "@/hooks/useLeetCodeStats";
 import { LeetCodeContestSection } from "@/components/LeetCodeContestSection";
 
 const getHeatmapColor = (count: number): string => {
-  if (count === 0) return "bg-[#161b22]";
-  if (count === 1) return "bg-[#0e4429]";
-  if (count >= 2 && count <= 3) return "bg-[#006d32]";
-  if (count >= 4 && count <= 6) return "bg-[#26a641]";
-  return "bg-[#39d353]";
+  if (count === 0) return "bg-muted";
+  if (count === 1) return "bg-[hsl(142,76%,22%)] dark:bg-[hsl(142,76%,22%)]";
+  if (count >= 2 && count <= 3) return "bg-[hsl(142,76%,45%)] dark:bg-[hsl(142,76%,32%)]";
+  if (count >= 4 && count <= 6) return "bg-[hsl(142,76%,55%)] dark:bg-[hsl(142,76%,42%)]";
+  return "bg-[hsl(142,76%,65%)] dark:bg-[hsl(142,76%,52%)]";
 };
 
 interface MonthData {
@@ -126,12 +127,15 @@ const processHeatmapDataByMonth = (data: LeetCodeHeatmapDay[]): MonthData[] => {
                   </Button>
                 </Link>
               </div>
-               <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="gap-2 border-leetcode/30 text-leetcode hover:bg-leetcode/10">
-                  <ExternalLink className="w-4 h-4" />
-                  View Profile
-                </Button>
-              </a>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" className="gap-2 border-leetcode/30 text-leetcode hover:bg-leetcode/10">
+                    <ExternalLink className="w-4 h-4" />
+                    View Profile
+                  </Button>
+                </a>
+              </div>
             </div>
          </div>
        </div>
