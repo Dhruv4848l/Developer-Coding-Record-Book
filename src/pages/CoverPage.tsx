@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, MapPin, GraduationCap } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { GlassBackground } from "@/components/GlassBackground";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ContactBalloons } from "@/components/ContactBalloons";
@@ -10,16 +11,12 @@ const CoverPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
+      <GlassBackground variant="hero" />
       {/* Theme Toggle */}
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-glow opacity-50" />
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">

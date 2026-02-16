@@ -178,19 +178,47 @@
   }
 
   .glass {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
 
   .dark .glass {
-    background: hsl(222 47% 10% / 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(222 30% 20% / 0.5);
-    box-shadow: none;
+    background: hsl(222 47% 10% / 0.65);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid hsl(222 30% 22% / 0.5);
+    box-shadow: 0 8px 32px hsl(222 47% 4% / 0.3), inset 0 1px 0 hsl(222 30% 25% / 0.2);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .dark .glass-card {
+    background: hsl(222 47% 10% / 0.5);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid hsl(222 30% 20% / 0.4);
+    box-shadow: 0 4px 24px hsl(222 47% 4% / 0.3), inset 0 1px 0 hsl(222 30% 22% / 0.15);
+  }
+
+  .dark .glass-card:hover {
+    background: hsl(222 47% 12% / 0.6);
+    box-shadow: 0 8px 40px hsl(222 47% 4% / 0.4), inset 0 1px 0 hsl(222 30% 25% / 0.2);
   }
 
   .animate-float {

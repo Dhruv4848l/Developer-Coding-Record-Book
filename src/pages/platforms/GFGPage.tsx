@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { GlassBackground } from "@/components/GlassBackground";
 import { useGFGStats } from "@/hooks/useGFGStats";
 import { GFG160Tracker } from "@/components/GFG160Tracker";
 
@@ -15,7 +16,8 @@ const GFGPage = () => {
   const profileUrl = stats?.profileUrl || `https://www.geeksforgeeks.org/user/${GFG_USERNAME}`;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
+      <GlassBackground variant="subtle" />
       {/* Header */}
       <div className="glass sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
