@@ -142,9 +142,9 @@ export const ContributionHeatmap = ({ data, platform = "leetcode" }: Contributio
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
-      {/* Heatmap Grid */}
-      <div className="flex-1 overflow-x-auto pb-4">
+    <div className="flex flex-col gap-6">
+      {/* Heatmap Grid - full width */}
+      <div className="w-full overflow-x-auto pb-4">
         <div className="flex gap-3 min-w-max">
           {monthsData.map((monthData, monthIndex) => (
             <div key={`${monthData.year}-${monthData.month}-${monthIndex}`} className="flex flex-col">
@@ -188,19 +188,19 @@ export const ContributionHeatmap = ({ data, platform = "leetcode" }: Contributio
         </div>
       </div>
 
-      {/* Stats Summary */}
-      <div className="flex flex-row lg:flex-col gap-4 lg:gap-3 justify-center lg:min-w-[140px]">
-        <div className="text-center lg:text-left p-3 rounded-lg bg-muted/30">
-          <div className="text-xl lg:text-2xl font-bold">{totalActiveDays}</div>
-          <div className="text-xs text-muted-foreground">Active Days</div>
+      {/* Stats Summary - below heatmap */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-center p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="text-2xl font-bold text-white">{totalActiveDays}</div>
+          <div className="text-sm text-white/40">Active Days</div>
         </div>
-        <div className="text-center lg:text-left p-3 rounded-lg bg-muted/30">
-          <div className="text-xl lg:text-2xl font-bold">{currentStreak}</div>
-          <div className="text-xs text-muted-foreground">Current Streak</div>
+        <div className="text-center p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="text-2xl font-bold text-white">{currentStreak}</div>
+          <div className="text-sm text-white/40">Current Streak</div>
         </div>
-        <div className="text-center lg:text-left p-3 rounded-lg bg-muted/30">
-          <div className="text-xl lg:text-2xl font-bold">{maxStreak}</div>
-          <div className="text-xs text-muted-foreground">Max Streak</div>
+        <div className="text-center p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="text-2xl font-bold text-white">{maxStreak}</div>
+          <div className="text-sm text-white/40">Max Streak</div>
         </div>
       </div>
     </div>
