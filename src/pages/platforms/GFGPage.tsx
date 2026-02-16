@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink, Trophy, BookOpen, Flame, Award, TrendingUp, Us
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useGFGStats } from "@/hooks/useGFGStats";
 import { GFG160Tracker } from "@/components/GFG160Tracker";
 
@@ -32,12 +33,15 @@ const GFGPage = () => {
                 </Button>
               </Link>
             </div>
-            <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="gap-2 border-gfg/30 text-gfg hover:bg-gfg/10">
-                <ExternalLink className="w-4 h-4" />
-                View Profile
-              </Button>
-            </a>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="gap-2 border-gfg/30 text-gfg hover:bg-gfg/10">
+                  <ExternalLink className="w-4 h-4" />
+                  View Profile
+                </Button>
+              </a>
+            </div>
           </div>
         </div>
       </div>

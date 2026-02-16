@@ -8,10 +8,10 @@ const dayLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
 // Get color based on submission count (LeetCode style - darker = more submissions)
 const getHeatmapColor = (count: number): string => {
   if (count === 0) return "bg-secondary/40";
-  if (count === 1) return "bg-[hsl(142,76%,22%)]";
-  if (count >= 2 && count <= 4) return "bg-[hsl(142,76%,32%)]";
-  if (count >= 5 && count <= 8) return "bg-[hsl(142,76%,42%)]";
-  return "bg-[hsl(142,76%,52%)]";
+  if (count === 1) return "bg-[hsl(142,76%,65%)] dark:bg-[hsl(142,76%,22%)]";
+  if (count >= 2 && count <= 4) return "bg-[hsl(142,76%,55%)] dark:bg-[hsl(142,76%,32%)]";
+  if (count >= 5 && count <= 8) return "bg-[hsl(142,76%,45%)] dark:bg-[hsl(142,76%,42%)]";
+  return "bg-[hsl(142,76%,36%)] dark:bg-[hsl(142,76%,52%)]";
 };
 
 // Get month labels with correct positions

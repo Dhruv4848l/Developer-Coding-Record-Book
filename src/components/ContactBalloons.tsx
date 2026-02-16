@@ -64,7 +64,7 @@ export const ContactBalloons = () => {
         {/* Main toggle pill */}
         <button
           onClick={toggle}
-          className="gooey-btn relative z-20 cursor-pointer font-semibold text-white whitespace-nowrap"
+          className="gooey-btn relative z-20 cursor-pointer font-semibold text-white dark:text-white whitespace-nowrap"
           style={{
             height: 56,
             paddingLeft: 28,
