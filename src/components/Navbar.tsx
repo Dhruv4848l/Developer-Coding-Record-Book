@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart3, Calendar, Trophy, ExternalLink, User } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
+
 import { Link } from "react-router-dom";
 
 const navItems = [
@@ -72,7 +72,7 @@ export const Navbar = () => {
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
-            <ThemeToggle />
+            
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}

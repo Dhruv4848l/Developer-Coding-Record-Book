@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Trophy, TrendingUp, Target, Users, Award, Zap, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ThemeToggle";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
 
@@ -50,7 +50,7 @@ const CodeforcesPage = () => {
               <Link to="/dashboard"><Button variant="ghost" className="gap-2 text-white/60 hover:text-white hover:bg-white/10"><ArrowLeft className="w-4 h-4" />Back to Dashboard</Button></Link>
             </div>
             <div className="flex items-center gap-2">
-              <ThemeToggle />
+              
               <a href={profileUrl} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="gap-2 border-codeforces/30 text-codeforces hover:bg-codeforces/10"><ExternalLink className="w-4 h-4" />View Profile</Button>
               </a>

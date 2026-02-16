@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, MapPin, GraduationCap } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ContactBalloons } from "@/components/ContactBalloons";
 
@@ -36,10 +36,6 @@ const CoverPage = () => {
         backgroundSize: "60px 60px"
       }} />
 
-      {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-50">
-        <ThemeToggle />
-      </div>
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
