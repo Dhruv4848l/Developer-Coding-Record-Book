@@ -74,7 +74,10 @@ export const ContactBalloons = () => {
           pointerEvents: isOpen ? "none" : "auto",
           boxShadow: isHovered && !isOpen
             ? "0 10px 30px rgba(123, 47, 247, 0.4)"
-            : "none",
+            : !isOpen
+              ? "0 0 15px rgba(123, 47, 247, 0.2)"
+              : "none",
+          animation: !isOpen && !isHovered ? "contact-pulse 2.5s ease-in-out infinite" : "none",
           transition: isOpen
             ? "all 0.25s ease"
             : "all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.35s",
@@ -130,6 +133,12 @@ export const ContactBalloons = () => {
           );
         })}
       </div>
+      <style>{`
+        @keyframes contact-pulse {
+          0%, 100% { box-shadow: 0 0 15px rgba(123, 47, 247, 0.2); }
+          50% { box-shadow: 0 0 25px rgba(123, 47, 247, 0.35), 0 0 50px rgba(241, 7, 163, 0.15); }
+        }
+      `}</style>
     </div>
   );
 };
