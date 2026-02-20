@@ -38,81 +38,34 @@ export const ContactBalloons = () => {
   }, [isOpen]);
 
   return (
-    <>
-      {/* SVG goo filter for connected blob effect */}
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" className="absolute w-0 h-0" aria-hidden="true">
-        <defs>
-          <filter id="shadowed-goo">
-            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
-            <feGaussianBlur in="goo" stdDeviation="3" result="shadow" />
-            <feColorMatrix in="shadow" mode="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 -0.2" result="shadow" />
-            <feOffset in="shadow" dx="1" dy="1" result="shadow" />
-            <feComposite in2="shadow" in="goo" result="goo" />
-            <feComposite in2="goo" in="SourceGraphic" result="mix" />
-          </filter>
-        </defs>
-      </svg>
-
+    <div ref={menuRef} className="flex flex-col items-center gap-3">
+      {/* Social icons row - appears above button when open */}
       <div
-        ref={menuRef}
-        className="relative inline-block"
+        className="flex items-center justify-center gap-3 overflow-hidden transition-all duration-400 ease-out"
         style={{
-          filter: "url('#shadowed-goo')",
+          maxHeight: isOpen ? 60 : 0,
+          opacity: isOpen ? 1 : 0,
+          transform: isOpen ? "scale(1)" : "scale(0.8)",
+          transition: "max-height 0.35s ease, opacity 0.3s ease, transform 0.3s ease",
         }}
       >
-        {/* Main toggle pill */}
-        <button
-          onClick={toggle}
-          className="gooey-btn relative z-20 cursor-pointer font-semibold text-white whitespace-nowrap transition-all duration-300 overflow-hidden hover:-translate-y-[3px]"
-          style={{
-            height: 56,
-            paddingLeft: 36,
-            paddingRight: 36,
-            borderRadius: 50,
-            background: "linear-gradient(135deg, rgba(123, 47, 247, 0.3), rgba(241, 7, 163, 0.3))",
-            backdropFilter: "blur(10px)",
-            border: "1px solid rgba(255, 255, 255, 0.18)",
-            transform: isOpen ? "scale(0.92)" : "scale(1)",
-            transition: isOpen
-              ? "transform 200ms linear, box-shadow 0.25s"
-              : "transform 400ms cubic-bezier(0.175, 0.885, 0.320, 1.275), box-shadow 0.25s",
-          }}
-          aria-label="Connect with me"
-        >
-          <span className="relative z-10">Connect with me!!</span>
-        </button>
-
-        {/* Items that slide out upward, staying connected via goo */}
         {socialPlatforms.map((platform, index) => {
           const Icon = platform.icon;
-          const yOffset = isOpen ? -(62 + index * 58) : 0;
           return (
             <button
               key={platform.name}
               onClick={() => handleItemClick(platform.url)}
-              className="absolute flex items-center justify-center text-white hover:brightness-125 hover:scale-110 transition-all duration-200"
+              className="flex items-center justify-center text-white rounded-full hover:brightness-125 hover:scale-110 transition-all duration-200"
               style={{
-                width: 56,
-                height: 56,
-                borderRadius: "100%",
+                width: 44,
+                height: 44,
                 background: platform.color,
                 border: "none",
-                cursor: isOpen ? "pointer" : "default",
-                left: "50%",
-                top: 0,
-                marginLeft: -28,
-                transform: `translate3d(0, ${yOffset}px, 0) scale(${isOpen ? 1 : 0.4})`,
-                transitionProperty: "transform, opacity",
-                transitionTimingFunction: isOpen
-                  ? "cubic-bezier(0.165, 0.840, 0.440, 1.000)"
-                  : "ease-in",
-                transitionDuration: isOpen
-                  ? `${90 + 80 * (index + 1)}ms`
-                  : "180ms",
-                zIndex: 10 - index,
+                cursor: "pointer",
+                transitionDelay: isOpen ? `${index * 50}ms` : "0ms",
+                transform: isOpen ? "scale(1)" : "scale(0)",
                 opacity: isOpen ? 1 : 0,
-                pointerEvents: isOpen ? "auto" : "none",
+                transition: "transform 0.3s ease, opacity 0.3s ease",
               }}
               aria-label={platform.name}
               title={platform.name}
@@ -122,6 +75,24 @@ export const ContactBalloons = () => {
           );
         })}
       </div>
+
+      {/* Main toggle button */}
+      <button
+        onClick={toggle}
+        className="gooey-btn relative cursor-pointer font-semibold text-white whitespace-nowrap transition-all duration-300 overflow-hidden hover:-translate-y-[3px]"
+        style={{
+          height: 56,
+          paddingLeft: 36,
+          paddingRight: 36,
+          borderRadius: 50,
+          background: "linear-gradient(135deg, rgba(123, 47, 247, 0.3), rgba(241, 7, 163, 0.3))",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.18)",
+        }}
+        aria-label="Connect with me"
+      >
+        <span className="relative z-10">Connect with me!!</span>
+      </button>
 
       {/* Hover animation styles */}
       <style>{`
@@ -144,7 +115,7 @@ export const ContactBalloons = () => {
           box-shadow: 0 10px 30px rgba(123, 47, 247, 0.4);
         }
       `}</style>
-    </>
+    </div>
   );
 };
 
