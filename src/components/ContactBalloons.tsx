@@ -80,7 +80,9 @@ export const ContactBalloons = () => {
           animation: !isOpen && !isHovered ? "contact-pulse 2.5s ease-in-out infinite" : "none",
           transition: isOpen
             ? "all 0.25s ease"
-            : "all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.35s",
+            : isHovered
+              ? "all 50ms ease"
+              : "all 80ms ease 0.35s",
         }}
         aria-label="Connect with me"
       >
