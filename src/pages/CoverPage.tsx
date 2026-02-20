@@ -157,22 +157,19 @@ const CoverPage = () => {
             >
               <button
                 onClick={() => navigate("/dashboard")}
-                className="group relative px-9 py-4 rounded-full text-base font-semibold cursor-pointer overflow-hidden hover:-translate-y-[3px]"
+                className="group relative px-9 py-4 rounded-full text-base font-semibold cursor-pointer transition-all duration-300 overflow-hidden hover:-translate-y-[3px]"
                 style={{
                   background: "rgba(0, 212, 255, 0.15)",
                   backdropFilter: "blur(10px)",
                   border: "1px solid rgba(0, 212, 255, 0.3)",
                   color: "#00d4ff",
-                  transition: "all 50ms ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transition = "all 50ms ease";
                   e.currentTarget.style.background = "rgba(0, 212, 255, 0.25)";
                   e.currentTarget.style.borderColor = "rgba(0, 212, 255, 0.5)";
                   e.currentTarget.style.boxShadow = "0 10px 25px rgba(0, 212, 255, 0.3)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transition = "all 80ms ease";
                   e.currentTarget.style.background = "rgba(0, 212, 255, 0.15)";
                   e.currentTarget.style.borderColor = "rgba(0, 212, 255, 0.3)";
                   e.currentTarget.style.boxShadow = "none";
