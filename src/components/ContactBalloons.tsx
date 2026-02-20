@@ -75,7 +75,9 @@ export const ContactBalloons = () => {
           boxShadow: isHovered && !isOpen
             ? "0 10px 30px rgba(123, 47, 247, 0.4)"
             : "none",
-          transition: "all 0.3s ease",
+          transition: isOpen
+            ? "all 0.25s ease"
+            : "all 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.35s",
         }}
         aria-label="Connect with me"
       >
@@ -88,15 +90,16 @@ export const ContactBalloons = () => {
         style={{
           height: COLLAPSED_HEIGHT,
           borderRadius: 50,
-          background: isOpen
-            ? "linear-gradient(135deg, rgba(123, 47, 247, 0.25), rgba(241, 7, 163, 0.25))"
-            : "transparent",
-          backdropFilter: isOpen ? "blur(10px)" : "none",
-          border: isOpen ? "1px solid rgba(255, 255, 255, 0.18)" : "1px solid transparent",
+          background: "linear-gradient(135deg, rgba(123, 47, 247, 0.25), rgba(241, 7, 163, 0.25))",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.18)",
           width: isOpen ? EXPANDED_WIDTH : 0,
           opacity: isOpen ? 1 : 0,
           padding: isOpen ? "0 16px" : "0",
           position: isOpen ? "relative" : "absolute",
+          transition: isOpen
+            ? "width 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease 0.05s, padding 0.45s cubic-bezier(0.4, 0, 0.2, 1)"
+            : "width 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s, opacity 0.25s ease, padding 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s",
         }}
       >
         {socialPlatforms.map((platform, index) => {
@@ -114,7 +117,9 @@ export const ContactBalloons = () => {
                 cursor: "pointer",
                 transform: isOpen ? "scale(1) translateX(0)" : "scale(0) translateX(-20px)",
                 opacity: isOpen ? 1 : 0,
-                transition: `transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) ${isOpen ? index * 60 + 150 : 0}ms, opacity 0.25s ease ${isOpen ? index * 60 + 150 : 0}ms`,
+                transition: isOpen
+                  ? `transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 60 + 150}ms, opacity 0.25s ease ${index * 60 + 150}ms`
+                  : `transform 0.2s ease ${(socialPlatforms.length - 1 - index) * 40}ms, opacity 0.15s ease ${(socialPlatforms.length - 1 - index) * 40}ms`,
                 pointerEvents: isOpen ? "auto" : "none",
               }}
               aria-label={platform.name}
