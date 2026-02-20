@@ -18,7 +18,7 @@ const socialPlatforms: SocialPlatform[] = [
 
 export const ContactBalloons = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const toggle = useCallback(() => setIsOpen((v) => !v), []);
 
@@ -29,7 +29,7 @@ export const ContactBalloons = () => {
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -38,15 +38,49 @@ export const ContactBalloons = () => {
   }, [isOpen]);
 
   return (
-    <div ref={menuRef} className="flex flex-col items-center gap-3">
-      {/* Social icons row - appears above button when open */}
-      <div
-        className="flex items-center justify-center gap-3 overflow-hidden transition-all duration-400 ease-out"
+    <div ref={containerRef} className="relative inline-flex items-center justify-center" style={{ minHeight: 56 }}>
+      {/* Collapsed: the button */}
+      <button
+        onClick={toggle}
+        className="relative cursor-pointer font-semibold text-white whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{
-          maxHeight: isOpen ? 60 : 0,
+          height: 56,
+          paddingLeft: isOpen ? 0 : 36,
+          paddingRight: isOpen ? 0 : 36,
+          borderRadius: 50,
+          background: "linear-gradient(135deg, rgba(123, 47, 247, 0.3), rgba(241, 7, 163, 0.3))",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.18)",
+          width: isOpen ? 0 : "auto",
+          opacity: isOpen ? 0 : 1,
+          transform: isOpen ? "scale(0.8)" : "scale(1)",
+          pointerEvents: isOpen ? "none" : "auto",
+        }}
+        aria-label="Connect with me"
+      >
+        <span className="relative z-10">Connect with me!!</span>
+        <span
+          className="absolute inset-0 rounded-[50px] opacity-0 transition-opacity duration-300"
+          style={{ background: "linear-gradient(135deg, #7b2ff7, #f107a3)" }}
+          aria-hidden
+        />
+      </button>
+
+      {/* Expanded: social icons row morphing from the button */}
+      <div
+        className="flex items-center justify-center gap-2 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        style={{
+          height: 56,
+          borderRadius: 50,
+          background: isOpen
+            ? "linear-gradient(135deg, rgba(123, 47, 247, 0.25), rgba(241, 7, 163, 0.25))"
+            : "transparent",
+          backdropFilter: isOpen ? "blur(10px)" : "none",
+          border: isOpen ? "1px solid rgba(255, 255, 255, 0.18)" : "1px solid transparent",
+          width: isOpen ? 280 : 0,
           opacity: isOpen ? 1 : 0,
-          transform: isOpen ? "scale(1)" : "scale(0.8)",
-          transition: "max-height 0.35s ease, opacity 0.3s ease, transform 0.3s ease",
+          padding: isOpen ? "0 16px" : "0",
+          position: isOpen ? "relative" : "absolute",
         }}
       >
         {socialPlatforms.map((platform, index) => {
@@ -55,66 +89,26 @@ export const ContactBalloons = () => {
             <button
               key={platform.name}
               onClick={() => handleItemClick(platform.url)}
-              className="flex items-center justify-center text-white rounded-full hover:brightness-125 hover:scale-110 transition-all duration-200"
+              className="flex-shrink-0 flex items-center justify-center text-white rounded-full hover:scale-110 transition-all duration-200"
               style={{
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 background: platform.color,
                 border: "none",
                 cursor: "pointer",
-                transitionDelay: isOpen ? `${index * 50}ms` : "0ms",
-                transform: isOpen ? "scale(1)" : "scale(0)",
+                transform: isOpen ? "scale(1) translateX(0)" : "scale(0) translateX(-20px)",
                 opacity: isOpen ? 1 : 0,
-                transition: "transform 0.3s ease, opacity 0.3s ease",
+                transition: `transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) ${isOpen ? index * 60 + 150 : 0}ms, opacity 0.25s ease ${isOpen ? index * 60 + 150 : 0}ms`,
+                pointerEvents: isOpen ? "auto" : "none",
               }}
               aria-label={platform.name}
               title={platform.name}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-4 h-4" />
             </button>
           );
         })}
       </div>
-
-      {/* Main toggle button */}
-      <button
-        onClick={toggle}
-        className="gooey-btn relative cursor-pointer font-semibold text-white whitespace-nowrap transition-all duration-300 overflow-hidden hover:-translate-y-[3px]"
-        style={{
-          height: 56,
-          paddingLeft: 36,
-          paddingRight: 36,
-          borderRadius: 50,
-          background: "linear-gradient(135deg, rgba(123, 47, 247, 0.3), rgba(241, 7, 163, 0.3))",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.18)",
-        }}
-        aria-label="Connect with me"
-      >
-        <span className="relative z-10">Connect with me!!</span>
-      </button>
-
-      {/* Hover animation styles */}
-      <style>{`
-        .gooey-btn {
-          position: relative;
-        }
-        .gooey-btn::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: 50px;
-          background: linear-gradient(135deg, #7b2ff7, #f107a3);
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-        .gooey-btn:hover::before {
-          opacity: 1;
-        }
-        .gooey-btn:hover {
-          box-shadow: 0 10px 30px rgba(123, 47, 247, 0.4);
-        }
-      `}</style>
     </div>
   );
 };
