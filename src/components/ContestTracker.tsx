@@ -70,7 +70,7 @@ export const ContestTracker = () => {
               <p className="text-white/50">No upcoming contests found.</p>
             </div>
           ) : (
-            contests.map((contest, index) => (
+            contests.slice(0, 7).map((contest, index) => (
               <motion.div
                 key={contest.name}
                 initial={{ opacity: 0, y: 20 }}
