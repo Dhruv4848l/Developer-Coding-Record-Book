@@ -72,34 +72,6 @@ export const CTASection = () => {
             ))}
           </div>
 
-          {/* Direct Contact */}
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="mailto:dhruvmajiever1920@gmail.com"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 hover:scale-105"
-              style={{
-                background: "rgba(0, 210, 255, 0.1)",
-                border: "1px solid rgba(0, 210, 255, 0.25)",
-                color: "hsl(190, 95%, 60%)",
-              }}
-            >
-              <Mail className="w-5 h-5" />
-              Email Me
-            </a>
-            <a
-              href="https://github.com/dhruv4848l"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-white/80 transition-all duration-300 hover:scale-105"
-              style={{
-                background: "rgba(255, 255, 255, 0.06)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-              }}
-            >
-              <Github className="w-5 h-5" />
-              GitHub
-            </a>
-          </div>
         </motion.div>
       </div>
     </section>

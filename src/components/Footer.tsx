@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { Github, Linkedin, Twitter, Mail } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -35,6 +35,7 @@ export const Footer = () => {
               { Icon: Github, url: "https://github.com/dhruv4848l" },
               { Icon: Linkedin, url: "https://www.linkedin.com/in/mr-dhruv-maji/" },
               { Icon: Twitter, url: "https://x.com/DhruvMaji" },
+              { Icon: Mail, url: "mailto:dhruvmajiever1920@gmail.com" },
             ].map(({ Icon, url }, i) => (
               <a
                 key={i}
