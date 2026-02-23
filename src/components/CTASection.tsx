@@ -87,7 +87,7 @@ export const CTASection = () => {
               Email Me
             </a>
             <a
-              href="https://github.com/Dhruv4848l"
+              href="https://github.com/dhruv4848l"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-white/80 transition-all duration-300 hover:scale-105"

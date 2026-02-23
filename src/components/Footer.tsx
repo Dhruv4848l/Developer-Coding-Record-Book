@@ -31,10 +31,16 @@ export const Footer = () => {
 
           {/* Social Links */}
           <div className="flex items-center gap-4">
-            {[Github, Linkedin, Twitter].map((Icon, i) => (
+            {[
+              { Icon: Github, url: "https://github.com/dhruv4848l" },
+              { Icon: Linkedin, url: "https://www.linkedin.com/in/mr-dhruv-maji/" },
+              { Icon: Twitter, url: "https://x.com/DhruvMaji" },
+            ].map(({ Icon, url }, i) => (
               <a
                 key={i}
-                href="#"
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-lg flex items-center justify-center text-white/40 hover:text-white transition-all duration-300"
                 style={{
                   background: "rgba(255, 255, 255, 0.06)",
