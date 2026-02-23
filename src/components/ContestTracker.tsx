@@ -78,12 +78,13 @@ export const ContestTracker = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ scale: 1.01 }}
-                className="rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300"
+                className="rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4"
                 style={{
                   background: "rgba(255, 255, 255, 0.05)",
                   backdropFilter: "blur(16px)",
                   border: "1px solid rgba(255, 255, 255, 0.1)",
                   boxShadow: "0 4px 16px rgba(0, 0, 0, 0.1)",
+                  transition: "all 50ms ease",
                 }}
               >
                 <div className="flex-1">
