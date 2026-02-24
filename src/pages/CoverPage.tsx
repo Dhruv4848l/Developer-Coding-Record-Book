@@ -1,14 +1,20 @@
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, MapPin, GraduationCap } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ContactBalloons } from "@/components/ContactBalloons";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 const CoverPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const handleFinish = useCallback(() => setLoading(false), []);
 
   return (
+    <>
+      {loading && <LoadingScreen onFinish={handleFinish} duration={3000} />}
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       {/* Animated gradient orbs */}
       <motion.div
@@ -186,6 +192,7 @@ const CoverPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
