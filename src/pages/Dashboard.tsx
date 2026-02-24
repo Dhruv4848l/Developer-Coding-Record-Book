@@ -1,12 +1,18 @@
+import { useState, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
 import { PlatformStats } from "@/components/PlatformStats";
 import { ContestTracker } from "@/components/ContestTracker";
 import { CTASection } from "@/components/CTASection";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
+import { DashboardLoader } from "@/components/DashboardLoader";
 
 const Dashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const handleFinish = useCallback(() => setLoading(false), []);
   return (
+    <>
+      {loading && <DashboardLoader onFinish={handleFinish} />}
     <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       {/* Animated gradient orbs */}
       <motion.div
@@ -44,6 +50,7 @@ const Dashboard = () => {
         <Footer />
       </div>
     </div>
+    </>
   );
 };
 
