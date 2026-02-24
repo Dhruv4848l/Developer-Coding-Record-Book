@@ -25,7 +25,7 @@ export const LoadingScreen = ({ onFinish, duration = 3000 }: LoadingScreenProps)
       <div className="loader">
         <div className="ph1">
           <div className="record"></div>
-          <div className="record-text">Hello from Dhruv</div>
+          <div className="record-text">DHRUV</div>
         </div>
         <div className="ph2">
           <div className="laptop-b"></div>
