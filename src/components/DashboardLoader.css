@@ -1,0 +1,89 @@
+.dashboard-loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: hsl(222, 47%, 5%);
+  transition: opacity 0.6s ease;
+}
+
+.dashboard-loader--fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.yin-yang-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.yin-yang {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, white 50%, hsl(190, 95%, 50%) 50%);
+  animation: yy-rotate 4s linear infinite;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.15);
+  transition: box-shadow 0.3s ease;
+}
+
+.yin-yang:hover {
+  box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+}
+
+.yin-yang::before,
+.yin-yang::after {
+  content: "";
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.yin-yang::before {
+  top: 0;
+  background: hsl(190, 95%, 50%);
+}
+
+.yin-yang::after {
+  bottom: 0;
+  background: white;
+}
+
+.yin-yang .dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  animation: yy-pulse 4s ease-in-out infinite;
+}
+
+.yin-yang .dot.white {
+  background: white;
+  top: 21px;
+}
+
+.yin-yang .dot.black {
+  background: hsl(190, 95%, 50%);
+  bottom: 21px;
+}
+
+@keyframes yy-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes yy-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.1); }
+}
