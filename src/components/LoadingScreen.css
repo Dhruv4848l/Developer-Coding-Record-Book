@@ -32,7 +32,7 @@
   align-items: center;
   gap: 8px;
   animation: ph1 3s ease infinite;
-  clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em);
+  clip-path: polygon(-5em -2em, 6em -2em, 6em 2em, -5em 2em);
 }
 
 .record {
@@ -66,12 +66,12 @@
 @keyframes ph1 {
   25.5% {
     translate: 0 0;
-    clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em);
+    clip-path: polygon(-5em -2em, 6em -2em, 6em 2em, -5em 2em);
   }
   30%, to {
     opacity: 1;
     translate: 0 3em;
-    clip-path: polygon(-4em 1em, 4em 1em, 4em 1em, -4em 1em);
+    clip-path: polygon(-5em 2em, 6em 2em, 6em 2em, -5em 2em);
   }
   30.1% {
     opacity: 0;
@@ -80,15 +80,15 @@
   92.4%, to {
     translate: 0 0;
     opacity: 0;
-    clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em);
+    clip-path: polygon(-5em -2em, 6em -2em, 6em 2em, -5em 2em);
   }
   92.5% {
     opacity: 1;
-    clip-path: polygon(-4em -1em, -0.5em -1em, -0.5em 1em, -4em 1em);
+    clip-path: polygon(-5em -2em, -0.5em -2em, -0.5em 2em, -5em 2em);
   }
   to {
     opacity: 1;
-    clip-path: polygon(-4em -1em, 4em -1em, 4em 1em, -4em 1em);
+    clip-path: polygon(-5em -2em, 6em -2em, 6em 2em, -5em 2em);
   }
 }
 
