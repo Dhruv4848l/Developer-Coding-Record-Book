@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
+import PlatformLoader from "@/components/PlatformLoader";
 import { useLeetCodeStats, LeetCodeHeatmapDay } from "@/hooks/useLeetCodeStats";
 import { LeetCodeContestSection } from "@/components/LeetCodeContestSection";
 
@@ -85,7 +86,12 @@ const LeetCodePage = () => {
     return processHeatmapDataByMonth(leetcodeStats.heatmap);
   }, [leetcodeStats?.heatmap]);
 
+  const [loading, setLoading] = useState(true);
+  const handleFinish = useCallback(() => setLoading(false), []);
+
   return (
+    <>
+    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
     <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       {/* Animated orbs */}
       <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
@@ -238,6 +244,7 @@ const LeetCodePage = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 

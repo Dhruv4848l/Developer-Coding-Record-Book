@@ -2,9 +2,10 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Code2, Trophy, Award, Star, Loader2, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
+import { useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodolioStats } from "@/hooks/useCodolioStats";
+import PlatformLoader from "@/components/PlatformLoader";
 
 const glassStyle = {
   background: "rgba(255, 255, 255, 0.05)",
@@ -29,7 +30,12 @@ const HackerRankPage = () => {
   const badges = [{ name: "Java", level: "3 Star", category: "Language Proficiency" }];
   const certificates = [{ name: "Problem Solving (Basic)", date: "2024" }];
 
+  const [loading, setLoading] = useState(true);
+  const handleFinish = useCallback(() => setLoading(false), []);
+
   return (
+    <>
+    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
     <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         className="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 pointer-events-none"
@@ -100,6 +106,7 @@ const HackerRankPage = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 

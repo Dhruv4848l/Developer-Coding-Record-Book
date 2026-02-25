@@ -3,8 +3,9 @@ import { ArrowLeft, ExternalLink, Trophy, BookOpen, Flame, Award, TrendingUp, Us
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { useState, useCallback } from "react";
 import { useGFGStats } from "@/hooks/useGFGStats";
+import PlatformLoader from "@/components/PlatformLoader";
 import { GFG160Tracker } from "@/components/GFG160Tracker";
 
 const GFG_USERNAME = "dhruvmaji8b4b";
@@ -29,7 +30,12 @@ const GFGPage = () => {
   const { data: stats, isLoading, error } = useGFGStats(GFG_USERNAME);
   const profileUrl = stats?.profileUrl || `https://www.geeksforgeeks.org/user/${GFG_USERNAME}`;
 
+  const [loading, setLoading] = useState(true);
+  const handleFinish = useCallback(() => setLoading(false), []);
+
   return (
+    <>
+    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
     <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         className="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 pointer-events-none"
@@ -109,6 +115,7 @@ const GFGPage = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
