@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useAtCoderStats, AtCoderHeatmapDay } from "@/hooks/useAtCoderStats";
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
+import PlatformLoader from "@/components/PlatformLoader";
 
 const getHeatmapColor = (count: number): string => {
   if (count === 0) return "bg-white/5";
@@ -102,7 +103,12 @@ const AtCoderPage = () => {
       tempStreak = 0;
     }
   }
+  const [loading, setLoading] = useState(true);
+  const handleFinish = useCallback(() => setLoading(false), []);
+
   return (
+    <>
+    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
     <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 pointer-events-none"
@@ -246,8 +252,9 @@ const AtCoderPage = () => {
           </motion.div>
         }
       </div>
-    </div>);
-
+    </div>
+    </>
+  );
 };
 
 export default AtCoderPage;

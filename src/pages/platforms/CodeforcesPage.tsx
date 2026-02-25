@@ -2,9 +2,10 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ExternalLink, Trophy, TrendingUp, Target, Users, Award, Zap, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
+import { useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
+import PlatformLoader from "@/components/PlatformLoader";
 
 const CODEFORCES_HANDLE = "Ordinary_Coder_420";
 
@@ -29,7 +30,12 @@ const CodeforcesPage = () => {
   const profile = stats?.profile;
   const profileUrl = `https://codeforces.com/profile/${CODEFORCES_HANDLE}`;
 
+  const [loading, setLoading] = useState(true);
+  const handleFinish = useCallback(() => setLoading(false), []);
+
   return (
+    <>
+    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
     <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
       <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 pointer-events-none"
@@ -109,6 +115,7 @@ const CodeforcesPage = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 
