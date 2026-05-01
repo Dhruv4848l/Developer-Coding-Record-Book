@@ -4,8 +4,10 @@
   <h1 align="center">Developer Coding Record Book</h1>
 
   <p align="center">
-    A cinematic, Cybertronian-themed personal dashboard that aggregates competitive programming stats.
-    <br />
+    <em>"Track Stats. Break Limits. Increase Your Power Level."</em>
+    <br /><br />
+    A cinematic, full-stack dashboard that aggregates and visualizes competitive programming stats across multiple platforms in real time. Designed with a futuristic HUD-inspired interface, it transforms raw coding data into an immersive experience—helping developers track progress, monitor contests, and push their limits with a unified "power level" system.
+    <br /><br />
     <a href="https://github.com/Dhruv4848l/Developer-Coding-Record-Book"><strong>Explore the docs »</strong></a>
     <br />
     <br />
