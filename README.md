@@ -1,4 +1,4 @@
-# 🔥 Dhruv's Code Vault — Personal Coding Stats Dashboard
+# 🔥 Personal Coding Tracker — Competitive Programming Stats Dashboard
 
 > *"Jo darr gaya, samjho mar gaya. Yahan sirf woh jeeta hai, jo roz apni seema todhta hai."*
 
@@ -41,8 +41,8 @@ A cinematic, **Cybertronian-themed** personal dashboard that scrapes and aggrega
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/Dhruv4848l/dhruv-maji.git
-cd dhruv-maji
+git clone https://github.com/Dhruv4848l/Personal-Coding-Tracker.git
+cd Personal-Coding-Tracker
 ```
 
 ### 2. Backend Setup
@@ -85,7 +85,7 @@ This uses `concurrently` to launch both frontend and backend simultaneously.
 ## 📁 Project Structure
 
 ```
-dhruv-maji/
+Personal-Coding-Tracker/
 ├── backend/
 │   ├── routes/          # Platform-specific API scrapers
 │   │   ├── leetcode.ts
