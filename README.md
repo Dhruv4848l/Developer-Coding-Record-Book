@@ -28,18 +28,23 @@
 
 <br/><br/>
 
-### Multi-Platform Dashboard
-<img src="docs/screenshots/dashboard.png" alt="Multi-platform stats dashboard" width="90%" />
+### The Cover — Warrior of the Void
+<img src="docs/screenshots/cover.png" alt="Cinematic cover page with profile avatar and orbital rings" width="90%" />
 
 <br/><br/>
 
-### Platform Specific Analytics
-<img src="docs/screenshots/platform.png" alt="Platform specific stats and graphs" width="90%" />
+### The Dashboard — Platform Intelligence Grid
+<img src="docs/screenshots/dashboard.png" alt="Multi-platform stats dashboard with power level" width="90%" />
 
 <br/><br/>
 
-### Real-Time Contest Tracker
-<img src="docs/screenshots/tracker.png" alt="Upcoming contest tracker" width="90%" />
+### LeetCode Chronicle — Platform Deep Dive
+<img src="docs/screenshots/platform.png" alt="LeetCode platform page with difficulty breakdown" width="90%" />
+
+<br/><br/>
+
+### Codeforces Chronicle — Performance Summary
+<img src="docs/screenshots/tracker.png" alt="Codeforces platform page with rating and contest stats" width="90%" />
 
 </div>
 
