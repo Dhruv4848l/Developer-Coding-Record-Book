@@ -13,6 +13,7 @@ import GFGPage from "./pages/platforms/GFGPage";
 import HackerRankPage from "./pages/platforms/HackerRankPage";
 import AtCoderPage from "./pages/platforms/AtCoderPage";
 import NotFound from "./pages/NotFound";
+import { BottomNav } from "@/components/BottomNav";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <BottomNav />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

@@ -3,40 +3,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { gfg160DSTopics, getTotalProblems, getCompletedProblems, type GFG160Problem } from "@/data/gfg160Problems";
 
-const STORAGE_KEY = "gfg160-completed";
-
 const difficultyColors: Record<string, { text: string; bg: string }> = {
   Easy: { text: "text-success", bg: "bg-success/10" },
   Medium: { text: "text-warning", bg: "bg-warning/10" },
   Hard: { text: "text-destructive", bg: "bg-destructive/10" },
 };
 
-const loadCompleted = (): Record<number, boolean> => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-};
-
-const saveCompleted = (data: Record<number, boolean>) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-};
-
-interface TopicSectionProps {
-  topic: typeof gfg160DSTopics[0];
-  completedMap: Record<number, boolean>;
-  onToggle: (day: number) => void;
-  index: number;
-}
-
-const TopicSection = ({ topic, completedMap, onToggle, index }: TopicSectionProps) => {
+const TopicSection = ({ topic, index }: { topic: typeof gfg160DSTopics[0]; index: number }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const completedCount = topic.problems.filter(
-    (p) => completedMap[p.day] ?? p.completed
-  ).length;
+  const completedCount = topic.problems.filter((p) => p.completed).length;
   const total = topic.problems.length;
   const progress = total > 0 ? (completedCount / total) * 100 : 0;
 
@@ -92,7 +68,7 @@ const TopicSection = ({ topic, completedMap, onToggle, index }: TopicSectionProp
           >
             <div className="border-t border-border/50 divide-y divide-border/30">
               {topic.problems.map((problem) => {
-                const isCompleted = completedMap[problem.day] ?? problem.completed;
+                const isCompleted = problem.completed;
                 const colors = difficultyColors[problem.difficulty];
 
                 return (
@@ -103,16 +79,13 @@ const TopicSection = ({ topic, completedMap, onToggle, index }: TopicSectionProp
                     }`}
                   >
                     {/* Completed icon */}
-                    <button
-                      onClick={() => onToggle(problem.day)}
-                      className="flex-shrink-0 transition-transform hover:scale-110"
-                    >
+                    <div className="flex-shrink-0">
                       {isCompleted ? (
                         <CheckCircle2 className="w-5 h-5 text-gfg" />
                       ) : (
                         <Circle className="w-5 h-5 text-muted-foreground/50" />
                       )}
-                    </button>
+                    </div>
 
                     {/* Day number */}
                     <span className="text-xs text-muted-foreground font-mono min-w-[38px]">
@@ -148,33 +121,12 @@ const TopicSection = ({ topic, completedMap, onToggle, index }: TopicSectionProp
 };
 
 export const GFG160Tracker = () => {
-  const [completedMap, setCompletedMap] = useState<Record<number, boolean>>(loadCompleted);
-
-  useEffect(() => {
-    // Initialize from default data if nothing stored
-    const stored = loadCompleted();
-    if (Object.keys(stored).length === 0) {
-      const defaults: Record<number, boolean> = {};
-      gfg160DSTopics.forEach((topic) =>
-        topic.problems.forEach((p) => {
-          if (p.completed) defaults[p.day] = true;
-        })
-      );
-      setCompletedMap(defaults);
-      saveCompleted(defaults);
-    }
-  }, []);
-
-  const handleToggle = useCallback((day: number) => {
-    setCompletedMap((prev) => {
-      const updated = { ...prev, [day]: !prev[day] };
-      saveCompleted(updated);
-      return updated;
-    });
-  }, []);
-
   const totalProblems = getTotalProblems();
-  const completedCount = getCompletedProblems(completedMap);
+  
+  // Calculate completed directly from the data
+  const completedCount = gfg160DSTopics.reduce((sum, topic) => 
+    sum + topic.problems.filter(p => p.completed).length, 0);
+    
   const overallProgress = totalProblems > 0 ? (completedCount / totalProblems) * 100 : 0;
 
   return (
@@ -239,8 +191,6 @@ export const GFG160Tracker = () => {
           <TopicSection
             key={topic.name}
             topic={topic}
-            completedMap={completedMap}
-            onToggle={handleToggle}
             index={index}
           />
         ))}

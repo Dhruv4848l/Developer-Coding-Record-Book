@@ -1,119 +1,148 @@
+import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Code2, Trophy, Star, Award, Globe, MapPin, Loader2, User } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState, useCallback } from "react";
-import { useCodeChefStats } from "@/hooks/useCodeChefStats";
 import PlatformLoader from "@/components/PlatformLoader";
-
-const glassStyle = {
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(20px) saturate(150%)",
-  WebkitBackdropFilter: "blur(20px) saturate(150%)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  boxShadow: "0 8px 32px rgba(31, 38, 135, 0.15)",
-};
-
-const headerStyle = {
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(20px) saturate(150%)",
-  WebkitBackdropFilter: "blur(20px) saturate(150%)",
-  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-  boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)",
-};
+import FireCanvas from "@/components/FireCanvas";
+import { useCodeChefStats } from "@/hooks/useCodeChefStats";
+import { CodeChefRatingGraph } from "@/components/CodeChefRatingGraph";
+import "./PlatformsCommon.css";
 
 const CodeChefPage = () => {
   const { data: stats, isLoading, error } = useCodeChefStats();
-  const profileUrl = `https://www.codechef.com/users/cooking_coder`;
+  const profile = stats?.profile;
+  const profileUrl = `https://www.codechef.com/users/${profile?.username || 'cooking_coder'}`;
+  
   const [loading, setLoading] = useState(true);
   const handleFinish = useCallback(() => setLoading(false), []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen relative flex items-center justify-center bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-codechef animate-spin mx-auto mb-4" />
-          <p className="text-white/50">Loading CodeChef stats...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen relative flex items-center justify-center bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
-        <div className="text-center">
-          <p className="mb-4" style={{ color: "hsl(0,84%,60%)" }}>Failed to load CodeChef stats</p>
-          <Link to="/dashboard"><Button variant="outline" className="text-white/70 border-white/20">Back to Dashboard</Button></Link>
-        </div>
-      </div>
-    );
-  }
-
-  const profile = stats?.profile;
-
   return (
-    <>
-    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
-    <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
-      <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(25, 65%, 40%) 0%, transparent 70%)" }} />
-      <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        className="fixed bottom-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full blur-[100px] opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(38, 92%, 50%) 0%, transparent 70%)" }} />
-      <div className="fixed inset-0 opacity-[0.02] pointer-events-none" style={{
-        backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-        backgroundSize: "60px 60px"
-      }} />
+    <div id="codechef" className="cyber-theme min-h-screen pb-12 relative overflow-hidden">
+      {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
+      
+      <FireCanvas />
 
-      <div className="sticky top-0 z-50" style={headerStyle}>
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Link to="/"><Button variant="ghost" size="icon" className="h-9 w-9 text-white/60 hover:text-white hover:bg-white/10"><User className="w-4 h-4" /></Button></Link>
-              <Link to="/dashboard"><Button variant="ghost" className="gap-2 text-white/60 hover:text-white hover:bg-white/10"><ArrowLeft className="w-4 h-4" />Back to Dashboard</Button></Link>
-            </div>
-            <div className="flex items-center gap-2">
-              
-              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="gap-2 border-codechef/30 text-codechef hover:bg-codechef/10"><ExternalLink className="w-4 h-4" />View Profile</Button>
-              </a>
-            </div>
-          </div>
+      {/* Top Nav (Cyber style) */}
+      <nav style={{position: 'sticky', top: 0, zIndex: 100, background: 'rgba(3,2,10,0.97)', borderBottom: '1px solid var(--border1)', padding: '0 2.5rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+        <div style={{display: 'flex', gap: '1rem'}}>
+           <Link to="/dashboard">
+             <Button variant="ghost" className="hover:bg-white/10" style={{fontFamily: 'var(--fs)', fontSize: '10px', letterSpacing: '0.2em', color: 'var(--t3)', textTransform: 'uppercase'}}><ArrowLeft className="w-4 h-4 mr-2" /> Dashboard</Button>
+           </Link>
         </div>
-      </div>
+        <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+           <button className="nav-cta" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><ExternalLink className="w-3 h-3"/> View on CodeChef</button>
+        </a>
+      </nav>
 
-      <div className="container mx-auto px-6 py-12 relative z-10">
+      <section className="sec" style={{padding: '4rem 2.5rem', maxWidth: '1180px', margin: '0 auto', position: 'relative', zIndex: 10}}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Dhruv's <span className="text-codechef">CodeChef</span> Profile</h1>
-          <p className="text-white/50 text-lg">@{profile?.username || 'cooking_coder'}</p>
+          <div style={{fontFamily: 'var(--fs)', fontSize: '9px', letterSpacing: '0.65em', color: 'var(--blood)', textTransform: 'uppercase', marginBottom: '0.6rem'}}>⬥ platform chronicle ⬥</div>
+          <h2 style={{fontFamily: 'var(--fd)', fontSize: 'clamp(1.4rem,3vw,2.1rem)', fontWeight: 700, color: 'var(--t1)', marginBottom: '0.5rem', textShadow: '0 0 30px rgba(200,40,28,.15)'}}>Dhruv's <em style={{fontStyle: 'normal', color: 'var(--ember)'}}>CodeChef</em> Profile</h2>
+          <div style={{width: '200px', height: '1px', margin: '0.6rem auto', background: 'linear-gradient(90deg,transparent,var(--border2),var(--blood),var(--border2),transparent)'}}></div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-          <div className="rounded-xl p-6 text-center" style={glassStyle}><Trophy className="w-8 h-8 text-codechef mx-auto mb-3" /><div className="text-3xl font-bold text-codechef">{profile?.problemsSolved || 0}</div><div className="text-sm text-white/40">Problems Solved</div></div>
-          <div className="rounded-xl p-6 text-center" style={glassStyle}><Star className="w-8 h-8 mx-auto mb-3" style={{ color: "hsl(38,92%,50%)" }} /><div className="text-3xl font-bold" style={{ color: "hsl(38,92%,50%)" }}>{profile?.stars ? `${profile.stars}★` : 'Unrated'}</div><div className="text-sm text-white/40">Star Rating</div></div>
-          <div className="rounded-xl p-6 text-center" style={glassStyle}><Award className="w-8 h-8 mx-auto mb-3" style={{ color: "hsl(190,95%,60%)" }} /><div className="text-3xl font-bold text-white">{profile?.rating || 'N/A'}</div><div className="text-sm text-white/40">Current Rating</div></div>
-          <div className="rounded-xl p-6 text-center" style={glassStyle}><Code2 className="w-8 h-8 mx-auto mb-3" style={{ color: "hsl(142,76%,45%)" }} /><div className="text-3xl font-bold" style={{ color: "hsl(142,76%,45%)" }}>{profile?.highestRating || 'N/A'}</div><div className="text-sm text-white/40">Highest Rating</div></div>
-        </motion.div>
-
-        {(profile?.globalRank > 0 || profile?.countryRank > 0) && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 gap-6 mb-12">
-            <div className="rounded-2xl p-8 text-center" style={glassStyle}><Globe className="w-8 h-8 text-codechef mx-auto mb-3" /><h3 className="text-lg text-white/40 mb-2">Global Rank</h3><div className="text-4xl font-bold text-codechef">#{profile?.globalRank?.toLocaleString() || 'N/A'}</div></div>
-            <div className="rounded-2xl p-8 text-center" style={glassStyle}><MapPin className="w-8 h-8 mx-auto mb-3" style={{ color: "hsl(190,95%,60%)" }} /><h3 className="text-lg text-white/40 mb-2">Country Rank</h3><div className="text-4xl font-bold" style={{ color: "hsl(190,95%,60%)" }}>#{profile?.countryRank?.toLocaleString() || 'N/A'}</div></div>
-          </motion.div>
+        {error && (
+            <div className="text-center py-12" style={{color: "hsl(0,84%,60%)", fontFamily: 'var(--fs)'}}>
+              Failed to load CodeChef stats. Please try again.
+            </div>
         )}
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-2xl p-8 text-center" style={glassStyle}>
-          <h2 className="text-2xl font-bold mb-4 text-white">Division</h2>
-          <div className="flex items-center justify-center gap-4">
-            <Code2 className="w-10 h-10 text-codechef" />
-            <div><div className="text-3xl font-bold text-codechef">{profile?.division || 'Unrated'}</div><div className="text-white/40">{profile?.country || 'India'}</div></div>
+        {!error && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="profile-box">
+          
+          <div className="pf-hero">
+            <div className="pf-title-main">Dhruv's <em>CodeChef</em> Profile</div>
+            <div className="pf-subtitle">@{profile?.username || 'cooking_coder'}</div>
           </div>
+
+          <div className="pf-stats-row">
+            <div className="pf-stat">
+              <span className="pf-stat-ico">🏆</span>
+              <div className="pf-stat-val orange">{isLoading ? '-' : profile?.problemsSolved ?? 0}</div>
+              <div className="pf-stat-lbl">Problems Solved</div>
+            </div>
+            <div className="pf-stat">
+              <span className="pf-stat-ico" style={{color: 'hsl(38,92%,50%)'}}>★</span>
+              <div className="pf-stat-val" style={{color: 'hsl(38,92%,50%)'}}>{isLoading ? '-' : profile?.stars ? `${profile.stars}` : '0'}</div>
+              <div className="pf-stat-lbl">Star Rating</div>
+            </div>
+            <div className="pf-stat">
+              <span className="pf-stat-ico">🏅</span>
+              <div className="pf-stat-val blue">{isLoading ? '-' : profile?.rating || 0}</div>
+              <div className="pf-stat-lbl">Current Rating</div>
+            </div>
+            <div className="pf-stat">
+              <span className="pf-stat-ico">🏅</span>
+              <div className="pf-stat-val teal">{isLoading ? '-' : profile?.highestRating || 0}</div>
+              <div className="pf-stat-lbl">Highest Rating</div>
+            </div>
+          </div>
+
+          {(profile?.globalRank > 0 || profile?.countryRank > 0) && (
+          <div className="pf-contest-section" style={{borderTop: 'none'}}>
+            <div className="pf-contest-title" style={{textAlign: 'center', marginBottom: '1.5rem'}}>Rankings</div>
+            <div className="pf-c-summary" style={{gridTemplateColumns: 'repeat(2, 1fr)', maxWidth: '600px', margin: '0 auto'}}>
+              <div className="pf-c-sum-card">
+                <div className="pf-cs-val orange">{isLoading ? '-' : `#${profile?.globalRank?.toLocaleString() || 0}`}</div>
+                <div className="pf-cs-lbl">Global Rank</div>
+              </div>
+              <div className="pf-c-sum-card">
+                <div className="pf-cs-val blue">{isLoading ? '-' : `#${profile?.countryRank?.toLocaleString() || 0}`}</div>
+                <div className="pf-cs-lbl">Country Rank</div>
+              </div>
+            </div>
+          </div>
+          )}
+
+          <div className="hm-section" style={{borderTop: '1px solid rgba(42, 37, 64, 0.5)'}}>
+            <div className="hm-top-row" style={{justifyContent: 'center', textAlign: 'center'}}>
+              <div>
+                <div className="hm-count-big" style={{textTransform: 'uppercase', letterSpacing: '.1em', fontSize: '13px'}}>Division</div>
+                <div style={{fontFamily: 'var(--fn)', fontSize: '3rem', color: 'var(--ember)', lineHeight: 1.2}}>
+                    {isLoading ? '-' : profile?.division || 'Unrated'}
+                </div>
+                <div className="hm-stat-item" style={{marginTop: '0.4rem', textTransform: 'uppercase'}}>{isLoading ? '-' : profile?.country || 'N/A'}</div>
+              </div>
+            </div>
+          </div>
+
+          {stats?.ratingHistory && stats.ratingHistory.length > 0 && (
+            <div className="pf-contest-section" style={{ borderTop: '1px solid rgba(42, 37, 64, 0.5)', marginTop: '2rem', paddingTop: '2rem' }}>
+              <div className="pf-contest-title" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Rating Trajectory Matrix</div>
+              
+              <div className="mb-12 w-full mx-auto px-4">
+                 <CodeChefRatingGraph data={stats.ratingHistory} />
+              </div>
+              
+              <div className="pf-contest-title" style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '12px', letterSpacing: '0.3em' }}>Recent Contests</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '800px', margin: '0 auto' }}>
+                {[...stats.ratingHistory].reverse().slice(0, 10).map((contest, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border2)', borderRadius: '8px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: 'var(--t1)', fontWeight: 600, fontSize: '14px', marginBottom: '0.2rem', fontFamily: 'var(--fs)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{contest.name || contest.code}</div>
+                      <div style={{ color: 'var(--t3)', fontSize: '11px', fontFamily: 'var(--fn)' }}>{contest.date}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '2rem', textAlign: 'right' }}>
+                      <div>
+                        <div style={{ color: 'var(--t3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Rank</div>
+                        <div style={{ color: 'var(--t1)', fontWeight: 600, fontFamily: 'var(--fn)', fontSize: '16px' }}>#{contest.rank}</div>
+                      </div>
+                      <div>
+                        <div style={{ color: 'var(--t3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Rating</div>
+                        <div style={{ color: 'var(--blood)', fontWeight: 600, fontFamily: 'var(--fn)', fontSize: '16px' }}>{contest.rating}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </motion.div>
-      </div>
+        )}
+      </section>
     </div>
-    </>
   );
 };
 

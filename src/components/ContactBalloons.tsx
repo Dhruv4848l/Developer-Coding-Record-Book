@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Linkedin, MessageCircle, Mail, Instagram, Send } from "lucide-react";
+import { Linkedin, MessageCircle, Mail, Instagram, Github } from "lucide-react";
 
 interface SocialPlatform {
   name: string;
@@ -12,12 +12,12 @@ const socialPlatforms: SocialPlatform[] = [
   { name: "LinkedIn", icon: Linkedin, url: "https://www.linkedin.com/in/mr-dhruv-maji", color: "#0A66C2" },
   { name: "WhatsApp", icon: MessageCircle, url: "https://wa.me/918141910049?text=Hi%20Dhruv!", color: "#25D366" },
   { name: "Email", icon: Mail, url: "mailto:dhruvmajiever1920@gmail.com", color: "#EA4335" },
-  { name: "Instagram", icon: Instagram, url: "https://www.instagram.com/ordinary_boy_here/", color: "#E4405F" },
-  { name: "Telegram", icon: Send, url: "https://t.me/Ordinary_Boy_Here", color: "#0088CC" },
+  { name: "Instagram", icon: Instagram, url: "https://www.instagram.com/Ordinary_Boy_Here/", color: "#E4405F" },
+  { name: "GitHub", icon: Github, url: "https://github.com/Dhruv4848l", color: "#181717" },
 ];
 
-const EXPANDED_WIDTH = 280;
-const COLLAPSED_HEIGHT = 56;
+const EXPANDED_WIDTH = 260;
+const COLLAPSED_HEIGHT = 44;
 
 export const ContactBalloons = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,31 +53,29 @@ export const ContactBalloons = () => {
         onClick={toggle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="relative cursor-pointer font-semibold text-white whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        className="relative cursor-pointer transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{
+          fontFamily: "var(--fs, 'Cinzel', serif)",
+          fontSize: "11px",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
           height: COLLAPSED_HEIGHT,
-          paddingLeft: isOpen ? 0 : 36,
-          paddingRight: isOpen ? 0 : 36,
-          borderRadius: 50,
+          paddingLeft: isOpen ? 0 : 30,
+          paddingRight: isOpen ? 0 : 30,
+          borderRadius: 0,
+          clipPath: isOpen ? "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" : "polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%)",
           background: isHovered && !isOpen
-            ? "linear-gradient(135deg, #7b2ff7, #f107a3)"
-            : "linear-gradient(135deg, rgba(123, 47, 247, 0.3), rgba(241, 7, 163, 0.3))",
+            ? "rgba(200, 40, 28, 0.08)"
+            : "transparent",
           backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.18)",
+          border: isHovered && !isOpen ? "1px solid var(--blood, #C8281C)" : "1px solid var(--border2, #3A3558)",
+          color: isHovered && !isOpen ? "var(--t1, #F0EBF8)" : "var(--t2, #C8C0DC)",
           width: isOpen ? 0 : "auto",
           opacity: isOpen ? 0 : 1,
           transform: isOpen
             ? "scale(0.8)"
-            : isHovered
-              ? "translateY(-3px) scale(1)"
-              : "scale(1)",
+            : "scale(1)",
           pointerEvents: isOpen ? "none" : "auto",
-          boxShadow: isHovered && !isOpen
-            ? "0 10px 30px rgba(123, 47, 247, 0.4)"
-            : !isOpen
-              ? "0 0 15px rgba(123, 47, 247, 0.2)"
-              : "none",
-          animation: !isOpen && !isHovered ? "contact-pulse 2.5s ease-in-out infinite" : "none",
           transition: isOpen
             ? "all 0.25s ease"
             : isHovered
@@ -86,7 +84,7 @@ export const ContactBalloons = () => {
         }}
         aria-label="Connect with me"
       >
-        <span className="relative z-10">Connect with me!!</span>
+        <span className="relative z-10 whitespace-nowrap overflow-hidden leading-none flex items-center justify-center pt-px">⚔ Connect with me</span>
       </button>
 
       {/* Expanded: social icons row */}
@@ -94,17 +92,18 @@ export const ContactBalloons = () => {
         className="flex items-center justify-center gap-2 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{
           height: COLLAPSED_HEIGHT,
-          borderRadius: 50,
-          background: "linear-gradient(135deg, rgba(123, 47, 247, 0.25), rgba(241, 7, 163, 0.25))",
+          borderRadius: 0,
+          clipPath: "polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%)",
+          background: "rgba(14, 12, 24, 0.6)",
           backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.18)",
+          border: isOpen ? "1px solid var(--blood, #C8281C)" : "1px solid var(--border2, #3A3558)",
           width: isOpen ? EXPANDED_WIDTH : 0,
           opacity: isOpen ? 1 : 0,
-          padding: isOpen ? "0 16px" : "0",
+          padding: isOpen ? "0 12px" : "0",
           position: isOpen ? "relative" : "absolute",
           transition: isOpen
-            ? "width 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease 0.05s, padding 0.45s cubic-bezier(0.4, 0, 0.2, 1)"
-            : "width 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s, opacity 0.25s ease, padding 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s",
+            ? "width 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease 0.05s, padding 0.45s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s ease"
+            : "width 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s, opacity 0.25s ease, padding 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s, border 0.3s ease",
         }}
       >
         {socialPlatforms.map((platform, index) => {
@@ -115,8 +114,8 @@ export const ContactBalloons = () => {
               onClick={() => handleItemClick(platform.url)}
               className="flex-shrink-0 flex items-center justify-center text-white rounded-full hover:scale-110 transition-all duration-200"
               style={{
-                width: 40,
-                height: 40,
+                width: 32,
+                height: 32,
                 background: platform.color,
                 border: "none",
                 cursor: "pointer",
@@ -135,12 +134,6 @@ export const ContactBalloons = () => {
           );
         })}
       </div>
-      <style>{`
-        @keyframes contact-pulse {
-          0%, 100% { box-shadow: 0 0 15px rgba(123, 47, 247, 0.2); }
-          50% { box-shadow: 0 0 25px rgba(123, 47, 247, 0.35), 0 0 50px rgba(241, 7, 163, 0.15); }
-        }
-      `}</style>
     </div>
   );
 };

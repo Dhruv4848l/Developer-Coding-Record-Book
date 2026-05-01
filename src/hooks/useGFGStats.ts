@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+// Using native fetch instead of Supabase client
 
 export interface GFGStats {
   username: string;
@@ -24,17 +24,20 @@ export interface GFGStats {
 }
 
 async function fetchGFGStats(username: string): Promise<GFGStats> {
-  const { data, error } = await supabase.functions.invoke("fetch-gfg-stats", {
-    body: { username },
+  const url = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/gfg`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
   });
   
-  if (error) {
-    throw new Error(error.message);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error ${response.status}`);
   }
   
-  if (data.error) {
-    throw new Error(data.error);
-  }
+  const data = await response.json();
+  if (data.error) throw new Error(data.error);
   
   return data as GFGStats;
 }

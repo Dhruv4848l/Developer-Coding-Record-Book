@@ -1,9 +1,6 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import express from 'express';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const router = express.Router();
 
 const rateLimiter = new Map<string, number[]>();
 function checkRateLimit(ip: string, limit = 15, windowMs = 60000): boolean {
@@ -27,46 +24,30 @@ interface Contest {
 
 async function fetchDigitomizeContests(): Promise<Contest[]> {
   try {
-    const response = await fetch('https://www.v2api.digitomize.com/contests');
+    const response = await fetch('https://api.digitomize.com/contests');
     const data = await response.json();
-
-    if (!data || !Array.isArray(data)) return [];
+    const contests = data?.results || (Array.isArray(data) ? data : []);
+    if (!contests || !Array.isArray(contests) || contests.length === 0) return [];
 
     const now = new Date();
-
-    return data
+    return contests
       .filter((contest: any) => new Date(contest.startTimeUnix * 1000) > now)
       .map((contest: any) => {
         const platform = (contest.host || '').toLowerCase();
         let colorClass = 'text-primary';
         let bgClass = 'bg-primary/10';
 
-        if (platform.includes('leetcode')) {
-          colorClass = 'text-leetcode';
-          bgClass = 'bg-leetcode/10';
-        } else if (platform.includes('codeforces')) {
-          colorClass = 'text-codeforces';
-          bgClass = 'bg-codeforces/10';
-        } else if (platform.includes('codechef')) {
-          colorClass = 'text-codechef';
-          bgClass = 'bg-codechef/10';
-        } else if (platform.includes('atcoder')) {
-          colorClass = 'text-atcoder';
-          bgClass = 'bg-atcoder/10';
-        } else if (platform.includes('geeksforgeeks') || platform.includes('gfg')) {
-          colorClass = 'text-gfg';
-          bgClass = 'bg-gfg/10';
-        } else if (platform.includes('hackerrank')) {
-          colorClass = 'text-hackerrank';
-          bgClass = 'bg-hackerrank/10';
-        }
+        if (platform.includes('leetcode')) { colorClass = 'text-leetcode'; bgClass = 'bg-leetcode/10'; }
+        else if (platform.includes('codeforces')) { colorClass = 'text-codeforces'; bgClass = 'bg-codeforces/10'; }
+        else if (platform.includes('codechef')) { colorClass = 'text-codechef'; bgClass = 'bg-codechef/10'; }
+        else if (platform.includes('atcoder')) { colorClass = 'text-atcoder'; bgClass = 'bg-atcoder/10'; }
+        else if (platform.includes('geeksforgeeks') || platform.includes('gfg')) { colorClass = 'text-gfg'; bgClass = 'bg-gfg/10'; }
+        else if (platform.includes('hackerrank')) { colorClass = 'text-hackerrank'; bgClass = 'bg-hackerrank/10'; }
 
-        const durationSeconds = contest.duration || 0;
-        const hours = Math.floor(durationSeconds / 3600);
-        const minutes = Math.floor((durationSeconds % 3600) / 60);
-        const durationStr = hours > 0 
-          ? (minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`)
-          : `${minutes}m`;
+        const durationMinutes = contest.duration || 0;
+        const hours = Math.floor(durationMinutes / 60);
+        const minutes = Math.floor(durationMinutes % 60);
+        const durationStr = hours > 0 ? (minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`) : `${minutes}m`;
 
         return {
           platform: contest.host || 'Unknown',
@@ -79,7 +60,6 @@ async function fetchDigitomizeContests(): Promise<Contest[]> {
         };
       });
   } catch (error) {
-    console.error('Error fetching Digitomize contests:', error);
     return [];
   }
 }
@@ -90,15 +70,7 @@ async function fetchLeetCodeContests(): Promise<Contest[]> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        query: `
-          query {
-            topTwoContests {
-              title
-              startTime
-              duration
-            }
-          }
-        `
+        query: `query { topTwoContests { title startTime duration } }`
       })
     });
     
@@ -115,7 +87,6 @@ async function fetchLeetCodeContests(): Promise<Contest[]> {
       bgClass: 'bg-leetcode/10',
     }));
   } catch (error) {
-    console.error('Error fetching LeetCode contests:', error);
     return [];
   }
 }
@@ -141,7 +112,6 @@ async function fetchCodeforcesContests(): Promise<Contest[]> {
       bgClass: 'bg-codeforces/10',
     }));
   } catch (error) {
-    console.error('Error fetching Codeforces contests:', error);
     return [];
   }
 }
@@ -163,19 +133,14 @@ async function fetchCodeChefContests(): Promise<Contest[]> {
       bgClass: 'bg-codechef/10',
     }));
   } catch (error) {
-    console.error('Error fetching CodeChef contests:', error);
     return [];
   }
 }
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+router.post('/', async (req, res) => {
+  const clientIP = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
   if (!checkRateLimit(clientIP)) {
-    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
   }
 
   try {
@@ -186,7 +151,6 @@ serve(async (req) => {
       fetchCodeChefContests(),
     ]);
 
-    // Deduplicate: prefer Digitomize entries, remove duplicates from individual fetches
     const digitomizeNames = new Set(digitomize.map(c => c.name.toLowerCase().trim()));
     
     const filteredLeetcode = leetcode.filter(c => !digitomizeNames.has(c.name.toLowerCase().trim()));
@@ -198,15 +162,11 @@ serve(async (req) => {
       .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
       .slice(0, 15);
 
-    return new Response(
-      JSON.stringify({ contests: allContests, lastUpdated: new Date().toISOString() }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return res.json({ contests: allContests, lastUpdated: new Date().toISOString() });
   } catch (error) {
     console.error('Error:', error);
-    return new Response(
-      JSON.stringify({ error: 'Failed to fetch contests' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return res.status(500).json({ error: 'Failed to fetch contests' });
   }
 });
+
+export default router;

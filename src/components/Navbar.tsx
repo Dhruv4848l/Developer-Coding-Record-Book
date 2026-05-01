@@ -9,6 +9,42 @@ const navItems = [
   { label: "Leaderboard", icon: Trophy, href: "#leaderboard" },
 ];
 
+const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+  e.preventDefault();
+  const targetElement = document.querySelector(targetId);
+  if (!targetElement) return;
+
+  const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+  const startPosition = window.scrollY;
+  const distance = targetPosition - startPosition;
+  const duration = 1500; // Slower scroll duration (1.5 seconds)
+  let start: number | null = null;
+
+  // Custom ease-in-out cubic easing function
+  const easeInOutCubic = (t: number, b: number, c: number, d: number) => {
+    t /= d / 2;
+    if (t < 1) return (c / 2) * t * t * t + b;
+    t -= 2;
+    return (c / 2) * (t * t * t + 2) + b;
+  };
+
+  const animation = (currentTime: number) => {
+    if (start === null) start = currentTime;
+    const timeElapsed = currentTime - start;
+    const run = easeInOutCubic(timeElapsed, startPosition, distance, duration);
+    
+    window.scrollTo(0, run);
+    
+    if (timeElapsed < duration) {
+      requestAnimationFrame(animation);
+    } else {
+      window.scrollTo(0, targetPosition);
+    }
+  };
+
+  requestAnimationFrame(animation);
+};
+
 export const Navbar = () => {
   return (
     <motion.nav
@@ -59,6 +95,7 @@ export const Navbar = () => {
               <motion.a
                 key={item.label}
                 href={item.href}
+                onClick={(e) => handleSmoothScroll(e, item.href)}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}

@@ -1,29 +1,16 @@
+import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Trophy, TrendingUp, Target, Users, Award, Zap, User } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
 import PlatformLoader from "@/components/PlatformLoader";
+import FireCanvas from "@/components/FireCanvas";
+import { useCodeforcesStats } from "@/hooks/useCodeforcesStats";
+import { CodeforcesActivityWaveform } from "@/components/CodeforcesActivityWaveform";
+import "./PlatformsCommon.css";
 
 const CODEFORCES_HANDLE = "Ordinary_Coder_420";
-
-const glassStyle = {
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(20px) saturate(150%)",
-  WebkitBackdropFilter: "blur(20px) saturate(150%)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  boxShadow: "0 8px 32px rgba(31, 38, 135, 0.15)",
-};
-
-const headerStyle = {
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(20px) saturate(150%)",
-  WebkitBackdropFilter: "blur(20px) saturate(150%)",
-  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-  boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)",
-};
 
 const CodeforcesPage = () => {
   const { data: stats, isLoading, error } = useCodeforcesStats(CODEFORCES_HANDLE);
@@ -34,88 +21,124 @@ const CodeforcesPage = () => {
   const handleFinish = useCallback(() => setLoading(false), []);
 
   return (
-    <>
-    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
-    <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
-      <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(204, 70%, 53%) 0%, transparent 70%)" }} />
-      <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        className="fixed bottom-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full blur-[100px] opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(260, 80%, 55%) 0%, transparent 70%)" }} />
-      <div className="fixed inset-0 opacity-[0.02] pointer-events-none" style={{
-        backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-        backgroundSize: "60px 60px"
-      }} />
+    <div id="codeforces" className="cyber-theme min-h-screen pb-12 relative overflow-hidden">
+      {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
+      
+      <FireCanvas />
 
-      <div className="sticky top-0 z-50" style={headerStyle}>
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Link to="/"><Button variant="ghost" size="icon" className="h-9 w-9 text-white/60 hover:text-white hover:bg-white/10"><User className="w-4 h-4" /></Button></Link>
-              <Link to="/dashboard"><Button variant="ghost" className="gap-2 text-white/60 hover:text-white hover:bg-white/10"><ArrowLeft className="w-4 h-4" />Back to Dashboard</Button></Link>
+      {/* Top Nav (Cyber style) */}
+      <nav style={{position: 'sticky', top: 0, zIndex: 100, background: 'rgba(3,2,10,0.97)', borderBottom: '1px solid var(--border1)', padding: '0 2.5rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+        <div style={{display: 'flex', gap: '1rem'}}>
+           <Link to="/dashboard">
+             <Button variant="ghost" className="hover:bg-white/10" style={{fontFamily: 'var(--fs)', fontSize: '10px', letterSpacing: '0.2em', color: 'var(--t3)', textTransform: 'uppercase'}}><ArrowLeft className="w-4 h-4 mr-2" /> Dashboard</Button>
+           </Link>
+        </div>
+        <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+           <button className="nav-cta" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><ExternalLink className="w-3 h-3"/> View on Codeforces</button>
+        </a>
+      </nav>
+
+      <section className="sec" style={{padding: '4rem 2.5rem', maxWidth: '1180px', margin: '0 auto', position: 'relative', zIndex: 10}}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
+          <div style={{fontFamily: 'var(--fs)', fontSize: '9px', letterSpacing: '0.65em', color: 'var(--blood)', textTransform: 'uppercase', marginBottom: '0.6rem'}}>⬥ platform chronicle ⬥</div>
+          <h2 style={{fontFamily: 'var(--fd)', fontSize: 'clamp(1.4rem,3vw,2.1rem)', fontWeight: 700, color: 'var(--t1)', marginBottom: '0.5rem', textShadow: '0 0 30px rgba(200,40,28,.15)'}}>Dhruv's <em style={{fontStyle: 'normal', color: 'var(--ember)'}}>Codeforces</em> Profile</h2>
+          <div style={{width: '200px', height: '1px', margin: '0.6rem auto', background: 'linear-gradient(90deg,transparent,var(--border2),var(--blood),var(--border2),transparent)'}}></div>
+        </motion.div>
+
+        {error && (
+            <div className="text-center py-12" style={{color: "hsl(0,84%,60%)", fontFamily: 'var(--fs)'}}>
+              Failed to load Codeforces stats. Please try again.
             </div>
-            <div className="flex items-center gap-2">
-              
-              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="gap-2 border-codeforces/30 text-codeforces hover:bg-codeforces/10"><ExternalLink className="w-4 h-4" />View Profile</Button>
-              </a>
+        )}
+
+        {!error && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="profile-box">
+          
+          <div className="pf-hero">
+            <div className="pf-title-main">Dhruv's <em>Codeforces</em> Profile</div>
+            <div className="pf-subtitle" style={{textTransform: 'capitalize'}}>@{profile?.handle || CODEFORCES_HANDLE} {profile?.rank ? `• ${profile.rank}` : ''}</div>
+          </div>
+
+          <div className="pf-stats-row">
+            <div className="pf-stat">
+              <span className="pf-stat-ico">🏆</span>
+              <div className="pf-stat-val orange">{isLoading ? '-' : profile?.problemsSolved ?? 0}</div>
+              <div className="pf-stat-lbl">Problems Solved</div>
+            </div>
+            <div className="pf-stat">
+              <span className="pf-stat-ico" style={{color: profile?.rankColor || 'inherit'}}>⚡</span>
+              <div className="pf-stat-val" style={{color: profile?.rankColor || 'inherit'}}>{isLoading ? '-' : profile?.rating ?? 0}</div>
+              <div className="pf-stat-lbl">Current Rating</div>
+            </div>
+            <div className="pf-stat">
+              <span className="pf-stat-ico" style={{color: profile?.maxRankColor || 'inherit'}}>🎯</span>
+              <div className="pf-stat-val" style={{color: profile?.maxRankColor || 'inherit'}}>{isLoading ? '-' : profile?.maxRating ?? 0}</div>
+              <div className="pf-stat-lbl">Max Rating</div>
+            </div>
+            <div className="pf-stat">
+              <span className="pf-stat-ico">🏅</span>
+              <div className="pf-stat-val pale">{isLoading ? '-' : profile?.contestsParticipated ?? 0}</div>
+              <div className="pf-stat-lbl">Contests</div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="container mx-auto px-6 py-12 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Dhruv's <span className="text-codeforces">Codeforces</span> Profile</h1>
-          <p className="text-white/50 text-lg">@{profile?.handle || CODEFORCES_HANDLE}</p>
-          {profile?.rank && <p className="text-lg font-semibold mt-2 capitalize" style={{ color: profile.rankColor }}>{profile.rank}</p>}
-        </motion.div>
+          <div className="pf-contest-section">
+            <div className="pf-contest-title">Performance Summary</div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
-          {isLoading ? <>{[1,2,3,4].map(i => <Skeleton key={i} className="h-24 sm:h-28 w-full rounded-xl" />)}</> : (
-            <>
-              <div className="rounded-xl p-4 sm:p-6 text-center" style={glassStyle}><Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-codeforces mx-auto mb-2 sm:mb-3" /><div className="text-2xl sm:text-3xl font-bold text-codeforces">{profile?.problemsSolved ?? 0}</div><div className="text-sm text-white/40">Problems Solved</div></div>
-              <div className="rounded-xl p-4 sm:p-6 text-center" style={glassStyle}><TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3" style={{ color: "hsl(190,95%,60%)" }} /><div className="text-2xl sm:text-3xl font-bold" style={{ color: profile?.rankColor }}>{profile?.rating ?? 0}</div><div className="text-sm text-white/40">Current Rating</div></div>
-              <div className="rounded-xl p-4 sm:p-6 text-center" style={glassStyle}><Target className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3" style={{ color: "hsl(142,76%,45%)" }} /><div className="text-2xl sm:text-3xl font-bold" style={{ color: profile?.maxRankColor }}>{profile?.maxRating ?? 0}</div><div className="text-sm text-white/40">Max Rating</div></div>
-              <div className="rounded-xl p-4 sm:p-6 text-center" style={glassStyle}><Award className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3" style={{ color: "hsl(38,92%,50%)" }} /><div className="text-2xl sm:text-3xl font-bold" style={{ color: "hsl(38,92%,50%)" }}>{profile?.contestsParticipated ?? 0}</div><div className="text-sm text-white/40">Contests</div></div>
-            </>
-          )}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-12">
-          {isLoading ? <>{[1,2,3,4].map(i => <Skeleton key={i} className="h-20 w-full rounded-xl" />)}</> : (
-            <>
-              <div className="rounded-xl p-4 text-center" style={glassStyle}><Zap className="w-5 h-5 mx-auto mb-2" style={{ color: "hsl(190,95%,60%)" }} /><div className="text-xl font-bold text-white">{profile?.totalSubmissions ?? 0}</div><div className="text-xs text-white/40">Submissions</div></div>
-              <div className="rounded-xl p-4 text-center" style={glassStyle}><Users className="w-5 h-5 text-codeforces mx-auto mb-2" /><div className="text-xl font-bold text-white">{profile?.friendOfCount ?? 0}</div><div className="text-xs text-white/40">Friends</div></div>
-              <div className="rounded-xl p-4 text-center" style={glassStyle}><TrendingUp className="w-5 h-5 mx-auto mb-2" style={{ color: "hsl(142,76%,45%)" }} /><div className="text-xl font-bold" style={{ color: "hsl(142,76%,45%)" }}>+{profile?.contribution ?? 0}</div><div className="text-xs text-white/40">Contribution</div></div>
-              <div className="rounded-xl p-4 text-center capitalize" style={glassStyle}><Award className="w-5 h-5 mx-auto mb-2" style={{ color: profile?.maxRankColor }} /><div className="text-lg font-bold" style={{ color: profile?.maxRankColor }}>{profile?.maxRank ?? 'N/A'}</div><div className="text-xs text-white/40">Max Rank</div></div>
-            </>
-          )}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl p-8" style={glassStyle}>
-          <h2 className="text-2xl font-bold mb-6 text-white">Recent Contests</h2>
-          {isLoading ? (
-            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}</div>
-          ) : stats?.recentContests && stats.recentContests.length > 0 ? (
-            <div className="space-y-4">
-              {stats.recentContests.slice(0, 10).map((contest, index) => (
-                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg transition-colors gap-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div className="flex items-center gap-4"><Award className="w-5 h-5 text-codeforces hidden sm:block" /><span className="font-medium text-sm sm:text-base line-clamp-1 text-white/80">{contest.name}</span></div>
-                  <div className="flex items-center gap-4 sm:gap-6 text-sm">
-                    <span className="text-white/40">Rank: <span className="text-white font-medium">{contest.rank}</span></span>
-                    <span className={contest.ratingChange >= 0 ? "font-medium" : "font-medium"} style={{ color: contest.ratingChange >= 0 ? "hsl(142,76%,45%)" : "hsl(0,84%,60%)" }}>{contest.ratingChange >= 0 ? '+' : ''}{contest.ratingChange}</span>
-                    <span className="text-white/40">{contest.newRating}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="pf-c-summary">
+              <div className="pf-c-sum-card">
+                <div className="pf-cs-val teal">{isLoading ? '-' : profile?.totalSubmissions ?? 0}</div>
+                <div className="pf-cs-lbl">Submissions</div>
+              </div>
+              <div className="pf-c-sum-card">
+                <div className="pf-cs-val blue">{isLoading ? '-' : profile?.friendOfCount ?? 0}</div>
+                <div className="pf-cs-lbl">Friends</div>
+              </div>
+              <div className="pf-c-sum-card">
+                <div className="pf-cs-val pale">{isLoading ? '-' : `+${profile?.contribution ?? 0}`}</div>
+                <div className="pf-cs-lbl">Contribution</div>
+              </div>
+              <div className="pf-c-sum-card">
+                <div className="pf-cs-val orange" style={{color: profile?.maxRankColor || 'inherit', textTransform: 'capitalize'}}>{isLoading ? '-' : profile?.maxRank ?? 'N/A'}</div>
+                <div className="pf-cs-lbl">Max Rank</div>
+              </div>
             </div>
-          ) : <p className="text-white/40 text-center py-8">No contest history available</p>}
+
+            <div className="pf-c-cols" style={{gridTemplateColumns: '1fr'}}>
+              <div>
+                <div className="pf-c-col-title"><span className="dot8 d-am"></span> Recent Contests</div>
+                {isLoading ? (
+                   [...Array(3)].map((_,i) => <Skeleton key={i} className="h-16 w-full mb-2 bg-[var(--dark2)]" />)
+                ) : stats?.recentContests && stats.recentContests.length > 0 ? (
+                  stats.recentContests.slice(0, 10).map((c, i) => (
+                    <div key={i} className="pf-c-row">
+                      <div className="pf-c-row-left">
+                        <div className="pf-c-trophy">🏅</div>
+                        <div><div className="pf-c-name">{c.name}</div><div className="pf-c-date">Rank: #{c.rank.toLocaleString()}</div></div>
+                      </div>
+                      <div className="pf-c-right">
+                        <div className="pf-c-rating" style={{color: c.ratingChange >= 0 ? 'var(--green)' : 'var(--blood)'}}>
+                          {c.ratingChange >= 0 ? '+' : ''}{c.ratingChange}
+                        </div>
+                        <div className="pf-c-rank">{c.newRating} · Rating</div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm text-[var(--t3)] py-4">No recent contests</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-12 mt-16 w-full max-w-[1050px] mx-auto px-4">
+             {stats?.heatmap && stats.heatmap.length > 0 && <CodeforcesActivityWaveform data={stats.heatmap} rankColor={profile?.rankColor || 'var(--green)'} />}
+          </div>
+
         </motion.div>
-      </div>
+        )}
+      </section>
     </div>
-    </>
   );
 };
 

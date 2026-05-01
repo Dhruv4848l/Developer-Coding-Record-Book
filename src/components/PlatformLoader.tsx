@@ -7,7 +7,7 @@ interface PlatformLoaderProps {
   duration?: number;
 }
 
-const PlatformLoader = ({ onFinish, text = "Loading", duration = 2000 }: PlatformLoaderProps) => {
+const PlatformLoader = ({ onFinish, text = "Loading", duration = 600 }: PlatformLoaderProps) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {

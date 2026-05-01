@@ -1,7 +1,6 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import express from 'express';
+
+const router = express.Router();
 
 function validateUsername(username: unknown): { valid: boolean; error?: string } {
   if (!username || typeof username !== 'string') return { valid: false, error: 'Username is required' };
@@ -41,16 +40,11 @@ interface GFGStats {
   };
 }
 
-// Fetch with timeout to prevent hanging
 async function fetchWithTimeout(url: string, options: RequestInit, timeout = 8000): Promise<Response> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
-  
   try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
+    const response = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(id);
     return response;
   } catch (error) {
@@ -63,30 +57,14 @@ async function fetchFromAuthGFGAPI(username: string): Promise<GFGStats | null> {
   try {
     const response = await fetchWithTimeout(
       `https://authapi.geeksforgeeks.org/api-get/user-profile-info/?handle=${username}`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        },
-      },
+      { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } },
       8000
     );
-
-    if (!response.ok) {
-      console.error('Auth GFG API response not OK:', response.status);
-      return null;
-    }
-
+    if (!response.ok) return null;
     const data = await response.json();
-    console.log('Auth GFG API response received');
-
-    if (!data.data) {
-      console.error('Auth GFG API: No data field in response');
-      return null;
-    }
+    if (!data.data) return null;
 
     const userInfo = data.data;
-    
     return {
       username: username,
       name: userInfo.name || '',
@@ -99,16 +77,9 @@ async function fetchFromAuthGFGAPI(username: string): Promise<GFGStats | null> {
       currentStreak: parseInt(userInfo.pod_solved_current_streak) || 0,
       maxStreak: parseInt(userInfo.pod_solved_longest_streak) || 0,
       languages: [],
-      solvedByDifficulty: {
-        school: 0,
-        basic: 0,
-        easy: 0,
-        medium: 0,
-        hard: 0,
-      },
+      solvedByDifficulty: { school: 0, basic: 0, easy: 0, medium: 0, hard: 0 },
     };
   } catch (error) {
-    console.error('Error fetching from Auth GFG API:', error);
     return null;
   }
 }
@@ -117,27 +88,12 @@ async function fetchFromVercelAPI(username: string): Promise<GFGStats | null> {
   try {
     const response = await fetchWithTimeout(
       `https://geeksforgeeksapi.vercel.app/api/gfg?username=${username}`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        },
-      },
+      { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } },
       8000
     );
-
-    if (!response.ok) {
-      console.error('Vercel API response not OK:', response.status);
-      return null;
-    }
-
+    if (!response.ok) return null;
     const data = await response.json();
-    console.log('Vercel API response received');
-
-    if (data.error) {
-      console.error('Vercel API error:', data.error);
-      return null;
-    }
+    if (data.error) return null;
     
     return {
       username: data.username || username,
@@ -160,12 +116,10 @@ async function fetchFromVercelAPI(username: string): Promise<GFGStats | null> {
       },
     };
   } catch (error) {
-    console.error('Error fetching from Vercel API:', error);
     return null;
   }
 }
 
-// Fallback data for dhruvmaji8b4b when APIs fail
 function getFallbackStats(username: string): GFGStats {
   return {
     username: username,
@@ -179,103 +133,45 @@ function getFallbackStats(username: string): GFGStats {
     currentStreak: 5,
     maxStreak: 23,
     languages: ['C++', 'Java', 'Python'],
-    solvedByDifficulty: {
-      school: 15,
-      basic: 45,
-      easy: 70,
-      medium: 40,
-      hard: 10,
-    },
+    solvedByDifficulty: { school: 15, basic: 45, easy: 70, medium: 40, hard: 10 },
   };
 }
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+router.post('/', async (req, res) => {
+  const clientIP = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
   if (!checkRateLimit(clientIP)) {
-    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
   }
 
   try {
     let username = 'dhruvmaji8b4b';
-    
-    try {
-      const body = await req.json();
-      if (body?.username) {
-        username = body.username;
-      }
-    } catch {
-      const url = new URL(req.url);
-      const urlUsername = url.searchParams.get('username');
-      if (urlUsername) {
-        username = urlUsername;
-      }
-    }
+    if (req.body?.username) username = req.body.username;
+    else if (req.query?.username) username = req.query.username as string;
 
     const validation = validateUsername(username);
-    if (!validation.valid) {
-      return new Response(JSON.stringify({ error: validation.error }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-    }
+    if (!validation.valid) return res.status(400).json({ error: validation.error });
     
-    console.log('Fetching GFG stats for:', username);
-    
-    // Try both APIs in parallel with timeout
     const [authStats, vercelStats] = await Promise.all([
       fetchFromAuthGFGAPI(username).catch(() => null),
       fetchFromVercelAPI(username).catch(() => null),
     ]);
     
-    // Merge the data - prefer auth API for main stats, use vercel for difficulty breakdown
     if (authStats) {
       if (vercelStats && vercelStats.solvedByDifficulty) {
         authStats.solvedByDifficulty = vercelStats.solvedByDifficulty;
       }
-      
-      return new Response(
-        JSON.stringify({
-          ...authStats,
-          lastUpdated: new Date().toISOString(),
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return res.json({ ...authStats, lastUpdated: new Date().toISOString() });
     }
     
-    // Fall back to vercel stats if auth failed
     if (vercelStats) {
-      return new Response(
-        JSON.stringify({
-          ...vercelStats,
-          lastUpdated: new Date().toISOString(),
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return res.json({ ...vercelStats, lastUpdated: new Date().toISOString() });
     }
     
-    // Use fallback data if both APIs fail
-    console.log('Both APIs failed, using fallback data');
-    const fallbackStats = getFallbackStats(username);
-    
-    return new Response(
-      JSON.stringify({
-        ...fallbackStats,
-        lastUpdated: new Date().toISOString(),
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return res.json({ ...getFallbackStats(username), lastUpdated: new Date().toISOString() });
   } catch (error) {
     console.error('Error in GFG stats function:', error);
-    
-    // Return fallback data even on complete failure
-    const fallbackStats = getFallbackStats('dhruvmaji8b4b');
-    return new Response(
-      JSON.stringify({
-        ...fallbackStats,
-        lastUpdated: new Date().toISOString(),
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return res.json({ ...getFallbackStats('dhruvmaji8b4b'), lastUpdated: new Date().toISOString() });
   }
 });
+
+export default router;

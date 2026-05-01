@@ -1,112 +1,142 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, ExternalLink, Code2, Trophy, Award, Star, Loader2, User } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodolioStats } from "@/hooks/useCodolioStats";
 import PlatformLoader from "@/components/PlatformLoader";
-
-const glassStyle = {
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(20px) saturate(150%)",
-  WebkitBackdropFilter: "blur(20px) saturate(150%)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  boxShadow: "0 8px 32px rgba(31, 38, 135, 0.15)",
-};
-
-const headerStyle = {
-  background: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(20px) saturate(150%)",
-  WebkitBackdropFilter: "blur(20px) saturate(150%)",
-  borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-  boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)",
-};
+import FireCanvas from "@/components/FireCanvas";
+import { HackerRankActivityHorizon } from "@/components/HackerRankActivityHorizon";
+import { HackerRankTesseract } from "@/components/HackerRankTesseract";
+import "./PlatformsCommon.css";
 
 const HackerRankPage = () => {
   const { data: stats, isLoading, error } = useCodolioStats("dhruvmajiever191");
   const profileUrl = "https://www.hackerrank.com/profile/dhruvmajiever191";
 
-  const badges = [{ name: "Java", level: "3 Star", category: "Language Proficiency" }];
+  const badges = stats?.badges || [];
   const certificates = [{ name: "Problem Solving (Basic)", date: "2024" }];
 
   const [loading, setLoading] = useState(true);
   const handleFinish = useCallback(() => setLoading(false), []);
 
   return (
-    <>
-    {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
-    <div className="min-h-screen relative bg-gradient-to-br from-[hsl(222,47%,5%)] via-[hsl(230,40%,8%)] to-[hsl(240,35%,4%)]">
-      <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-25 pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(152, 69%, 31%) 0%, transparent 70%)" }} />
-      <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        className="fixed bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full blur-[100px] opacity-20 pointer-events-none"
-        style={{ background: "radial-gradient(circle, hsl(190, 95%, 50%) 0%, transparent 70%)" }} />
-      <div className="fixed inset-0 opacity-[0.02] pointer-events-none" style={{
-        backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-        backgroundSize: "60px 60px"
-      }} />
+    <div id="hackerrank" className="cyber-theme min-h-screen pb-12 relative overflow-hidden">
+      {loading && <PlatformLoader onFinish={handleFinish} text="Loading" />}
+      
+      <FireCanvas />
 
-      <div className="sticky top-0 z-50" style={headerStyle}>
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Link to="/"><Button variant="ghost" size="icon" className="h-9 w-9 text-white/60 hover:text-white hover:bg-white/10"><User className="w-4 h-4" /></Button></Link>
-              <Link to="/dashboard"><Button variant="ghost" className="gap-2 text-white/60 hover:text-white hover:bg-white/10"><ArrowLeft className="w-4 h-4" />Back to Dashboard</Button></Link>
-            </div>
-            <div className="flex items-center gap-2">
-              
-              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="gap-2 border-hackerrank/30 text-hackerrank hover:bg-hackerrank/10"><ExternalLink className="w-4 h-4" />View Profile</Button>
-              </a>
-            </div>
-          </div>
+      {/* Top Nav (Cyber style) */}
+      <nav style={{position: 'sticky', top: 0, zIndex: 100, background: 'rgba(3,2,10,0.97)', borderBottom: '1px solid var(--border1)', padding: '0 2.5rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+        <div style={{display: 'flex', gap: '1rem'}}>
+           <Link to="/dashboard">
+             <Button variant="ghost" className="hover:bg-white/10" style={{fontFamily: 'var(--fs)', fontSize: '10px', letterSpacing: '0.2em', color: 'var(--t3)', textTransform: 'uppercase'}}><ArrowLeft className="w-4 h-4 mr-2" /> Dashboard</Button>
+           </Link>
         </div>
-      </div>
+        <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+           <button className="nav-cta" style={{display: 'flex', alignItems: 'center', gap: '6px'}}><ExternalLink className="w-3 h-3"/> View on HackerRank</button>
+        </a>
+      </nav>
 
-      <div className="container mx-auto px-6 py-12 relative z-10">
+      <section className="sec" style={{padding: '4rem 2.5rem', maxWidth: '1180px', margin: '0 auto', position: 'relative', zIndex: 10}}>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Dhruv's <span className="text-hackerrank">HackerRank</span> Profile</h1>
-          <p className="text-white/50 text-lg">@dhruvmajiever191</p>
+          <div style={{fontFamily: 'var(--fs)', fontSize: '9px', letterSpacing: '0.65em', color: 'var(--blood)', textTransform: 'uppercase', marginBottom: '0.6rem'}}>⬥ platform chronicle ⬥</div>
+          <h2 style={{fontFamily: 'var(--fd)', fontSize: 'clamp(1.4rem,3vw,2.1rem)', fontWeight: 700, color: 'var(--t1)', marginBottom: '0.5rem', textShadow: '0 0 30px rgba(200,40,28,.15)'}}>Dhruv's <em style={{fontStyle: 'normal', color: 'var(--green)'}}>HackerRank</em> Profile</h2>
+          <div style={{width: '200px', height: '1px', margin: '0.6rem auto', background: 'linear-gradient(90deg,transparent,var(--border2),var(--blood),var(--border2),transparent)'}}></div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-          {isLoading ? <>{[1,2,3].map(i => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}</> : (
-            <>
-              <div className="rounded-xl p-6 text-center" style={glassStyle}><Trophy className="w-8 h-8 text-hackerrank mx-auto mb-3" /><div className="text-3xl font-bold text-hackerrank">{stats?.profile?.problemsSolved ?? 4}</div><div className="text-sm text-white/40">Problems Solved</div></div>
-              <div className="rounded-xl p-6 text-center" style={glassStyle}><Award className="w-8 h-8 mx-auto mb-3" style={{ color: "hsl(38,92%,50%)" }} /><div className="text-3xl font-bold" style={{ color: "hsl(38,92%,50%)" }}>1</div><div className="text-sm text-white/40">Badges Earned</div></div>
-              <div className="rounded-xl p-6 text-center" style={glassStyle}><Star className="w-8 h-8 mx-auto mb-3" style={{ color: "hsl(190,95%,60%)" }} /><div className="text-3xl font-bold text-white">1</div><div className="text-sm text-white/40">Certificates</div></div>
-            </>
-          )}
-        </motion.div>
+        {error && (
+            <div className="text-center py-12" style={{color: "hsl(0,84%,60%)", fontFamily: 'var(--fs)'}}>
+              Failed to load HackerRank stats. Please try again.
+            </div>
+        )}
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="rounded-2xl p-8 mb-12" style={glassStyle}>
-          <h2 className="text-2xl font-bold mb-6 text-white">Badges</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {badges.map((badge, index) => (
-              <div key={index} className="flex items-center gap-4 p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: "rgba(30, 130, 76, 0.2)" }}><Star className="w-6 h-6 text-hackerrank" /></div>
-                <div><div className="font-medium text-white/80">{badge.name}</div><div className="text-sm text-white/40">{badge.level} • {badge.category}</div></div>
+        {!error && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="profile-box">
+          
+          <div className="pf-hero">
+            <div className="pf-title-main">Dhruv's <em style={{color: 'var(--green)'}}>HackerRank</em> Profile</div>
+            <div className="pf-subtitle">@dhruvmajiever191</div>
+          </div>
+
+          <div className="pf-contest-section" style={{ borderTop: 'none', paddingTop: '1rem', paddingBottom: '5rem' }}>
+             <div className="pf-contest-title" style={{ textAlign: 'center', marginBottom: '3rem' }}>Data Core Tesseract</div>
+             <div className="h-[300px] sm:h-[350px] w-full flex items-center justify-center">
+               <HackerRankTesseract 
+                 problemsSolved={stats?.profile?.problemsSolved || 0}
+                 globalRank={stats?.profile?.globalRank || 'N/A'}
+                 activeDays={stats?.profile?.activeDays || 0}
+                 longestStreak={stats?.profile?.longestStreak || 0}
+               />
+             </div>
+          </div>
+
+          <div className="pf-contest-section">
+            <div className="pf-c-cols">
+              <div>
+                <div className="pf-c-col-title"><span className="dot8 d-am" style={{background: 'hsl(38,92%,50%)'}}></span> Security Badges</div>
+                <div className="space-y-4 mt-4">
+                  {badges.map((badge, index) => (
+                    <motion.div key={index} className="relative overflow-hidden bg-[#0A0F0A]/60 border border-[rgba(30,215,96,0.15)] rounded-xl p-4 flex justify-between items-center group">
+                      {/* Laser Scanner Line */}
+                      <motion.div 
+                        className="absolute top-0 bottom-0 w-[4px] bg-[var(--green)] blur-[2px] opacity-60 mix-blend-screen"
+                        animate={{ left: ['-10%', '110%'] }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', delay: index * 0.7 }}
+                        style={{ background: 'linear-gradient(to right, transparent, var(--green), transparent)' }}
+                      />
+                      <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[rgba(30,215,96,0.1)] border border-[rgba(30,215,96,0.3)] shadow-[0_0_15px_rgba(30,215,96,0.2)]" style={{ fontSize: '1.2rem'}}>⭐</div>
+                        <div>
+                          <div className="text-[var(--green)] font-mono text-sm tracking-widest font-bold uppercase" style={{textShadow: '0 0 10px rgba(30,215,96,0.4)'}}>{badge.name}</div>
+                          <div className="text-[var(--t4)] text-[9px] font-mono tracking-widest uppercase mt-1">{badge.category}</div>
+                        </div>
+                      </div>
+                      <div className="relative z-10 text-right">
+                        <div className="text-[var(--t1)] font-mono font-bold text-lg">{badge.stars} Star</div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            ))}
+
+              <div>
+                <div className="pf-c-col-title"><span className="dot8 d-bl" style={{background: 'var(--cyan)'}}></span> Mainframe Certificates</div>
+                <div className="space-y-4 mt-4">
+                  {certificates.map((cert, index) => (
+                    <motion.div key={index} className="relative overflow-hidden bg-[#0A0F14]/60 border border-[rgba(0,184,217,0.15)] rounded-xl p-4 flex justify-between items-center group">
+                      {/* Laser Scanner Line */}
+                      <motion.div 
+                        className="absolute top-0 bottom-0 w-[4px] bg-[var(--cyan)] blur-[2px] opacity-60 mix-blend-screen"
+                        animate={{ left: ['-10%', '110%'] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'linear', delay: index * 0.5 + 1 }}
+                        style={{ background: 'linear-gradient(to right, transparent, var(--cyan), transparent)' }}
+                      />
+                      <div className="flex items-center gap-4 relative z-10">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[rgba(0,184,217,0.1)] border border-[rgba(0,184,217,0.3)] shadow-[0_0_15px_rgba(0,184,217,0.2)]" style={{ fontSize: '1.2rem'}}>📜</div>
+                        <div>
+                          <div className="text-[var(--cyan)] font-mono text-sm tracking-widest font-bold uppercase" style={{textShadow: '0 0 10px rgba(0,184,217,0.4)'}}>{cert.name}</div>
+                        </div>
+                      </div>
+                      <div className="relative z-10 text-right">
+                        <div className="text-[var(--t3)] font-mono tracking-widest text-[10px]">{cert.date}</div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-12 mt-16 w-full max-w-[1020px] mx-auto px-4">
+             <div className="pf-contest-title" style={{ textAlign: 'center', marginBottom: '2rem' }}>Activity Horizon</div>
+             {stats?.heatmap && stats.heatmap.length > 0 && <HackerRankActivityHorizon data={stats.heatmap} />}
           </div>
         </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="rounded-2xl p-8" style={glassStyle}>
-          <h2 className="text-2xl font-bold mb-6 text-white">Certificates</h2>
-          <div className="space-y-4">
-            {certificates.map((cert, index) => (
-              <div key={index} className="flex items-center justify-between p-4 rounded-lg" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="flex items-center gap-4"><Award className="w-6 h-6 text-hackerrank" /><span className="font-medium text-white/80">{cert.name}</span></div>
-                <span className="text-sm text-white/40">{cert.date}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+        )}
+      </section>
     </div>
-    </>
   );
 };
 

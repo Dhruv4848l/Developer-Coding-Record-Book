@@ -1,7 +1,6 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import express from 'express';
+
+const router = express.Router();
 
 function validateUsername(username: unknown): { valid: boolean; error?: string } {
   if (!username || typeof username !== 'string') return { valid: false, error: 'Username is required' };
@@ -49,14 +48,10 @@ interface AtCoderStats {
 async function fetchWithTimeout(url: string, timeout = 10000): Promise<Response> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
-  
   try {
     const response = await fetch(url, { 
       signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'application/json, text/html',
-      },
+      headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json, text/html' },
     });
     clearTimeout(id);
     return response;
@@ -79,9 +74,6 @@ function getRankFromRating(rating: number): { rank: string; color: string } {
 
 async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | null> {
   try {
-    console.log('Fetching AtCoder profile for:', username);
-    
-    // Fetch from AtCoder APIs - use official history endpoint for all contests
     const [profileResponse, historyResponse, submissionResponse] = await Promise.all([
       fetchWithTimeout(`https://kenkoooo.com/atcoder/atcoder-api/v3/user/ac_rank?user=${username}`),
       fetchWithTimeout(`https://atcoder.jp/users/${username}/history/json`),
@@ -95,29 +87,22 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
     let acceptedSubmissions = 0;
     let problemsSolved = 0;
 
-    // Parse AC rank
     if (profileResponse.ok) {
       const rankData = await profileResponse.json();
       acRank = rankData?.rank || 0;
       acceptedSubmissions = rankData?.count || 0;
     }
 
-    // Parse contest history from AtCoder's official endpoint
     if (historyResponse.ok) {
       const historyData = await historyResponse.json();
-      console.log('Contest history entries:', Array.isArray(historyData) ? historyData.length : 0);
       if (Array.isArray(historyData) && historyData.length > 0) {
-        // Get latest rating from the most recent rated contest
         const ratedContests = historyData.filter((c: any) => c.IsRated !== false);
         if (ratedContests.length > 0) {
           const latestRated = ratedContests[ratedContests.length - 1];
           rating = latestRated.NewRating || 0;
-          highestRating = ratedContests.reduce((max: number, c: any) => 
-            Math.max(max, c.NewRating || 0), 0);
+          highestRating = ratedContests.reduce((max: number, c: any) => Math.max(max, c.NewRating || 0), 0);
         }
         
-        // Map ALL contest history (last 10), fields from official API:
-        // ContestName, ContestScreenName, Place, OldRating, NewRating, Performance, IsRated, EndTime
         contestHistory = historyData.slice(-10).reverse().map((c: any) => ({
           contestName: c.ContestName || c.ContestScreenName || 'Unknown Contest',
           rank: c.Place || 0,
@@ -129,7 +114,6 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
       }
     }
 
-    // Parse submissions to get problems solved and heatmap
     const heatmapData: { date: string; count: number }[] = [];
     const submissionCounts: Record<string, number> = {};
     const solvedProblems = new Set<string>();
@@ -138,19 +122,14 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
       const submissions = await submissionResponse.json();
       if (Array.isArray(submissions)) {
         submissions.forEach((sub: any) => {
-          if (sub.result === 'AC') {
-            solvedProblems.add(sub.problem_id);
-          }
-          
+          if (sub.result === 'AC') solvedProblems.add(sub.problem_id);
           const date = new Date(sub.epoch_second * 1000).toISOString().split('T')[0];
           submissionCounts[date] = (submissionCounts[date] || 0) + 1;
         });
-        
         problemsSolved = solvedProblems.size;
       }
     }
 
-    // Generate heatmap for last 12 months
     const now = new Date();
     const startDate = new Date(now);
     startDate.setDate(startDate.getDate() - (52 * 7));
@@ -160,10 +139,7 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
     const currentDate = new Date(startDate);
     while (currentDate <= now) {
       const dateStr = currentDate.toISOString().split('T')[0];
-      heatmapData.push({
-        date: dateStr,
-        count: submissionCounts[dateStr] || 0,
-      });
+      heatmapData.push({ date: dateStr, count: submissionCounts[dateStr] || 0 });
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
@@ -188,80 +164,43 @@ async function fetchAtCoderProfile(username: string): Promise<AtCoderStats | nul
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {
-    console.error('Error fetching AtCoder profile:', error);
     return null;
   }
 }
 
-// Fallback stats
 function getFallbackStats(username: string): AtCoderStats {
   return {
     profile: {
-      username,
-      rating: 0,
-      highestRating: 0,
-      rank: 'Unrated',
-      rankColor: '#808080',
-      country: 'India',
-      affiliation: '',
-      contestsParticipated: 0,
-      problemsSolved: 0,
-      acceptedSubmissions: 0,
-      globalRank: 0,
+      username, rating: 0, highestRating: 0, rank: 'Unrated', rankColor: '#808080',
+      country: 'India', affiliation: '', contestsParticipated: 0, problemsSolved: 0,
+      acceptedSubmissions: 0, globalRank: 0,
     },
-    contestHistory: [],
-    heatmap: [],
-    lastUpdated: new Date().toISOString(),
+    contestHistory: [], heatmap: [], lastUpdated: new Date().toISOString(),
   };
 }
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+router.post('/', async (req, res) => {
+  const clientIP = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
   if (!checkRateLimit(clientIP)) {
-    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
   }
 
   try {
     let username = 'MrCoder420';
-
-    try {
-      const body = await req.json();
-      if (body?.username) {
-        username = body.username;
-      }
-    } catch {
-      // Use default username
-    }
+    if (req.body?.username) username = req.body.username;
+    else if (req.query?.username) username = req.query.username as string;
 
     const validation = validateUsername(username);
-    if (!validation.valid) {
-      return new Response(JSON.stringify({ error: validation.error }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-    }
-
-    console.log('Fetching AtCoder stats for:', username);
+    if (!validation.valid) return res.status(400).json({ error: validation.error });
 
     const stats = await fetchAtCoderProfile(username);
+    if (!stats) return res.json(getFallbackStats(username));
 
-    if (!stats) {
-      console.log('AtCoder fetch failed, using fallback');
-      const fallbackStats = getFallbackStats(username);
-      return new Response(JSON.stringify(fallbackStats), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    return new Response(JSON.stringify(stats), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return res.json(stats);
   } catch (error) {
     console.error('Error in AtCoder stats function:', error);
-    const fallbackStats = getFallbackStats('MrCoder420');
-    return new Response(JSON.stringify(fallbackStats), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return res.json(getFallbackStats('MrCoder420'));
   }
 });
+
+export default router;

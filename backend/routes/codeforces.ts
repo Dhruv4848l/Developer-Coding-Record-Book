@@ -1,7 +1,7 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import express from 'express';
+import cache from '../lib/cache';
+
+const router = express.Router();
 
 function validateUsername(username: unknown): { valid: boolean; error?: string } {
   if (!username || typeof username !== 'string') return { valid: false, error: 'Handle is required' };
@@ -53,7 +53,6 @@ interface CodeforcesContest {
   newRating: number;
 }
 
-// Fetch with timeout to prevent hanging
 async function fetchWithTimeout(url: string, timeout = 8000): Promise<Response> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -72,7 +71,6 @@ async function fetchUserInfo(handle: string): Promise<CodeforcesUser | null> {
   try {
     const response = await fetchWithTimeout(`https://codeforces.com/api/user.info?handles=${handle}`);
     const data = await response.json();
-    
     if (data.status === 'OK' && data.result.length > 0) {
       return data.result[0];
     }
@@ -87,7 +85,6 @@ async function fetchUserSubmissions(handle: string): Promise<CodeforcesSubmissio
   try {
     const response = await fetchWithTimeout(`https://codeforces.com/api/user.status?handle=${handle}&from=1&count=10000`);
     const data = await response.json();
-    
     if (data.status === 'OK') {
       return data.result;
     }
@@ -102,7 +99,6 @@ async function fetchUserRatingHistory(handle: string): Promise<CodeforcesContest
   try {
     const response = await fetchWithTimeout(`https://codeforces.com/api/user.rating?handle=${handle}`);
     const data = await response.json();
-    
     if (data.status === 'OK') {
       return data.result;
     }
@@ -196,7 +192,6 @@ function getRankColor(rank: string): string {
   return '#808080';
 }
 
-// Fallback stats for dhruvmaji when APIs fail
 function getFallbackStats(handle: string) {
   return {
     profile: {
@@ -224,33 +219,32 @@ function getFallbackStats(handle: string) {
   };
 }
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+router.post('/', async (req, res) => {
+  const clientIP = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
   if (!checkRateLimit(clientIP)) {
-    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
   }
 
   try {
     let handle = 'Ordinary_Coder_420';
     
-    try {
-      const body = await req.json();
-      if (body?.handle) {
-        handle = body.handle;
-      }
-    } catch {
-      // If no body, use default handle
+    if (req.body?.handle) {
+      handle = req.body.handle;
+    } else if (req.query?.handle) {
+      handle = req.query.handle as string;
     }
 
     const validation = validateUsername(handle);
     if (!validation.valid) {
-      return new Response(JSON.stringify({ error: validation.error }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      return res.status(400).json({ error: validation.error });
     }
     
+    const forceSync = req.query.force === 'true';
+    const cacheKey = `codeforces_${handle}`;
+
+    if (!forceSync && cache.has(cacheKey)) {
+      return res.json(cache.get(cacheKey));
+    }
     const [userInfo, submissions, ratingHistory] = await Promise.all([
       fetchUserInfo(handle).catch(() => null),
       fetchUserSubmissions(handle).catch(() => []),
@@ -258,12 +252,8 @@ Deno.serve(async (req) => {
     ]);
     
     if (!userInfo) {
-      // Return fallback data if user info fetch fails
-      console.log('User info fetch failed, using fallback data');
       const fallbackStats = getFallbackStats(handle);
-      return new Response(JSON.stringify(fallbackStats), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return res.json(fallbackStats);
     }
     
     const heatmap = generateHeatmap(submissions as CodeforcesSubmission[]);
@@ -310,16 +300,13 @@ Deno.serve(async (req) => {
       lastUpdated: new Date().toISOString(),
     };
     
-    return new Response(JSON.stringify(stats), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    cache.set(cacheKey, stats);
+    return res.json(stats);
   } catch (error) {
     console.error('Error fetching Codeforces stats:', error);
-    
-    // Return fallback data on error
     const fallbackStats = getFallbackStats('Ordinary_Coder_420');
-    return new Response(JSON.stringify(fallbackStats), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return res.json(fallbackStats);
   }
 });
+
+export default router;

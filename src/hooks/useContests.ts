@@ -1,5 +1,5 @@
  import { useQuery } from "@tanstack/react-query";
- import { supabase } from "@/integrations/supabase/client";
+ // Using native fetch instead of Supabase client
  
  export interface Contest {
    platform: string;
@@ -17,15 +17,19 @@
  }
  
  async function fetchContests(): Promise<ContestsResponse> {
-   const { data, error } = await supabase.functions.invoke("fetch-contests");
+   const url = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/contests`;
+   const response = await fetch(url, {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+   });
    
-   if (error) {
-     throw new Error(error.message);
+   if (!response.ok) {
+     const errorData = await response.json().catch(() => ({}));
+     throw new Error(errorData.error || `HTTP error ${response.status}`);
    }
    
-   if (data.error) {
-     throw new Error(data.error);
-   }
+   const data = await response.json();
+   if (data.error) throw new Error(data.error);
    
    return data as ContestsResponse;
  }

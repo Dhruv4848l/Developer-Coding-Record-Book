@@ -71,16 +71,34 @@ const ContestCard = ({ contest, index }: ContestCardProps) => {
             <p className="text-xs text-muted-foreground">{formatDate(contest.startTime)}</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right hidden sm:block">
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap sm:flex-nowrap justify-end w-full sm:w-auto">
+          <div className="flex flex-col items-end justify-center mr-0 sm:mr-2">
+            <div className="text-[10px] sm:text-xs font-bold text-green-400 mb-1 tracking-wider whitespace-nowrap">
+              {contest.problemsSolved}/{contest.totalProblems || 4} SOLVED
+            </div>
+            <div className="flex gap-1">
+              {[...Array(Math.max(4, contest.totalProblems || 4))].map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`w-3 sm:w-4 h-1.5 rounded-sm transition-all ${
+                    i < contest.problemsSolved 
+                      ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]' 
+                      : 'bg-white/10'
+                  }`} 
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="text-right hidden sm:block w-16">
             <div className="font-bold text-leetcode">{contest.rating}</div>
-            <div className="text-xs text-muted-foreground">Rating</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-widest" style={{fontSize: '9px'}}>Rating</div>
           </div>
-          <div className="text-right hidden sm:block">
+          <div className="text-right hidden sm:block w-16">
             <div className="font-bold">#{contest.ranking.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Rank</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-widest" style={{fontSize: '9px'}}>Rank</div>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8 ml-1">
             {expanded ? (
               <ChevronUp className="w-4 h-4" />
             ) : (
@@ -161,26 +179,30 @@ export const LeetCodeContestSection = ({
       <h2 className="text-2xl font-bold mb-6">Contest Performance</h2>
 
       {/* Contest Rating Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div className="text-center p-4 rounded-xl bg-leetcode/10 border border-leetcode/30">
-          <div className="text-2xl sm:text-3xl font-bold text-leetcode">{contestRating || "N/A"}</div>
-          <div className="text-sm text-muted-foreground">Contest Rating</div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <div className="text-center p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+             style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(12px)", borderColor: "rgba(255, 161, 22, 0.4)", boxShadow: "0 0 20px rgba(255, 161, 22, 0.1)" }}>
+          <div className="text-3xl sm:text-4xl font-extrabold text-[#FFB84D] mb-1 drop-shadow-md">{contestRating || "N/A"}</div>
+          <div className="text-sm font-medium text-white/80">Contest Rating</div>
         </div>
-        <div className="text-center p-4 rounded-xl bg-primary/10 border border-primary/30">
-          <div className="text-2xl sm:text-3xl font-bold text-primary">
+        <div className="text-center p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+             style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(12px)", borderColor: "rgba(59, 130, 246, 0.4)", boxShadow: "0 0 20px rgba(59, 130, 246, 0.1)" }}>
+          <div className="text-3xl sm:text-4xl font-extrabold text-[#60A5FA] mb-1 drop-shadow-md">
             {contestGlobalRanking ? `#${contestGlobalRanking.toLocaleString()}` : "N/A"}
           </div>
-          <div className="text-sm text-muted-foreground">Global Rank</div>
+          <div className="text-sm font-medium text-white/80">Global Rank</div>
         </div>
-        <div className="text-center p-4 rounded-xl bg-warning/10 border border-warning/30">
-          <div className="text-2xl sm:text-3xl font-bold text-warning">
+        <div className="text-center p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+             style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(12px)", borderColor: "rgba(245, 158, 11, 0.4)", boxShadow: "0 0 20px rgba(245, 158, 11, 0.1)" }}>
+          <div className="text-3xl sm:text-4xl font-extrabold text-[#FBBF24] mb-1 drop-shadow-md">
             {contestTopPercentage !== "0" ? `Top ${contestTopPercentage}%` : "N/A"}
           </div>
-          <div className="text-sm text-muted-foreground">Percentile</div>
+          <div className="text-sm font-medium text-white/80">Percentile</div>
         </div>
-        <div className="text-center p-4 rounded-xl bg-success/10 border border-success/30">
-          <div className="text-2xl sm:text-3xl font-bold text-success">{attendedContestsCount}</div>
-          <div className="text-sm text-muted-foreground">Contests Attended</div>
+        <div className="text-center p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+             style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(12px)", borderColor: "rgba(34, 197, 94, 0.4)", boxShadow: "0 0 20px rgba(34, 197, 94, 0.1)" }}>
+          <div className="text-3xl sm:text-4xl font-extrabold text-[#4ADE80] mb-1 drop-shadow-md">{attendedContestsCount}</div>
+          <div className="text-sm font-medium text-white/80">Contests Attended</div>
         </div>
       </div>
 

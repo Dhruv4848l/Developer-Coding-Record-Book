@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+// Using native fetch instead of Supabase client
 
 export interface AtCoderProfile {
   username: string;
@@ -37,14 +37,19 @@ export interface AtCoderStats {
 }
 
 async function fetchAtCoderStats(username: string): Promise<AtCoderStats> {
-  const { data, error } = await supabase.functions.invoke("fetch-atcoder-stats", {
-    body: { username },
+  const url = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/atcoder`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
   });
 
-  if (error) {
-    throw new Error(error.message);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error ${response.status}`);
   }
-
+  
+  const data = await response.json();
   return data as AtCoderStats;
 }
 

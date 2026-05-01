@@ -1,7 +1,7 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import express from 'express';
+import cache from '../lib/cache';
+
+const router = express.Router();
 
 function validateUsername(username: unknown): { valid: boolean; error?: string } {
   if (!username || typeof username !== 'string') return { valid: false, error: 'Username is required' };
@@ -49,28 +49,7 @@ interface LeetCodeStats {
   contestHistory: ContestHistoryItem[];
 }
 
-interface ContestInfo {
-  contestId: number;
-  contestName: string;
-  contestSlug: string;
-  startTime: number;
-  finishTime: number;
-  ranking: number;
-  problemsSolved: number;
-  totalProblems: number;
-  rating: number;
-  ratingChange: number;
-}
-
-interface ContestRankingInfo {
-  attendedContestsCount: number;
-  rating: number;
-  globalRanking: number;
-  topPercentage: number;
-}
-
 async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
-  // Query for user profile and submission stats
   const userProfileQuery = `
     query userProfile($username: String!) {
       matchedUser(username: $username) {
@@ -120,6 +99,7 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
     }
   `;
 
+  // We use node-fetch or native fetch in Node 18+
   const response = await fetch(LEETCODE_GRAPHQL_URL, {
     method: 'POST',
     headers: {
@@ -147,14 +127,12 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
     throw new Error('User not found');
   }
 
-  // Parse submission stats
   const acStats = user.submitStatsGlobal?.acSubmissionNum || [];
   const easySolved = acStats.find((s: any) => s.difficulty === 'Easy')?.count || 0;
   const mediumSolved = acStats.find((s: any) => s.difficulty === 'Medium')?.count || 0;
   const hardSolved = acStats.find((s: any) => s.difficulty === 'Hard')?.count || 0;
   const totalSolved = acStats.find((s: any) => s.difficulty === 'All')?.count || (easySolved + mediumSolved + hardSolved);
 
-  // Calculate acceptance rate
   const submitStats = user.submitStats;
   let acceptanceRate = '0%';
   if (submitStats) {
@@ -165,7 +143,6 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
     }
   }
 
-  // Parse submission calendar (JSON string -> object)
   let submissionCalendar: Record<string, number> = {};
   try {
     submissionCalendar = JSON.parse(user.submissionCalendar || '{}');
@@ -173,14 +150,11 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
     submissionCalendar = {};
   }
 
-  // Calculate total submissions from calendar
   const totalSubmissions = Object.values(submissionCalendar).reduce((sum, count) => sum + count, 0);
 
-  // Parse contest ranking info
   const contestRanking = data.data?.userContestRanking;
   const contestHistory = data.data?.userContestRankingHistory || [];
 
-  // Process contest history - only attended contests
   const attendedContests = contestHistory
     .filter((c: any) => c.attended)
     .map((c: any) => ({
@@ -192,7 +166,7 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
       rating: Math.round(c.rating || 0),
       finishTime: c.finishTimeInSeconds || 0,
     }))
-    .sort((a: any, b: any) => b.startTime - a.startTime); // Most recent first
+    .sort((a: any, b: any) => b.startTime - a.startTime);
 
   return {
     username: user.username,
@@ -215,27 +189,36 @@ async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
 function processHeatmapData(submissionCalendar: Record<string, number>) {
   const heatmap: { date: string; count: number }[] = [];
   
-  // Get date range for last 12 months
+  // Count by UTC date string
+  const countByDate: Record<string, number> = {};
+  for (const [timestampStr, count] of Object.entries(submissionCalendar)) {
+    const date = new Date(parseInt(timestampStr) * 1000);
+    // timestamp is midnight UTC, so this gives the proper UTC date string
+    const dateString = date.toISOString().split('T')[0];
+    countByDate[dateString] = (countByDate[dateString] || 0) + count;
+  }
+
+  // To build the grid, use UTC calendar math from today
   const now = new Date();
-  const endDate = new Date(now);
-  endDate.setHours(0, 0, 0, 0);
+  const todayDateStr = now.toISOString().split('T')[0];
+  const endDate = new Date(todayDateStr + 'T00:00:00Z');
   
-  const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - (52 * 7));
-  const dayOfWeek = startDate.getDay();
-  startDate.setDate(startDate.getDate() - dayOfWeek);
+  const startDate = new Date(endDate.getTime());
+  startDate.setUTCDate(startDate.getUTCDate() - (52 * 7));
+  const dayOfWeek = startDate.getUTCDay(); // 0 is Sunday
+  startDate.setUTCDate(startDate.getUTCDate() - dayOfWeek);
   
-  const currentDate = new Date(startDate);
+  const currentDate = new Date(startDate.getTime());
   while (currentDate <= endDate) {
-    const timestamp = Math.floor(currentDate.getTime() / 1000);
-    const count = submissionCalendar[timestamp.toString()] || 0;
+    const isoDateStr = currentDate.toISOString().split('T')[0];
+    const count = countByDate[isoDateStr] || 0;
     
     heatmap.push({
-      date: currentDate.toISOString().split('T')[0],
+      date: isoDateStr,
       count,
     });
     
-    currentDate.setDate(currentDate.getDate() + 1);
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1);
   }
   
   return heatmap;
@@ -246,8 +229,12 @@ function calculateStreaks(heatmap: { date: string; count: number }[]) {
   let longestStreak = 0;
   let tempStreak = 0;
   
-  // Current streak (counting backwards from today)
-  for (let i = heatmap.length - 1; i >= 0; i--) {
+  let i = heatmap.length - 1;
+  if (i >= 0 && heatmap[i].count === 0) {
+    i--;
+  }
+  
+  for (; i >= 0; i--) {
     if (heatmap[i].count > 0) {
       currentStreak++;
     } else {
@@ -255,7 +242,6 @@ function calculateStreaks(heatmap: { date: string; count: number }[]) {
     }
   }
   
-  // Longest streak
   for (const day of heatmap) {
     if (day.count > 0) {
       tempStreak++;
@@ -270,35 +256,31 @@ function calculateStreaks(heatmap: { date: string; count: number }[]) {
   return { currentStreak, longestStreak, activeDays };
 }
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+router.post('/', async (req, res) => {
+  const clientIP = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
   if (!checkRateLimit(clientIP)) {
-    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    return res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
   }
 
   try {
-    let username = 'Ydp5K7DIfv';
+    let username = 'Ordinary_Coder_Here';
     
-    try {
-      const body = await req.json();
-      if (body?.username) {
-        username = body.username;
-      }
-    } catch {
-      const url = new URL(req.url);
-      const urlUsername = url.searchParams.get('username');
-      if (urlUsername) {
-        username = urlUsername;
-      }
+    if (req.body?.username) {
+      username = req.body.username;
+    } else if (req.query?.username) {
+      username = req.query.username as string;
     }
 
     const validation = validateUsername(username);
     if (!validation.valid) {
-      return new Response(JSON.stringify({ error: validation.error }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      return res.status(400).json({ error: validation.error });
+    }
+    
+    const forceSync = req.query.force === 'true';
+    const cacheKey = `leetcode_${username}`;
+
+    if (!forceSync && cache.has(cacheKey)) {
+      return res.json(cache.get(cacheKey));
     }
     
     console.log('Fetching LeetCode stats for:', username);
@@ -327,17 +309,12 @@ Deno.serve(async (req) => {
       heatmap,
       lastUpdated: new Date().toISOString(),
     };
-    
-    console.log('LeetCode stats result:', JSON.stringify(result.profile));
-    
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    cache.set(cacheKey, result);
+    return res.json(result);
   } catch (error) {
     console.error('Error fetching LeetCode stats:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Failed to fetch stats' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to fetch stats' });
   }
 });
+
+export default router;

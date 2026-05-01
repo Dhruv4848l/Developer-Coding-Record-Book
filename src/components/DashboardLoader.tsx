@@ -6,7 +6,7 @@ interface DashboardLoaderProps {
   duration?: number;
 }
 
-export const DashboardLoader = ({ onFinish, duration = 2500 }: DashboardLoaderProps) => {
+export const DashboardLoader = ({ onFinish, duration = 800 }: DashboardLoaderProps) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {

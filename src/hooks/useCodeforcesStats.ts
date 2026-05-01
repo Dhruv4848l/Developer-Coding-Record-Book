@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+// Using native fetch instead of Supabase client
 
 export interface CodeforcesProfile {
   handle: string;
@@ -50,19 +50,22 @@ export interface CodeforcesStats {
 }
 
 async function fetchCodeforcesStats(handle: string): Promise<CodeforcesStats> {
-  const response = await supabase.functions.invoke("fetch-codeforces-stats", {
-    body: { handle },
+  const url = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/codeforces`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ handle }),
   });
   
-  if (response.error) {
-    throw new Error(response.error.message);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error ${response.status}`);
   }
   
-  if (response.data.error) {
-    throw new Error(response.data.error);
-  }
+  const data = await response.json();
+  if (data.error) throw new Error(data.error);
   
-  return response.data as CodeforcesStats;
+  return data as CodeforcesStats;
 }
 
 const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds

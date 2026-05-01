@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+// Using native fetch instead of Supabase client
 
 export interface LeetCodeProfile {
   username: string;
@@ -42,24 +42,27 @@ export interface LeetCodeStats {
 }
 
 async function fetchLeetCodeStats(username: string): Promise<LeetCodeStats> {
-  const { data, error } = await supabase.functions.invoke("fetch-leetcode-stats", {
-    body: { username },
+  const url = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/leetcode`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
   });
   
-  if (error) {
-    throw new Error(error.message);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error ${response.status}`);
   }
   
-  if (data.error) {
-    throw new Error(data.error);
-  }
+  const data = await response.json();
+  if (data.error) throw new Error(data.error);
   
   return data as LeetCodeStats;
 }
 
 const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
-export function useLeetCodeStats(username: string = 'Ydp5K7DIfv') {
+export function useLeetCodeStats(username: string = 'Ordinary_Coder_Here') {
   return useQuery({
     queryKey: ["leetcode-stats", username],
     queryFn: () => fetchLeetCodeStats(username),
