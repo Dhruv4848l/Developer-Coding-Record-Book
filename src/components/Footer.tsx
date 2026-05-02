@@ -11,10 +11,10 @@ export const Footer = () => {
             <div className="q-line"></div>
           </div>
           <blockquote className="q-text">
-            "Har contest ek yudh hai. Har problem ek dushman.<br/>
-            Main tab tak nahi rukta — jab tak jeet nahi jaata."
+            "sukha-duḥkhe same kṛitvā lābhālābhau jayājayau<br/>
+            सुख-दुःख, लाभ-हानि और जय-पराजय को समान मानकर युद्ध के लिए तैयार हो जाओ।"
           </blockquote>
-          <span className="q-auth">KINGKONG_CODER</span>
+          <span className="q-auth">BHAGAVAD GITA 2.38</span>
         </div>
       </div>
 
@@ -26,7 +26,7 @@ export const Footer = () => {
         
         <div className="ft-cr">
           © 2026 Dhruv's CodeVault. Track your coding journey.
-          <span>"The King has arrived. Let the algorithms bow."</span>
+          <span>"yogaḥ karmasu kauśalam — कर्मों में कुशलता ही योग है।"</span>
         </div>
 
         <div className="ft-socials">

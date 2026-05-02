@@ -89,8 +89,8 @@ const CoverPage = () => {
             <h1 className="hero-name">Dhruv <em>Maji</em></h1>
             <div className="hero-handle">@KingKong_Coder</div>
             <div className="hero-quote">
-              "Jo darr gaya, samjho mar gaya.<br/>
-              Yahan sirf woh jeeta hai, jo roz apni seema todhta hai."
+              "uddhared ātmanātmānaṁ nātmānam avasādayet<br/>
+              मनुष्य को चाहिए कि वह अपने मन की शक्ति से अपना उद्धार करे। यह मन ही मनुष्य का मित्र है और मन ही उसका शत्रु भी है।"
             </div>
             <div className="hero-tags">
               <div className="hero-tag">◈ India</div>
