@@ -22,10 +22,10 @@ export function SyncTerminal({ onSyncComplete }: { onSyncComplete: () => void })
     await new Promise((r) => setTimeout(r, 800));
 
     const platforms = [
-      { name: "LeetCode", url: "http://localhost:5000/api/leetcode?force=true", body: { username: "Ordinary_Coder_Here" } },
-      { name: "Codeforces", url: "http://localhost:5000/api/codeforces?force=true", body: { handle: "Ordinary_Coder_420" } },
-      { name: "CodeChef", url: "http://localhost:5000/api/codechef?force=true", body: { username: "cooking_coder" } },
-      { name: "Codolio", url: "http://localhost:5000/api/codolio?force=true", body: { username: "dhruvmajiever191" } },
+      { name: "LeetCode", url: `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/leetcode?force=true`, body: { username: "Ordinary_Coder_Here" } },
+      { name: "Codeforces", url: `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/codeforces?force=true`, body: { handle: "Ordinary_Coder_420" } },
+      { name: "CodeChef", url: `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/codechef?force=true`, body: { username: "cooking_coder" } },
+      { name: "Codolio", url: `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/codolio?force=true`, body: { username: "dhruvmajiever191" } },
     ];
 
     for (const p of platforms) {
@@ -56,7 +56,7 @@ export function SyncTerminal({ onSyncComplete }: { onSyncComplete: () => void })
     // Trigger powerlevel sync
     try {
         const startTime = Date.now();
-        await fetch("http://localhost:5000/api/powerlevel?force=true", {
+        await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/powerlevel?force=true`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ leetcode: "Ordinary_Coder_Here", codeforces: "Ordinary_Coder_420", codechef: "cooking_coder", hackerrank: "dhruvmajiever191" })
