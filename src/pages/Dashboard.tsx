@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { PlatformStats } from "@/components/PlatformStats";
 import { ContestTracker } from "@/components/ContestTracker";
@@ -9,6 +10,7 @@ import { SyncTerminal } from "@/components/SyncTerminal";
 import "./CoverPage.css"; // Ensure cyber-theme applies here
 
 const Dashboard = () => {
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const handleFinish = useCallback(() => setLoading(false), []);
 
@@ -25,7 +27,7 @@ const Dashboard = () => {
           <CTASection />
           <Footer />
         </div>
-        <SyncTerminal onSyncComplete={() => window.location.reload()} />
+        <SyncTerminal onSyncComplete={() => queryClient.invalidateQueries()} />
       </div>
     </>
   );
